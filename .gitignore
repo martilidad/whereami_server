@@ -130,7 +130,4 @@ dmypy.json
 
 .idea/
 
-# todo add this as git subrepo
-whereami/static/
-
 whereami/migrations/
