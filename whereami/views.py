@@ -44,6 +44,14 @@ def post_guess(request):
 
 
 def get_guesses(request):
-    body = request.body
-    return JsonResponse({'A': {'LLArr': [31.710572, -81.731586]}, 'B': {'LLArr': [54.730097, -113.322859]}},
-                            safe=False)
+    try:
+        location_id = request.GET['Location_ID']
+        location = Location.objects.get(id=location_id)
+        guesses = location.guess_set.all()
+        response_dict = {}
+        for guess in guesses:
+            response_dict[guess.user.username] = \
+                {'Lat': guess.lat, 'Long': guess.long, 'Score': guess.score, 'Distance': guess.distance}
+        return JsonResponse(response_dict, safe=False)
+    except (KeyError, Location.DoesNotExist):
+        return HttpResponseBadRequest()
