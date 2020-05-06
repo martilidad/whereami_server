@@ -2,7 +2,7 @@ import json
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseBadRequest
+from django.http import HttpResponse, Http404, HttpResponseBadRequest
 from django.http import JsonResponse
 from django.shortcuts import render
 
@@ -52,10 +52,11 @@ def get_guesses(request):
         location_id = request.GET['Location_ID']
         location = Location.objects.get(id=location_id)
         guesses = location.guess_set.all()
-        response_dict = {}
+        response_dict = []
         for guess in guesses:
-            response_dict[guess.user.username] = \
-                {'Lat': guess.lat, 'Long': guess.long, 'Score': guess.score, 'Distance': guess.distance}
+            response_dict.append(
+                {'Name': guess.user.username, 'Lat': guess.lat, 'Long': guess.long, 'Score': guess.score,
+                 'Distance': guess.distance})
         return JsonResponse(response_dict, safe=False)
     except (KeyError, Location.DoesNotExist):
         return HttpResponseBadRequest()
@@ -76,4 +77,3 @@ def challenge(request):
         return JsonResponse(response_dict, safe=False)
     except (KeyError, Challenge.DoesNotExist):
         return HttpResponseBadRequest()
-

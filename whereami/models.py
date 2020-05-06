@@ -28,3 +28,6 @@ class Guess(models.Model):
     score = models.IntegerField()
     distance = models.IntegerField()
     pub_date = models.DateTimeField(default=datetime.now, blank=True)
+
+    class Meta:
+        unique_together = ('user', 'location')
