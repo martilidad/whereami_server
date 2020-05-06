@@ -1,19 +1,21 @@
 import json
 
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseBadRequest
 from django.http import JsonResponse
 
+from whereami.models import Location, Guess
+
 
 # Create your views here.
-from django.views.decorators.csrf import csrf_exempt
 
 
+@login_required
 def index(request):
     return HttpResponseRedirect("static/index.html")
 
 
-# TODO remove
-@csrf_exempt
+@login_required
 def guess(request):
     if request.method == 'POST':
         return post_guess(request)
@@ -24,16 +26,21 @@ def guess(request):
 
 
 def post_guess(request):
-    data = json.loads(request.body)
-    name = data['Name']
-    location = data['Location']
-    if location is not None and name is not None:
-        lat = location['Lat']
-        long = location['Long']
-        if lat is not None and long is not None:
-            print(data)
-            return HttpResponse()
-    return HttpResponseBadRequest()
+    try:
+        user = request.user
+        data = json.loads(request.body)
+        location_id = data['Location_ID']
+        location = Location.objects.get(pk=location_id)
+        lat = data['Lat']
+        long = data['Long']
+        # Let's just believe the client for now
+        score = data['Score']
+        distance = data['Distance']
+        guess = Guess(user=user, location=location, lat=lat, long=long, score=score, distance=distance)
+        guess.save()
+        return HttpResponse()
+    except (KeyError, Location.DoesNotExist):
+        return HttpResponseBadRequest()
 
 
 def get_guesses(request):
