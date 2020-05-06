@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseBadRequest
 from django.http import JsonResponse
 
-from whereami.models import Location, Guess
+from whereami.models import Location, Guess, Challenge
 
 
 # Create your views here.
@@ -55,3 +55,20 @@ def get_guesses(request):
         return JsonResponse(response_dict, safe=False)
     except (KeyError, Location.DoesNotExist):
         return HttpResponseBadRequest()
+
+
+@login_required
+def challenge(request):
+    if request.method != 'GET':
+        raise Http404()
+    try:
+        id = request.GET['Challenge_ID']
+        obj = Challenge.objects.get(id=id)
+        locations = obj.location_set.all()
+        response_dict = []
+        for location in locations:
+            response_dict.append({'Location_ID': location.id, 'Lat': location.lat, 'Long': location.long})
+        return JsonResponse(response_dict, safe=False)
+    except (KeyError, Challenge.DoesNotExist):
+        return HttpResponseBadRequest()
+
