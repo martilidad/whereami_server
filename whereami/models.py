@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 
 class Challenge(models.Model):
     name = models.CharField(max_length=32, unique=True)
+    time = models.IntegerField()
     pub_date = models.DateTimeField(default=datetime.now, blank=True)
 
 

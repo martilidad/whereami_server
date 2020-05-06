@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Whereami</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <meta property="og:title" content="Whereami"/>
+    <meta property="og:type" content="website"/>
+{#    TODO#}
+{#    <meta property="og:url" content=""/>#}
+{#    <meta property="og:image" content=""/>#}
+    <meta property="og:description" content="A multiplayer location guessing game based on streetview."/>
+    <style>
+        .clickable:hover{
+            cursor: hand;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<h3>Welcome to WhereAmI.</h3>
+<p>Please click on the challenge you would like to start.</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Challenge name</th>
+      <th scope="col"># of Locations</th>
+      <th scope="col">Time</th>
+    </tr>
+  </thead>
+  <tbody>
+  {%  for challenge in challenges %}
+    <tr class="clickable" onclick="location.href='/static/index.html?Challenge_ID={{ challenge.id }}'">
+      <th scope="row">{{ challenge.id }}</th>
+      <td>{{ challenge.name }}</td>
+      <td>{{ challenge.location__count }}</td>
+      <td>{{ challenge.time }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</body>
+</html>

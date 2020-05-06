@@ -1,8 +1,10 @@
 import json
 
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseBadRequest
 from django.http import JsonResponse
+from django.shortcuts import render
 
 from whereami.models import Location, Guess, Challenge
 
@@ -12,7 +14,9 @@ from whereami.models import Location, Guess, Challenge
 
 @login_required
 def index(request):
-    return HttpResponseRedirect("static/index.html")
+    challenges = Challenge.objects.annotate(Count('location'))
+    context = {'challenges': challenges}
+    return render(request, "index.html", context)
 
 
 @login_required
@@ -65,9 +69,10 @@ def challenge(request):
         id = request.GET['Challenge_ID']
         obj = Challenge.objects.get(id=id)
         locations = obj.location_set.all()
-        response_dict = []
+        list = []
         for location in locations:
-            response_dict.append({'Location_ID': location.id, 'Lat': location.lat, 'Long': location.long})
+            list.append({'Location_ID': location.id, 'Lat': location.lat, 'Long': location.long})
+        response_dict = {'Challenge_ID': id, 'Time': obj.time, 'Locations': list}
         return JsonResponse(response_dict, safe=False)
     except (KeyError, Challenge.DoesNotExist):
         return HttpResponseBadRequest()
