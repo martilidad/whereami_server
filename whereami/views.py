@@ -1,12 +1,13 @@
 import json
+import random
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import HttpResponse, Http404, HttpResponseBadRequest
+from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from whereami.models import ChallengeLocation, Guess, Challenge
+from whereami.models import ChallengeLocation, Guess, Challenge, Game, Location
 
 
 # Create your views here.
@@ -15,7 +16,8 @@ from whereami.models import ChallengeLocation, Guess, Challenge
 @login_required
 def index(request):
     challenges = Challenge.objects.annotate(Count('challengelocation'))
-    context = {'challenges': challenges}
+    games = Game.objects.annotate(Count('locations'))
+    context = {'challenges': challenges, 'games': games}
     return render(request, "index.html", context)
 
 
@@ -65,10 +67,17 @@ def get_guesses(request):
 
 @login_required
 def challenge(request):
-    if request.method != 'GET':
+    if request.method == 'GET':
+        return get_challenge(request)
+    elif request.method == 'POST':
+        return post_challenge(request)
+    else:
         raise Http404()
+
+
+def get_challenge(request):
     try:
-        id = request.GET['Challenge_Location_ID']
+        id = request.GET['Challenge_ID']
         obj = Challenge.objects.get(id=id)
         challenge_locations = obj.challengelocation_set.all()
         list = []
@@ -78,4 +87,30 @@ def challenge(request):
         response_dict = {'Challenge_ID': id, 'Time': obj.time, 'Challenge_Locations': list}
         return JsonResponse(response_dict, safe=False)
     except (KeyError, Challenge.DoesNotExist):
+        return HttpResponseBadRequest()
+
+
+def post_challenge(request):
+    try:
+        game_id = request.POST['game']
+        game = Game.objects.get(id=game_id)
+        quantity = int(request.POST['quantity'])
+        prevent_reuse = request.POST['preventReuse']
+        time = request.POST['time']
+        if prevent_reuse:
+            # exclude locations where ChallengeLocations exist already
+            used_location_ids = ChallengeLocation.objects.values_list('location_id', flat=True)
+            locations = game.locations.exclude(pk__in=used_location_ids)
+        else:
+            locations = game.locations.all()
+        if len(locations) < quantity:
+            # TODO proper error
+            return HttpResponseBadRequest()
+        sampled_locations = random.sample(list(locations), quantity)
+        challenge = Challenge(game=game, time=time)
+        challenge.save()
+        for location in sampled_locations:
+            ChallengeLocation(challenge=challenge, location=location).save()
+        return HttpResponseRedirect('')
+    except (KeyError, Game.DoesNotExist):
         return HttpResponseBadRequest()

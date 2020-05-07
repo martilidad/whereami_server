@@ -5,6 +5,7 @@
     <title>Whereami</title>
     <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-select.min.css">
     <meta property="og:title" content="Whereami"/>
     <meta property="og:type" content="website"/>
 {#    TODO#}
@@ -25,7 +26,7 @@
   <thead>
     <tr>
       <th scope="col">#</th>
-      <th scope="col">Challenge name</th>
+      <th scope="col">Game name</th>
       <th scope="col"># of Locations</th>
       <th scope="col">Time</th>
     </tr>
@@ -34,12 +35,34 @@
   {%  for challenge in challenges %}
     <tr class="clickable" onclick="location.href='/static/index.html?Challenge_ID={{ challenge.id }}'">
       <th scope="row">{{ challenge.id }}</th>
-      <td>{{ challenge.name }}</td>
-      <td>{{ challenge.challenge_location__count }}</td>
+      <td>{{ challenge.game.name }}</td>
+      <td>{{ challenge.challengelocation__count }}</td>
       <td>{{ challenge.time }}</td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
+<form action="/challenge" method="post">{% csrf_token %}
+    <h4>Create a new Challenge: </h4>
+    <select class="selectpicker" id="game" name="game">
+        {% for game in games %}
+            <option data-subtext="{{ game.locations__count }}" value="{{ game.id }}">{{ game.name }}</option>
+        {% endfor %}
+    </select>
+    <label for="quantity">Numer of Locations (between 1 and number of locations in game).</label>
+    <input type="number" id="quantity" name="quantity" min="1">
+    <label for="time">Challenge time in seconds.</label>
+    <input type="number" id="time" name="time">
+    <label for="preventReuse">Prevent reuse of Locations.</label>
+    <input type="checkbox" id="preventReuse" name="preventReuse" checked>
+    <button type="submit" value="Submit" class="btn btn-primary">Create</button>
+
+</form>
 </body>
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
+<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-select.min.js"></script>
+<script>$(function () {
+    $('select').selectpicker();
+});</script>
 </html>
