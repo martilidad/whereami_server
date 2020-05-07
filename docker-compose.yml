@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:80"
+    container_name: whereami
+    volumes:
+      - .:/code
+    ports:
+      - "80:80"
+# Everything below this point is traefik(reverse proxy) configuration, instead of exposing port 80 directly
+#     networks:
+#         - web
+#     labels:
+#         - "traefik.enable=true"
+#         - "traefik.docker.network=web"
+#         - "traefik.basic.frontend.rule=Host:where.example.de"
+#         - "traefik.basic.protocol=http"
+# networks:
+#     web:
+#         external: true
