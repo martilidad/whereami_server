@@ -49,7 +49,7 @@ function renderOtherGuesses() {
       url: "http://" + window.location.host + "/guess",
       method: "GET",
       data: {
-        "Location_ID": window.loc['Location_ID'],
+        "Challenge_Location_ID": window.loc['Challenge_Location_ID'],
       },
       success: function (otherGuesses) {
           for (let i = 0; i < otherGuesses.length; i++) {

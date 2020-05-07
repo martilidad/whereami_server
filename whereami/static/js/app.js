@@ -1,7 +1,7 @@
 function get_challenge_callback(challenge) {
 
   var maxTime = challenge['Time'];
-  var locations = challenge['Locations'];
+  var locations = challenge['Challenge_Locations'];
 
   // Config
   var game = {
@@ -147,7 +147,7 @@ function get_challenge_callback(challenge) {
       headers: {"X-CSRFToken": Cookies.get('csrftoken')},
       contentType: 'application/json',
       data: JSON.stringify({
-        "Location_ID": window.loc['Location_ID'],
+        "Challenge_Location_ID": window.loc['Challenge_Location_ID'],
         "Lat": window.guessArray[0],
         "Long": window.guessArray[1],
         "Score": points,
