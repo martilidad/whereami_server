@@ -114,3 +114,11 @@ def post_challenge(request):
         return HttpResponseRedirect('')
     except (KeyError, Game.DoesNotExist):
         return HttpResponseBadRequest()
+
+
+@login_required
+def game(request):
+    if request.method == 'GET':
+        return render(request, "creategame.html")
+    else:
+        return Http404()
