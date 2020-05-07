@@ -6,20 +6,21 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 
+class Location(models.Model):
+    name = models.CharField(max_length=32)
+    lat = models.FloatField()
+    long = models.FloatField()
+    pub_date = models.DateTimeField(default=datetime.now, blank=True)
+
+
 class Game(models.Model):
     name = models.CharField(max_length=32, unique=True)
+    locations = models.ManyToManyField(Location)
 
 
 class Challenge(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     time = models.IntegerField()
-    pub_date = models.DateTimeField(default=datetime.now, blank=True)
-
-
-class Location(models.Model):
-    name = models.CharField(max_length=32, unique=True)
-    lat = models.FloatField()
-    long = models.FloatField()
     pub_date = models.DateTimeField(default=datetime.now, blank=True)
 
 

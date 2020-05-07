@@ -1,0 +1,1194 @@
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.386151
+    long: -72.594942
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.143598
+    long: -79.850821
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 39.953833
+    long: -82.459817
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 31.710572
+    long: -81.731586
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 54.730097
+    long: -113.322859
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 18.204668
+    long: 98.688083
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.716861
+    long: -73.444118
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 49.773504
+    long: 18.443298
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 49.760865
+    long: 18.540459
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 45.441826
+    long: -76.482697
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 45.048785
+    long: -81.364746
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 46.487874
+    long: -87.341824
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 40.48642
+    long: -8.67229
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -30.060433
+    long: -51.235402
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 48.462939
+    long: -122.57806
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.089282
+    long: -112.153015
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 39.607942
+    long: -104.037314
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 43.01766
+    long: -70.832514
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 44.636013
+    long: -63.56979
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 46.12368
+    long: -60.178324
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 58.154715
+    long: -6.503611
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 56.527054
+    long: -2.715433
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 52.381691
+    long: 4.842191
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 52.323185
+    long: 5.077737
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 48.627318
+    long: 2.414361
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 22.158751
+    long: 113.568383
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 50.443452
+    long: 30.368872
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 46.102489
+    long: 0.489836
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 40.32928
+    long: -8.843704
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 47.506302
+    long: -52.878399
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 59.91132
+    long: 10.704117
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 59.324429
+    long: 18.027363
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 59.308133
+    long: 18.017603
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 61.583522
+    long: 24.121818
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 61.792067
+    long: 26.09482
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 61.153023
+    long: 28.626297
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 59.930482
+    long: 30.326724
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 55.740989
+    long: 37.643505
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 42.504454
+    long: 26.778216
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 32.047836
+    long: 34.764
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 27.85158
+    long: -15.431503
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 28.405772
+    long: -13.851339
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 28.136941
+    long: -14.265967
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -22.121892
+    long: -41.579143
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 21.107432
+    long: -101.643071
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 33.907164
+    long: -118.291597
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 32.578544
+    long: -117.084322
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 32.499614
+    long: -116.949802
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 27.954928
+    long: -110.838017
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -33.627253
+    long: -70.713926
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -33.902864
+    long: 19.156254
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -33.418034
+    long: 19.287207
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -29.603402
+    long: 31.162643
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -29.353418
+    long: 31.275769
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 44.396495
+    long: 8.943227
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 52.455897
+    long: 13.315633
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 52.399292
+    long: 4.54257
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 51.504403
+    long: -0.096115
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 50.779741
+    long: -1.076586
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 53.006673
+    long: -9.388301
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 53.269908
+    long: -9.056027
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -36.244136
+    long: 150.138252
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -35.910253
+    long: 150.080754
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -35.304017
+    long: 149.125024
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -33.852164
+    long: 151.210808
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -33.60936
+    long: 151.330671
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -27.276922
+    long: 152.981374
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -16.914506
+    long: 145.772079
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -18.414849
+    long: 133.850509
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -12.714131
+    long: 131.087205
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -32.375691
+    long: 124.624594
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -33.205705
+    long: 136.127483
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -37.809287
+    long: 144.860957
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -38.518886
+    long: 145.364938
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -37.881112
+    long: 147.986631
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -45.890042
+    long: 170.509817
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -45.732399
+    long: 170.570131
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -44.395179
+    long: 171.248557
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -43.352667
+    long: 172.662721
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 14.42514
+    long: -60.88696
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -41.528316
+    long: 174.006963
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -41.278536
+    long: 173.79653
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -41.296114
+    long: 174.805083
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -39.831018
+    long: 174.884594
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -37.097002
+    long: 174.944404
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -36.586234
+    long: 174.696246
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 23.392954
+    long: 120.167403
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 23.434591
+    long: 120.475001
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 24.164274
+    long: 120.466706
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 25.127677
+    long: 121.345888
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 22.14233
+    long: 120.895906
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 22.068026
+    long: 120.713913
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 24.180617
+    long: 121.310135
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 22.713633
+    long: 120.647938
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 37.520159
+    long: 126.965217
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 37.605225
+    long: 126.819185
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 33.03172
+    long: 133.092495
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 33.363595
+    long: 133.257364
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 33.245564
+    long: 134.175172
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 33.9355
+    long: 134.675445
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 34.090315
+    long: 134.568655
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 34.370156
+    long: 134.897461
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 34.573761
+    long: 135.483717
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 35.036556
+    long: 136.624798
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 35.053323
+    long: 136.860677
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 37.919095
+    long: 140.90102
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 38.172184
+    long: 140.890116
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 38.302981
+    long: 141.016754
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 39.004622
+    long: 141.620705
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 40.834644
+    long: 140.724153
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 13.671031
+    long: 100.453813
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 13.794303
+    long: 100.475734
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 13.820743
+    long: 100.520225
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 15.688301
+    long: 100.123802
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 20.701626
+    long: -156.444524
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 20.935914
+    long: -156.340622
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 20.754721
+    long: -156.307426
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 20.932671
+    long: -156.512269
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 20.930665
+    long: -156.690124
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 20.817193
+    long: -156.627544
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 21.059255
+    long: -156.833847
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 21.170511
+    long: -156.998919
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 21.099857
+    long: -157.043906
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 21.314349
+    long: -157.88783
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 21.390764
+    long: -157.963323
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 21.460369
+    long: -157.994817
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 21.500828
+    long: -158.029445
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 21.579848
+    long: -158.179746
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 21.546209
+    long: -158.240185
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 22.215538
+    long: -159.533002
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 22.210937
+    long: -159.475825
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 22.14238
+    long: -159.313348
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 21.975743
+    long: -159.370528
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 61.037293
+    long: -149.780767
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 61.087325
+    long: -149.834305
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 61.481578
+    long: -149.252417
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 60.986285
+    long: -149.509693
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 60.81731
+    long: -148.986377
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 64.788119
+    long: -148.215078
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 66.426153
+    long: 19.682644
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 66.897023
+    long: 17.836021
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 68.419404
+    long: 17.38831
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 42.041688
+    long: 11.828012
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 36.747676
+    long: -3.062242
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 27.752501
+    long: -15.647589
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -42.808793
+    long: 147.521977
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -41.188572
+    long: 146.370518
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -41.239591
+    long: 147.007891
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -41.564388
+    long: 148.297033
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -42.193771
+    long: 148.058178
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -22.539818
+    long: 27.150758
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -22.564326
+    long: 27.084064
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -19.988805
+    long: 23.420358
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -19.987536
+    long: 23.400586
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -19.97829
+    long: 23.436552
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -2.547081
+    long: -44.303493
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -2.521623
+    long: -44.303452
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -2.496611
+    long: -44.307604
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -2.483738
+    long: -44.251567
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -4.8685
+    long: -43.359994
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -4.862966
+    long: -43.366505
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: -4.856253
+    long: -43.350032
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 61.256752
+    long: 73.445459
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 61.260159
+    long: 73.255434
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 61.223046
+    long: 73.159369
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 61.260149
+    long: 73.522541
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 61.018278
+    long: 69.03807
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 61.060151
+    long: 72.611124
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 60.161247
+    long: 24.924737
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 60.166274
+    long: 24.894095
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 60.180358
+    long: 24.839546
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 60.156709
+    long: 24.61002
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 60.443872
+    long: 22.269734
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 59.43249
+    long: 24.786236
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 59.438622
+    long: 24.77217
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 59.440308
+    long: 24.739404
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 59.428183
+    long: 24.725075
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 56.965314
+    long: 23.87461
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 56.930528
+    long: 23.611445
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 38.796784
+    long: -9.217481
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 38.762923
+    long: -9.140635
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.173086
+    long: -71.558383
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.1882
+    long: -71.568413
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.224204
+    long: -71.565897
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.503585
+    long: -71.342547
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.27875
+    long: -70.09466
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.285498
+    long: -70.097395
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.290028
+    long: -70.091802
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.28397
+    long: -70.169894
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 42.05567
+    long: -70.130615
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 42.0437
+    long: -70.214552
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 42.061555
+    long: -70.161672
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.460846
+    long: -71.321621
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 38.663682
+    long: 1.583126
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 39.067397
+    long: 1.588115
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 39.545419
+    long: 2.620647
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 39.56504
+    long: 2.643499
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 36.744034
+    long: 11.989399
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 40.846046
+    long: 14.266241
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.903467
+    long: 12.52023
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.900241
+    long: 12.45591
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.917006
+    long: 8.736544
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.931862
+    long: 8.740537
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.863582
+    long: -87.619196
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.702427
+    long: -87.524245
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 39.961456
+    long: -83.000494
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 39.953099
+    long: -82.998817
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 40.438824
+    long: -80.011528
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 40.449676
+    long: -79.993329
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.49853
+    long: -81.705368
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.478657
+    long: -81.673517
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 42.32768
+    long: -83.04662
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 42.347674
+    long: -83.000241
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 43.632123
+    long: -79.412226
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 43.649058
+    long: -79.354391
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 43.700565
+    long: -79.254752
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.390699
+    long: -73.477126
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.425949
+    long: -73.340598
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.468883
+    long: -73.405674
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.455067
+    long: -73.238091
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.465248
+    long: -73.246627
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.465829
+    long: -73.229696
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.477619
+    long: -73.216943
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.507517
+    long: -73.140724
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.117671
+    long: -73.38268
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.107462
+    long: -73.411
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.093624
+    long: -73.419081
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.09153
+    long: -73.415912
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.098894
+    long: -73.416056
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.576465
+    long: -73.411813
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.605417
+    long: -73.404012
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.592727
+    long: -73.450599
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.556962
+    long: -73.387772
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.550288
+    long: -73.329864
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.535304
+    long: -73.279492
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.550911
+    long: -73.205327
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.551363
+    long: -73.055456
+- model: whereami.location
+  fields:
+    name: "default_location"
+    lat: 41.518617
+    long: -72.771206
+- model: whereami.game
+  fields:
+    name: "Whereami_basic"
+    locations: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238]
