@@ -116,9 +116,26 @@ def post_challenge(request):
         return HttpResponseBadRequest()
 
 
+def post_game(request):
+    try:
+        data = json.loads(request.body)
+        name = data['Name']
+        locations = data['Locations']
+        game = Game(name=name)
+        game.save()
+        for location in locations:
+            game.locations.create(name=location['Name'], lat=location['Lat'], long=location['Long'])
+        game.save()
+        return HttpResponse()
+    except KeyError:
+        return HttpResponseBadRequest()
+
+
 @login_required
 def game(request):
     if request.method == 'GET':
         return render(request, "creategame.html")
+    if request.method == 'POST':
+        return post_game(request)
     else:
         return Http404()

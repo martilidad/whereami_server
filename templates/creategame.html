@@ -11,14 +11,15 @@
   <link rel='stylesheet' href='/static/css/style.css' />
 </head>
 <body>
-<form action="/game" method="post">{% csrf_token %}
     <h4>Create a new Game: </h4>
     <label for="quantity">Numer of Locations.(please check streetview availability)</label>
     <input type="number" id="quantity" name="quantity" min="1">
+    <label for="minDist">Minimum Distance between locations in km.</label>
+    <input type="number" id="minDist" name="minDist" min="1">
     <label for="name">Game Name(e.g. Spain)</label>
     <input type="text" id="name" name="name">
-    <button type="submit" value="Button" class="btn btn-primary">Create</button>
-</form>
+    <div id="loadingText"></div>
+    <button type="button" onclick="submit()" class="btn btn-primary">Create</button>
     <div id="createGameMap"></div>
   <script type='text/javascript' src='/static/js/js.cookie.min.js'></script>
   <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
