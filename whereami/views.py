@@ -1,8 +1,9 @@
 import json
 import random
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.db.models import Count
 from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseRedirect
 from django.http import JsonResponse
@@ -20,6 +21,12 @@ def index(request):
     games = Game.objects.annotate(Count('locations'))
     context = {'challenges': challenges, 'games': games}
     return render(request, "index.html", context)
+
+
+@login_required
+def start_challenge(request):
+    context = {'google_api_key': settings.GOOGLE_API_KEY}
+    return render(request, "startChallenge.html", context)
 
 
 @login_required
@@ -47,7 +54,7 @@ def post_guess(request):
                       distance=distance)
         guess.save()
         return HttpResponse()
-    except (KeyError, ChallengeLocation.DoesNotExist):
+    except (KeyError, ChallengeLocation.DoesNotExist, IntegrityError):
         return HttpResponseBadRequest()
 
 
@@ -137,7 +144,7 @@ def post_game(request):
 @login_required
 def game(request):
     if request.method == 'GET':
-        return render(request, "creategame.html")
+        return render(request, "creategame.html", context={'google_api_key': settings.GOOGLE_API_KEY})
     if request.method == 'POST':
         return post_game(request)
     else:

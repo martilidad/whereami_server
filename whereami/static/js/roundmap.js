@@ -28,13 +28,13 @@ function rminitialize() {
   var actualMarker = new google.maps.Marker({
     position: actualLtLng,
     title: "Actual Location",
-    icon: 'img/actual.png'
+    icon: '/static/img/actual.png'
   });
 
   var guessMarker = new google.maps.Marker({
     position: guessLtLng,
     title: "Your Guess",
-    icon: 'img/guess.png'
+    icon: '/static/img/guess.png'
   });
 
   actualMarker.setMap(map);
@@ -58,7 +58,7 @@ function renderOtherGuesses() {
             var Marker = new google.maps.Marker({
               position: ltLng,
               label: guess['Name'],
-              icon: 'img/other.png',
+              icon: '/static/img/other.png',
               title: 'Distance: ' + guess['Distance'] + ' Score: ' + guess['Score']
             });
             Marker.setMap(map);

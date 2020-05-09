@@ -38,7 +38,7 @@
             </thead>
             <tbody>
             {% for challenge in challenges %}
-                <tr class="clickable" onclick="location.href='/static/index.html?Challenge_ID={{ challenge.id }}'">
+                <tr class="clickable" onclick="location.href='/startChallenge?Challenge_ID={{ challenge.id }}'">
                     <th scope="row">{{ challenge.pub_date }}</th>
                     <td>{{ challenge.game.name }}</td>
                     <td>{{ challenge.challengelocation__count }}</td>
