@@ -6,14 +6,15 @@
     <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/dataTables.bootstrap4.min.css">
     <meta property="og:title" content="Whereami"/>
     <meta property="og:type" content="website"/>
-{#    TODO#}
-{#    <meta property="og:url" content=""/>#}
-{#    <meta property="og:image" content=""/>#}
+    {#    TODO#}
+    {#    <meta property="og:url" content=""/>#}
+    {#    <meta property="og:image" content=""/>#}
     <meta property="og:description" content="A multiplayer location guessing game based on streetview."/>
     <style>
-        .clickable:hover{
+        .clickable:hover {
             cursor: hand;
             cursor: pointer;
         }
@@ -21,48 +22,76 @@
 </head>
 <body>
 <h3>Welcome to WhereAmI.</h3>
-<p>Please click on the challenge you would like to start.</p>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Game name</th>
-      <th scope="col"># of Locations</th>
-      <th scope="col">Time</th>
-    </tr>
-  </thead>
-  <tbody>
-  {%  for challenge in challenges %}
-    <tr class="clickable" onclick="location.href='/static/index.html?Challenge_ID={{ challenge.id }}'">
-      <th scope="row">{{ challenge.id }}</th>
-      <td>{{ challenge.game.name }}</td>
-      <td>{{ challenge.challengelocation__count }}</td>
-      <td>{{ challenge.time }}</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
-<form action="/challenge" method="post">{% csrf_token %}
-    <h4>Create a new Challenge: </h4>
-    <select class="selectpicker" id="game" name="game">
-        {% for game in games %}
-            <option data-subtext="{{ game.locations__count }}" value="{{ game.id }}">{{ game.name }}</option>
-        {% endfor %}
-    </select>
-    <label for="quantity">Numer of Locations (between 1 and number of locations in game).</label>
-    <input type="number" id="quantity" name="quantity" min="1">
-    <label for="time">Challenge time in seconds.</label>
-    <input type="number" id="time" name="time">
-    <label for="preventReuse">Prevent reuse of Locations.</label>
-    <input type="checkbox" id="preventReuse" name="preventReuse" checked>
-    <button type="submit" value="Submit" class="btn btn-primary">Create</button>
+<div class="card border-dark">
+    <div class="card-body">
+        <h5 class="card-title">Challenges.</h5>
+        <h6 class="card-subtitle text-muted">Please click on the challenge you would like to start.</h6>
+        <table class="table table-striped" id="challenges">
+            <thead>
+            <tr>
+                <th scope="col">Created on</th>
+                <th scope="col">Game name</th>
+                <th scope="col"># of Locations</th>
+                <th scope="col">Time</th>
+                <th scope="col">#</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for challenge in challenges %}
+                <tr class="clickable" onclick="location.href='/static/index.html?Challenge_ID={{ challenge.id }}'">
+                    <th scope="row">{{ challenge.pub_date }}</th>
+                    <td>{{ challenge.game.name }}</td>
+                    <td>{{ challenge.challengelocation__count }}</td>
+                    <td>{{ challenge.time }}</td>
+                    <td>{{ challenge.id }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="card border-primary" style="max-width: 50rem;">
+    <div class="card-body">
+        <h5 class="card-title">Create a new challenge: </h5>
+        <form action="/challenge" method="post" class="form">{% csrf_token %}
+            <div class="form-group">
+                <label for="game">Select game to use locations from:</label><br/>
+                <select class="selectpicker col-6 pl-0" id="game" name="game" data-live-search="true"
+                        data-show-subtext="true"
+                        data-style="border-primary form-control">
+                    {% for game in games %}
+                        <option data-subtext="#of Locations:{{ game.locations__count }}"
+                                value="{{ game.id }}">{{ game.name }}</option>
+                    {% endfor %}
+                </select>
+                <a href="/game" class="btn btn-primary">Create new game</a>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Numer of locations (between 1 and number of locations in game).</label>
+                <input class="form-control col-1 border-primary" type="number" id="quantity" name="quantity" min="1" value="5">
+            </div>
+            <div class="form-group">
+                <label for="time">Challenge time in seconds.</label>
+                <input class="form-control col-1 border-primary" type="number" id="time" name="time" min="5" value="90">
+            </div>
+            <div class="form-check">
+                <input class="form-check-input border-primary" type="checkbox" id="preventReuse" name="preventReuse"
+                       checked>
+                <label for="preventReuse" class="form-check-label">Prevent reuse of locations.</label>
+            </div>
+            <button type="submit" value="Submit" class="btn btn-primary mt-3">Create</button>
+        </form>
+    </div>
+</div>
 
-</form>
 </body>
-<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
+<script type='text/javascript' src='/static/js/jquery.min.js'></script>
+<script type="text/javascript" src="/static/js/popper.min.js"></script>
 <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/static/js/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
 <script>$(function () {
-    $('select').selectpicker();
+    $('.selectpicker').selectpicker();
+    $('#challenges').DataTable({order: [[0, "desc"]]});
 });</script>
 </html>
