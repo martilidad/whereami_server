@@ -2,6 +2,7 @@ import json
 import random
 
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.db.models import Count
 from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseRedirect
 from django.http import JsonResponse
@@ -107,13 +108,13 @@ def post_challenge(request):
             # TODO proper error
             return HttpResponseBadRequest()
         sampled_locations = random.sample(list(locations), quantity)
-        challenge = Challenge(game=game, time=time)
-        challenge.save()
-        ChallengeLocation.objects.bulk_create(
-            [ChallengeLocation(challenge=challenge, location=location) for location in sampled_locations])
+        with transaction.atomic():
+            challenge = Challenge(game=game, time=time)
+            challenge.save()
+            ChallengeLocation.objects.bulk_create(
+                [ChallengeLocation(challenge=challenge, location=location) for location in sampled_locations])
         return HttpResponseRedirect('/')
     except (KeyError, Game.DoesNotExist) as ke:
-        print(ke)
         return HttpResponseBadRequest()
 
 
@@ -122,11 +123,12 @@ def post_game(request):
         data = json.loads(request.body)
         name = data['Name']
         locations = data['Locations']
-        game = Game(name=name)
-        game.save()
-        Location.objects.bulk_create(
-            [Location(name=location['Name'], lat=location['Lat'], long=location['Long'], game=game)
-             for location in locations])
+        with transaction.atomic():
+            game = Game(name=name)
+            game.save()
+            Location.objects.bulk_create(
+                [Location(name=location['Name'], lat=location['Lat'], long=location['Long'], game=game)
+                 for location in locations])
         return HttpResponse()
     except KeyError:
         return HttpResponseBadRequest()
