@@ -95,7 +95,7 @@ def post_challenge(request):
         game_id = request.POST['game']
         game = Game.objects.get(id=game_id)
         quantity = int(request.POST['quantity'])
-        prevent_reuse = request.POST['preventReuse']
+        prevent_reuse = request.POST.get('preventReuse', default=False)
         time = request.POST['time']
         if prevent_reuse:
             # exclude locations where ChallengeLocations exist already
@@ -109,10 +109,11 @@ def post_challenge(request):
         sampled_locations = random.sample(list(locations), quantity)
         challenge = Challenge(game=game, time=time)
         challenge.save()
-        for location in sampled_locations:
-            ChallengeLocation(challenge=challenge, location=location).save()
-        return HttpResponseRedirect('')
-    except (KeyError, Game.DoesNotExist):
+        ChallengeLocation.objects.bulk_create(
+            [ChallengeLocation(challenge=challenge, location=location) for location in sampled_locations])
+        return HttpResponseRedirect('/')
+    except (KeyError, Game.DoesNotExist) as ke:
+        print(ke)
         return HttpResponseBadRequest()
 
 
@@ -123,9 +124,9 @@ def post_game(request):
         locations = data['Locations']
         game = Game(name=name)
         game.save()
-        for location in locations:
-            game.locations.create(name=location['Name'], lat=location['Lat'], long=location['Long'])
-        game.save()
+        Location.objects.bulk_create(
+            [Location(name=location['Name'], lat=location['Lat'], long=location['Long'], game=game)
+             for location in locations])
         return HttpResponse()
     except KeyError:
         return HttpResponseBadRequest()
