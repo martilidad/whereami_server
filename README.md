@@ -2,7 +2,12 @@
 
 ## Start the Server with Docker:
 
-Replace the Google API-Key in /whereami/static/index.html
+Set the Google API-Key in 
+> whereami_server/settings.py
+  
+The free recurring monthly credit on the Maps Platform is more than enough to play self-hosted with friends, but you need a valid credit card.  
+See https://developers.google.com/maps/gmp-get-started
+
 Create the container and start it on port 80:
 > docker-compose up -d
 
