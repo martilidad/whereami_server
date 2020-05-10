@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chalenge Overview</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/dataTables.bootstrap4.min.css">
+    <meta property="og:title" content="Chalenge Overview"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:description" content="{% if winner is not None %}Easiest game of {{ winner }}'s life.
+                    {% else %} No one played yet.
+                    {% endif %}"/>
+</head>
+<body>
+<div>
+    <div class="card border-dark col-8">
+        <div class="card-body">
+            <h5 class="card-title" id="score-board-title">Challenge scores</h5>
+            <h6 class="card-subtitle text-muted">{% if winner is not None %}Easiest game of {{ winner }}'s life.
+            {% else %} No one played yet.
+            {% endif %}</h6>
+            <a href="location.href='/startChallenge?Challenge_ID={{ challenge_id }}'">Start Challenge</a>
+            <table class="table table-striped" id="score-board">
+                <thead>
+                <tr>
+                    <th scope="col">Score</th>
+                    <th scope="col">Distance</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Completed Locations</th>
+                    <th scope="col">Last interaction</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% for challenge_location in challenge_locations %}
+        <div class="row">
+            <div class="col-8">
+
+                <div class="card border-dark" id="round-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ challenge_location.location.name }}</h5>
+                        <table class="table table-striped" id="round-board">
+                            <thead>
+                            <tr>
+                                <th scope="col">Score</th>
+                                <th scope="col">Distance</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Time</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for guess in challenge_location.guess_set.all %}
+                                <tr>
+                                    <td>{{ guess.score }}</td>
+                                    <td>{{ guess.distance }}</td>
+                                    <td>{{ guess.user.username }}</td>
+                                    <td>{{ guess.pub_date }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 roundMap bg-dark border border-light d-flex justify-content-center text-center text-light"
+                 onclick="createMap(this, [
+                         {% for guess in challenge_location.guess_set.all %}
+                             {'Name': '{{ guess.user.username }}', 'Lat': {{ guess.lat }}, 'Long': {{ guess.long }}, 'Score': {{ guess.score }},
+                             'Distance': {{ guess.distance }}},{% endfor %}],
+                         {'Lat': {{ challenge_location.location.lat }}, 'Long': {{ challenge_location.location.long }} })">
+                Click to load Map.
+            </div>
+        </div>
+    {% endfor %}
+</div>
+</body>
+
+
+<script type='text/javascript' src='/static/js/jquery.min.js'></script>
+<script type="text/javascript" src="/static/js/popper.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+<script type='text/javascript'
+        src='https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&sensor=false&libraries=geometry'></script>
+<script>
+    $('#score-board').DataTable({
+        order: [[0, "desc"]], data: {{ scores|safe}},
+        columns: [{data: 'score'}, {data: 'distance'}, {data: 'name'}, {data: 'completed_locations'}, {data: 'last_interaction'}]
+    });
+
+    function createMap(div, otherGuesses, actualLocation) {
+        div.onclick = null;
+        var bounds = new google.maps.LatLngBounds();
+        var actualLatLng = new google.maps.LatLng(actualLocation['Lat'], actualLocation['Long'])
+        bounds.extend(actualLatLng);
+        var mapOptions = {
+            zoom: 2,
+            center: actualLatLng,
+            mapTypeControl: false,
+            streetViewControl: false,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+        var map = new google.maps.Map(div, mapOptions);
+        var actualMarker = new google.maps.Marker({
+            position: actualLatLng,
+            title: "Actual Location",
+            icon: '/static/img/actual.png'
+        });
+
+        actualMarker.setMap(map);
+
+        for (let i = 0; i < otherGuesses.length; i++) {
+            var guess = otherGuesses[i];
+            var ltLng = new google.maps.LatLng(guess['Lat'], guess['Long']);
+            var Marker = new google.maps.Marker({
+                position: ltLng,
+                label: guess['Name'],
+                icon: '/static/img/other.png',
+                title: 'Distance: ' + guess['Distance'] + ' Score: ' + guess['Score']
+            });
+
+            bounds.extend(ltLng);
+            Marker.setMap(map);
+        }
+        if (otherGuesses.length > 0) {
+            map.fitBounds(bounds);
+        }
+    }
+</script>
+</html>

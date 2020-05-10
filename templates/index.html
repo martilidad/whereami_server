@@ -45,8 +45,10 @@
                     <td>{{ challenge.challengelocation__count }}</td>
                     <td>{{ challenge.time }}</td>
                     <td>{{ challenge.id }}</td>
-                    <td><a href="location.href='/startChallenge?Challenge_ID={{ challenge.id }}'" class="btn btn-primary">Start</a>
-                        <button class="btn btn-secondary" onclick="loadScores({{ challenge.id }})">Stats</button></td>
+                    <td><a href="/startChallenge?Challenge_ID={{ challenge.id }}" class="btn btn-primary">Start</a>
+                        <button class="btn btn-secondary" onclick="loadScores({{ challenge.id }})">Stats</button>
+                        <a href="/challengeOverview?Challenge_ID={{ challenge.id }}" class="btn btn-success">Overview</a>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

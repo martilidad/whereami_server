@@ -4,6 +4,7 @@ import random
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction, IntegrityError
 from django.db.models import Count, Sum, Q, Max
 from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseRedirect
@@ -64,11 +65,8 @@ def get_guesses(request):
         challenge_location_id = request.GET['Challenge_Location_ID']
         challenge_location = ChallengeLocation.objects.get(id=challenge_location_id)
         guesses = challenge_location.guess_set.all()
-        response_dict = []
-        for guess in guesses:
-            response_dict.append(
-                {'Name': guess.user.username, 'Lat': guess.lat, 'Long': guess.long, 'Score': guess.score,
-                 'Distance': guess.distance})
+        response_dict = [{'Name': guess.user.username, 'Lat': guess.lat, 'Long': guess.long, 'Score': guess.score,
+                          'Distance': guess.distance} for guess in guesses]
         return JsonResponse(response_dict, safe=False)
     except (KeyError, ChallengeLocation.DoesNotExist):
         return HttpResponseBadRequest()
@@ -89,10 +87,9 @@ def get_challenge(request):
         id = request.GET['Challenge_ID']
         obj = Challenge.objects.get(id=id)
         challenge_locations = obj.challengelocation_set.all()
-        list = []
-        for challenge_location in challenge_locations:
-            list.append({'Challenge_Location_ID': challenge_location.id,
-                         'Lat': challenge_location.location.lat, 'Long': challenge_location.location.long})
+        list = [{'Challenge_Location_ID': challenge_location.id,
+                 'Lat': challenge_location.location.lat, 'Long': challenge_location.location.long}
+                for challenge_location in challenge_locations]
         response_dict = {'Challenge_ID': id, 'Time': obj.time, 'Challenge_Locations': list}
         return JsonResponse(response_dict, safe=False)
     except (KeyError, Challenge.DoesNotExist):
@@ -157,17 +154,46 @@ def scores(request):
     if request.method != 'GET':
         return Http404()
     challenge_id = request.GET['Challenge_ID']
+    users = user_challenge_scores(challenge_id)
+    return JsonResponse([{'name': user.username, 'score': user.score, 'distance': user.distance,
+                          'completed_locations': user.completed_locations, 'last_interaction': user.last_interaction}
+                         for user in users], safe=False)
+
+
+def user_challenge_scores(challenge_id):
     challenge_filter = Q(guess__challenge_location__challenge_id=challenge_id)
     score = Sum('guess__score', filter=challenge_filter)
     distance = Sum('guess__distance', filter=challenge_filter)
     completed_locations = Count('guess', filter=challenge_filter)
     last_interaction = Max('guess__pub_date', filter=challenge_filter)
     # completed_locations__gte 1 ^= filter for at least guess location
-    users = User.objects\
-        .annotate(completed_locations=completed_locations).filter(completed_locations__gte=1)\
+    users = User.objects \
+        .annotate(completed_locations=completed_locations).filter(completed_locations__gte=1) \
         .annotate(score=score) \
         .annotate(distance=distance) \
         .annotate(last_interaction=last_interaction)
-    return JsonResponse([{'name': user.username, 'score': user.score, 'distance': user.distance,
-                          'completed_locations': user.completed_locations, 'last_interaction': user.last_interaction}
-                         for user in users], safe=False)
+    return users
+
+
+@login_required
+def challenge_overview(request):
+    if request.method != 'GET':
+        return Http404()
+    challenge_id = request.GET['Challenge_ID']
+    challenge = Challenge.objects.get(id=challenge_id)
+    challenge_locations = challenge.challengelocation_set.all().prefetch_related('guess_set', 'location')
+    users = user_challenge_scores(challenge_id)
+    users.order_by('score')
+    winner = users.first()
+    winner_name = winner.username if winner else None
+    # TODO fix script injection possibility (username), currently admin register only though
+    context = {'scores': json.dumps([{'name': user.username, 'score': user.score, 'distance': user.distance,
+                                      'completed_locations': user.completed_locations,
+                                      'last_interaction': user.last_interaction}
+                                     for user in users], cls=DjangoJSONEncoder),
+               'winner': winner_name,
+               'challenge_id': challenge_id,
+               'challenge_locations': challenge_locations,
+               'google_api_key': settings.GOOGLE_API_KEY
+               }
+    return render(request, 'challengeOverview.html', context)
