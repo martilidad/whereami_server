@@ -154,8 +154,9 @@ function get_challenge_callback(challenge) {
     });
     roundScore = points;
     totalScore = totalScore + points;
+    var realRound = round + 1;
 
-    $('.round').html('Current Round: <b>' + round + '/' + locations.length + '</b>');
+    $('.round').html('Current Round: <b>' + realRound + '/' + locations.length + '</b>');
     $('.roundScore').html('Last Round Score: <b>' + roundScore + '</b>');
     $('.totalScore').html('Total Score: <b>' + totalScore + '</b>');
 
