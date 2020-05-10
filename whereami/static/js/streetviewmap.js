@@ -20,6 +20,7 @@ function svinitialize() {
         position: whoamiLocation,
         addressControl: false,
         linksControl: false,
+        showRoadLabels: false,
         pov: {
           heading: 270,
           zoom: 1,
