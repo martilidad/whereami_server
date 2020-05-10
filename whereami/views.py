@@ -3,8 +3,9 @@ import random
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db import transaction, IntegrityError
-from django.db.models import Count
+from django.db.models import Count, Sum, Q, Max
 from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -149,3 +150,24 @@ def game(request):
         return post_game(request)
     else:
         return Http404()
+
+
+@login_required
+def scores(request):
+    if request.method != 'GET':
+        return Http404()
+    challenge_id = request.GET['Challenge_ID']
+    challenge_filter = Q(guess__challenge_location__challenge_id=challenge_id)
+    score = Sum('guess__score', filter=challenge_filter)
+    distance = Sum('guess__distance', filter=challenge_filter)
+    completed_locations = Count('guess', filter=challenge_filter)
+    last_interaction = Max('guess__pub_date', filter=challenge_filter)
+    # completed_locations__gte 1 ^= filter for at least guess location
+    users = User.objects\
+        .annotate(completed_locations=completed_locations).filter(completed_locations__gte=1)\
+        .annotate(score=score) \
+        .annotate(distance=distance) \
+        .annotate(last_interaction=last_interaction)
+    return JsonResponse([{'name': user.username, 'score': user.score, 'distance': user.distance,
+                          'completed_locations': user.completed_locations, 'last_interaction': user.last_interaction}
+                         for user in users], safe=False)

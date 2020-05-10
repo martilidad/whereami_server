@@ -34,53 +34,87 @@
                 <th scope="col"># of Locations</th>
                 <th scope="col">Time</th>
                 <th scope="col">#</th>
+                <th scope="col">Actions</th>
             </tr>
             </thead>
             <tbody>
             {% for challenge in challenges %}
-                <tr class="clickable" onclick="location.href='/startChallenge?Challenge_ID={{ challenge.id }}'">
+                <tr>
                     <th scope="row">{{ challenge.pub_date }}</th>
                     <td>{{ challenge.game.name }}</td>
                     <td>{{ challenge.challengelocation__count }}</td>
                     <td>{{ challenge.time }}</td>
                     <td>{{ challenge.id }}</td>
+                    <td><a href="location.href='/startChallenge?Challenge_ID={{ challenge.id }}'" class="btn btn-primary">Start</a>
+                        <button class="btn btn-secondary" onclick="loadScores({{ challenge.id }})">Stats</button></td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
-<div class="card border-primary" style="max-width: 50rem;">
-    <div class="card-body">
-        <h5 class="card-title">Create a new challenge: </h5>
-        <form action="/challenge" method="post" class="form">{% csrf_token %}
-            <div class="form-group">
-                <label for="game">Select game to use locations from:</label><br/>
-                <select class="selectpicker col-6 pl-0" id="game" name="game" data-live-search="true"
-                        data-show-subtext="true"
-                        data-style="border-primary form-control">
-                    {% for game in games %}
-                        <option data-subtext="#of Locations:{{ game.locations__count }}"
-                                value="{{ game.id }}">{{ game.name }}</option>
-                    {% endfor %}
-                </select>
-                <a href="/game" class="btn btn-primary">Create new game</a>
+<div class="row">
+    <div class="col-4">
+        <div class="card border-primary">
+            <div class="card-body">
+                <h5 class="card-title">Create a new challenge: </h5>
+                <form action="/challenge" method="post" class="form">{% csrf_token %}
+                    <div class="form-group">
+                        <label for="game">Select game to use locations from:</label><br/>
+                        <select class="selectpicker col-8 pl-0" id="game" name="game" data-live-search="true"
+                                data-show-subtext="true"
+                                data-style="border-primary form-control">
+                            {% for game in games %}
+                                <option data-subtext="{{ game.locations__count }} locations"
+                                        value="{{ game.id }}">{{ game.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <a href="/game" class="btn btn-primary">Create new game</a>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Numer of locations (between 1 and number of locations in
+                            game).</label>
+                        <input class="form-control col-2 border-primary" type="number" id="quantity" name="quantity"
+                               min="1"
+                               value="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Challenge time in seconds.</label>
+                        <input class="form-control col-2 border-primary" type="number" id="time" name="time" min="5"
+                               value="90">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input border-primary" type="checkbox" id="preventReuse"
+                               name="preventReuse"
+                               checked>
+                        <label for="preventReuse" class="form-check-label">Prevent reuse of locations.</label>
+                    </div>
+                    <button type="submit" value="Submit" class="btn btn-primary mt-3">Create</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="quantity">Numer of locations (between 1 and number of locations in game).</label>
-                <input class="form-control col-1 border-primary" type="number" id="quantity" name="quantity" min="1" value="5">
+        </div>
+    </div>
+    <div class="col-8">
+        <div class="card border-dark col-8">
+            <div class="card-body">
+                <h5 class="card-title" id="score-board-title">Challenge scores</h5>
+                <h6 class="card-subtitle text-muted">Click on the stats button next to a challange to show it's stats
+                    here.</h6>
+                <table class="table table-striped" id="score-board">
+                    <thead>
+                    <tr>
+                        <th scope="col">Score</th>
+                        <th scope="col">Distance</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Completed Locations</th>
+                        <th scope="col">Last interaction</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
-            <div class="form-group">
-                <label for="time">Challenge time in seconds.</label>
-                <input class="form-control col-1 border-primary" type="number" id="time" name="time" min="5" value="90">
-            </div>
-            <div class="form-check">
-                <input class="form-check-input border-primary" type="checkbox" id="preventReuse" name="preventReuse"
-                       checked>
-                <label for="preventReuse" class="form-check-label">Prevent reuse of locations.</label>
-            </div>
-            <button type="submit" value="Submit" class="btn btn-primary mt-3">Create</button>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -93,5 +127,25 @@
 <script>$(function () {
     $('.selectpicker').selectpicker();
     $('#challenges').DataTable({order: [[0, "desc"]]});
-});</script>
+    $('#score-board').DataTable({order: [[0, "desc"]],
+        columns: [{data: 'score'}, {data: 'distance'}, {data: 'name'}, {data: 'completed_locations'}, {data: 'last_interaction'}]});
+});
+function loadScores(id) {
+    $.ajax({
+        url: "http://" + window.location.host + "/scores",
+        data: {
+            "Challenge_ID": id
+        },
+        success: function (result) {
+            var dataTable = $('#score-board').DataTable();
+            dataTable.clear();
+            dataTable.rows.add(result);
+            dataTable.draw();
+        },
+        error: function (result) {
+            console.log(result);
+        }
+    });
+}
+</script>
 </html>
