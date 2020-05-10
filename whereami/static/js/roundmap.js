@@ -46,7 +46,7 @@ function renderOtherGuesses() {
   var map = window.map;
   //intermediate static object before I figure out how to get the data
   $.ajax({
-      url: "http://" + window.location.host + "/guess",
+      url: "/guess",
       method: "GET",
       data: {
         "Challenge_Location_ID": window.loc['Challenge_Location_ID'],

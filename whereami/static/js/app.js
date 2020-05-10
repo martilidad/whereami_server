@@ -142,7 +142,7 @@ function get_challenge_callback(challenge) {
   function endRound() {
     doGuess();
     $.ajax({
-      url: "http://" + window.location.host + "/guess",
+      url: "/guess",
       method: "POST",
       headers: {"X-CSRFToken": Cookies.get('csrftoken')},
       contentType: 'application/json',
@@ -184,7 +184,7 @@ function get_challenge_callback(challenge) {
 $(document).ready(function() {
   var challenge_id = new URLSearchParams(location.search).get('Challenge_ID');
   $.ajax({
-    url: "http://" + window.location.host + "/challenge",
+    url: "/challenge",
     data: {
       "Challenge_ID": challenge_id
     },

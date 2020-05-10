@@ -75,7 +75,7 @@ async function submit() {
   }
   $('#loadingText').text('Sending to Server, this can take some time.');
   $.ajax({
-    url: "http://" + window.location.host + "/game",
+    url: "/game",
     method: "POST",
     headers: {"X-CSRFToken": Cookies.get('csrftoken')},
     contentType: 'application/json',
