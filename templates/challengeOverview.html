@@ -87,7 +87,7 @@
 <script type="text/javascript" src="/static/js/bootstrap-select.min.js"></script>
 <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
 <script type='text/javascript'
-        src='https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&sensor=false&libraries=geometry'></script>
+        src='https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=geometry'></script>
 <script>
     $('#score-board').DataTable({
         order: [[0, "desc"]], data: {{ scores|safe}},

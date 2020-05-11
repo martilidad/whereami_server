@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction, IntegrityError
-from django.db.models import Count, Sum, Q, Max
+from django.db.models import Count, Sum, Q, Max, Prefetch
 from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -86,11 +86,21 @@ def get_challenge(request):
     try:
         id = request.GET['Challenge_ID']
         obj = Challenge.objects.get(id=id)
-        challenge_locations = obj.challengelocation_set.all()
+        ignore_previous_guesses = 'true' == request.GET.get('ignore_previous_guesses', 'false')
+        challenge_locations = obj.challengelocation_set
+        filtered_ids = []
+        if ignore_previous_guesses:
+            challenge_locations = challenge_locations.all()
+        else:
+            guess_set = request.user.guess_set.only('challenge_location').filter(challenge_location__challenge_id=id) \
+                .prefetch_related(Prefetch('challenge_location', queryset=ChallengeLocation.objects.all().only('id')))
+            filtered_ids = [guess.challenge_location.id for guess in guess_set]
+            challenge_locations = challenge_locations.exclude(pk__in=filtered_ids)
         list = [{'Challenge_Location_ID': challenge_location.id,
                  'Lat': challenge_location.location.lat, 'Long': challenge_location.location.long}
                 for challenge_location in challenge_locations]
-        response_dict = {'Challenge_ID': id, 'Time': obj.time, 'Challenge_Locations': list}
+        response_dict = {'Challenge_ID': id, 'Time': obj.time, 'Challenge_Locations': list,
+                         'Ignored_Count': len(filtered_ids)}
         return JsonResponse(response_dict, safe=False)
     except (KeyError, Challenge.DoesNotExist):
         return HttpResponseBadRequest()
