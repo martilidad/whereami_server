@@ -38,14 +38,14 @@ html, body {
 
 #timer {
   font-size: 90px;
-  line-height: 200px;
+  vertical-align: middle;
   text-align: center;
-  width: 300px;
-  height: 200px;
+  width: 260px;
+  height: 150px;
   background: green;
   color: white;
   position: absolute;
-  top: 390px;
+  top: 460px;
   right: 20px;
   z-index: 1000;
   box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.9);
@@ -60,6 +60,19 @@ html, body {
   text-align: center;
   position: absolute;
   top: 340px;
+  right: 20px;
+  z-index: 1000;
+}
+
+#toStartButton {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  width: 260px;
+  cursor: pointer;
+  text-align: center;
+  position: absolute;
+  top: 400px;
   right: 20px;
   z-index: 1000;
 }
