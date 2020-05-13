@@ -15,6 +15,7 @@ function get_challenge_callback(challenge) {
     window.finished = true;
     return;
   }
+
   game = {
     round: {
       id: 0,
@@ -28,7 +29,7 @@ function get_challenge_callback(challenge) {
     distance: 0
   };
 
-  var round = game.round.id;
+  var round = game.round.id + ignored_count;
   var points = game.round.score.rewarded;
   var roundScore = game.round.score.final;
   var totalScore = game.totalScore;
@@ -42,6 +43,7 @@ function get_challenge_callback(challenge) {
   // Scoreboard & Guess button event
   // Init Timer
   resetTimer();
+  updateRound();
 
   // Timer
   function timer() {
@@ -68,9 +70,6 @@ function get_challenge_callback(challenge) {
     if(round >= locations.length){
       return endGame();
     }
-    var realRound = round + ignored_count + 1;
-    var totalRounds = locations.length + ignored_count;
-    $('.round').html('Current Round: <b>' + realRound + '/' + totalRounds + '</b>');
     window.loc = locations[round];
     // Reload maps to refresh coords
     svinitialize();
@@ -78,6 +77,7 @@ function get_challenge_callback(challenge) {
 
     // Reset Timer
     resetTimer();
+    updateRound();
   });
   $('#roundEnd').on('click', '.refreshBtn', renderOtherGuesses);
 
@@ -86,6 +86,12 @@ function get_challenge_callback(challenge) {
   function resetTimer() {
     count = maxTime;
     counter = setInterval(timer, 1000);
+  }
+
+  function updateRound() {
+    var realRound = round + ignored_count + 1;
+    var totalRounds = locations.length + ignored_count;
+    $('.round').html('Current Round: <b>' + realRound + '/' + totalRounds + '</b>');
   }
 
   // Calculate distance between points function
@@ -105,16 +111,12 @@ function get_challenge_callback(challenge) {
 
     // Calculate distance between points, and convert to kilometers
     distance = Math.floor(calcDistance(window.loc['Lat'], window.loc['Long'], window.guessArray[0], window.guessArray[1]) / 1000);
-    // Calculate points awarded via guess proximity
-    function inRange(x, min, max) {
-      return (min <= x && x <= max);
-    }
 
     // use exponential function for points calculation.
     var maxPoints = 10000;
     var lastPointDistance = 14000;
 
-    points = Math.floor(maxPoints**(1-distance/lastPointDistance))
+    points = Math.floor(maxPoints**(1-distance/lastPointDistance));
   }
 
   function endRound() {
@@ -137,9 +139,6 @@ function get_challenge_callback(challenge) {
     });
     roundScore = points;
     totalScore = totalScore + points;
-    var realRound = round + ignored_count + 1;
-    var totalRounds = locations.length + ignored_count;
-    $('.round').html('Current Round: <b>' + realRound + '/' + totalRounds + '</b>');
     $('.roundScore').html('Last Round Score: <b>' + roundScore + '</b>');
     $('.totalScore').html('Total Score: <b>' + totalScore + '</b>');
 
