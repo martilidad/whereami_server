@@ -104,43 +104,30 @@ function get_challenge_callback(challenge) {
     }
 
     // Calculate distance between points, and convert to kilometers
-    distance = Math.ceil(calcDistance(window.loc['Lat'], window.loc['Long'], window.guessArray[0], window.guessArray[1]) / 1000);
+    distance = Math.floor(calcDistance(window.loc['Lat'], window.loc['Long'], window.guessArray[0], window.guessArray[1]) / 1000);
     // Calculate points awarded via guess proximity
     function inRange(x, min, max) {
       return (min <= x && x <= max);
     }
 
-    // Real basic point thresholds depending on kilometer distances
-    if (inRange(distance, 1, 2)) {
-      points = 10000;
-    } else if (inRange(distance, 3, 10)) {
-      points = 7000;
-    } else if (inRange(distance, 11, 50)) {
-      points = 4000;
-    } else if (inRange(distance, 51, 200)) {
-      points = 3000;
-    } else if (inRange(distance, 201, 500)) {
-      points = 2000;
-    } else if (inRange(distance, 501, 800)) {
-      points = 1000;
-    } else if (inRange(distance, 801, 1300)) {
-      points = 500;
-    } else if (inRange(distance, 1301, 1600)) {
-      points = 400;
-    } else if (inRange(distance, 1601, 2300)) {
-      points = 300;
-    } else if (inRange(distance, 2301, 2800)) {
-      points = 200;
-    } else if (inRange(distance, 2801, 3200)) {
-      points = 100;
-    } else if (inRange(distance, 3200, 4500)) {
-      points = 50;
-    } else if (inRange(distance, 4501, 6000)) {
-      points = 25;
-    } else {
-      points = 0;
-    }
+    // use exponential function for points calculation.
+    var maxPoints = 10000;
+    var lastPointDistance = 6000;
 
+    var base = 10;
+    var onePointFactor = -getBaseLog(base, 1/maxPoints)
+    var factor = lastPointDistance / onePointFactor;
+    points = Math.floor(maxPoints * base**(-(distance/factor)))
+  }
+
+  /**
+   *
+   * @param b the base
+   * @param x the value
+   * @returns the logarithm of x to the base b
+   */
+  function getBaseLog(b, x) {
+    return Math.log(x) / Math.log(b);
   }
 
   function endRound() {
