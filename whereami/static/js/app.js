@@ -165,7 +165,7 @@ function get_challenge_callback(challenge) {
   }
 
   function endGame() {
-    $('#miniMap, #pano, #guessButton, #scoreBoard, #timer').hide();
+    $('#miniMap, #pano, #guessButton, #scoreBoard, #timer, #toStartButton').hide();
     $('#endGame').html('<h1>Congrats!</h1><h2>Your final score was:</h2><h1>' + totalScore + '!</h1><a class="btn btn-large btn-primary" href="/">Main Menu</a></p>' +
         `<a class="btn btn-large btn-secondary m-2" href="/startChallenge?Challenge_ID=${ challenge_id }&ignore_previous_guesses=true">Replay(unranked)</a>` +
         `<a class="btn btn-large btn-success m-2" href="/challengeOverview?Challenge_ID=${ challenge_id }">Overview</a></p>`);
