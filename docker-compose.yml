@@ -7,16 +7,18 @@ services:
     container_name: whereami
     volumes:
       - .:/code
-    ports:
+    links:
+      - postgresql:db
+    depends_on: 
+      - postgresql
+    ports: 
       - "80:80"
-# Everything below this point is traefik(reverse proxy) configuration, instead of exposing port 80 directly
-#     networks:
-#         - web
-#     labels:
-#         - "traefik.enable=true"
-#         - "traefik.docker.network=web"
-#         - "traefik.basic.frontend.rule=Host:where.example.de"
-#         - "traefik.basic.protocol=http"
-# networks:
-#     web:
-#         external: true
+  postgresql:
+    image: postgres
+    container_name: "whereami-postgresql"
+    environment:
+      - "POSTGRES_USER=whereami"
+      - "POSTGRES_PASSWORD=whereami"
+      - "POSTGRES_DB=whereami"
+    expose: 
+      - "5432"

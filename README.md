@@ -8,7 +8,7 @@ Set the Google API-Key in
 The free recurring monthly credit on the Maps Platform is more than enough to play self-hosted with friends, but you need a valid credit card.  
 See https://developers.google.com/maps/gmp-get-started
 
-Create the container and start it on port 80:
+Create the containers and expose wherami on port 80:
 > docker-compose up -d
 
 Connect into the container:

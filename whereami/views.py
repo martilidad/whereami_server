@@ -141,9 +141,12 @@ def post_game(request):
         with transaction.atomic():
             game = Game(name=name)
             game.save()
-            Location.objects.bulk_create(
+            db_locations = Location.objects.bulk_create(
                 [Location(name=location['Name'], lat=location['Lat'], long=location['Long'], game=game)
                  for location in locations])
+            # db_locations only have an id if db driver is postgres
+            game.locations.through.objects.bulk_create(
+                [game.locations.through(game_id=game.id, location_id=location.id) for location in db_locations])
         return HttpResponse()
     except KeyError:
         return HttpResponseBadRequest()

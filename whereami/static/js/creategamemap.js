@@ -33,7 +33,7 @@ function toRad(Value) {
   return Value * Math.PI / 180;
 }
 
-async function submit() {
+async function createGame() {
   // give up after getting 10 duplicate/unusable locations
   var maxIgnores = 10;
   var ignores = 0;
