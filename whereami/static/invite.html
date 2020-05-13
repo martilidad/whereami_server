@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Whereami - Challenge invite</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <meta property="og:title" content="Whereami - Challenge invite"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:description" content="You have been invited to a challenge."/>
+    <style>
+        .clickable:hover {
+            cursor: hand;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<input type="hidden" id="hiddenLink"></input>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <div class="card border-dark text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Challenge invite</h5>
+                    <h6 class="card-subtitle text-muted">Click on start once you(and your friends) are ready.</h6>
+                    <p></p>
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-3">
+                                <a class="btn btn-danger" href="/">Main Menu</a>
+                            </div>
+                            <div class="col-3">
+                                <a class="btn btn-primary" id="start">Start</a>
+                            </div>
+                            <div class="col-3">
+                                <a class="btn btn-warning" id="invite" onclick="invite()">Copy invite link</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type='text/javascript' src='/static/js/jquery.min.js'></script>
+<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+<script>
+    const inviteLink = location;
+    $('#start').prop("href", "/startChallenge" + location.search);
+
+    function invite() {
+        let temp_raw = $("<input>");
+         $("body").append(temp_raw);
+         temp_raw.val(inviteLink);
+         temp_raw.select();
+         console.log(document.execCommand("copy"));
+         temp_raw.remove();
+    }
+</script>
+</html>

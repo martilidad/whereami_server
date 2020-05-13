@@ -47,7 +47,9 @@
                     <td>{{ challenge.id }}</td>
                     <td><a href="/startChallenge?Challenge_ID={{ challenge.id }}" class="btn btn-primary">Start</a>
                         <button class="btn btn-secondary" onclick="loadScores({{ challenge.id }})">Stats</button>
-                        <a href="/challengeOverview?Challenge_ID={{ challenge.id }}" class="btn btn-success">Overview</a>
+                        <a href="/challengeOverview?Challenge_ID={{ challenge.id }}"
+                           class="btn btn-success">Overview</a>
+                        <button class="btn btn-warning" onclick="invite(location.origin + '/static/invite.html?Challenge_ID=' + {{ challenge.id }})">Invite link</button>
                     </td>
                 </tr>
             {% endfor %}
@@ -129,9 +131,12 @@
 <script>$(function () {
     $('.selectpicker').selectpicker();
     $('#challenges').DataTable({order: [[0, "desc"]]});
-    $('#score-board').DataTable({order: [[0, "desc"]],
-        columns: [{data: 'score'}, {data: 'distance'}, {data: 'name'}, {data: 'completed_locations'}, {data: 'last_interaction'}]});
+    $('#score-board').DataTable({
+        order: [[0, "desc"]],
+        columns: [{data: 'score'}, {data: 'distance'}, {data: 'name'}, {data: 'completed_locations'}, {data: 'last_interaction'}]
+    });
 });
+
 function loadScores(id) {
     $.ajax({
         url: "/scores",
@@ -148,6 +153,16 @@ function loadScores(id) {
             console.log(result);
         }
     });
+}
+
+function invite(link) {
+    let temp_raw = $("<input>");
+    $("body").append(temp_raw);
+    temp_raw.val(link);
+    temp_raw.select();
+    console.log(document.execCommand("copy"));
+    temp_raw.remove();
+    location = link;
 }
 </script>
 </html>
