@@ -100,9 +100,9 @@ function get_challenge_callback(challenge) {
   }
 
   function doGuess() {
+    clearInterval(counter);
     if (!game.timedOut) {
       // Stop Counter
-      clearInterval(counter);
       window.guessArray = [window.guessLatLng.lat(), window.guessLatLng.lng()];
     } else {
       //timed out
