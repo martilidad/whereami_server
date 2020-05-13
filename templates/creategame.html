@@ -25,7 +25,13 @@
                 <input class="form-control" type="number" id="minDist" name="minDist" min="1" value="10"></div>
             <div class="form-group">
                 <label for="name">Game name(e.g. Spain)</label>
-                <input class="form-control" type="text" id="name" name="name" required></div>
+                <input class="form-control" type="text" id="name" name="name" required>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input border-primary" type="checkbox" id="allowPhotoSpheres"
+                       name="allowPhotoSpheres">
+                <label for="allowPhotoSpheres" class="form-check-label">Allow Photospheres(Not Recommended)</label>
+            </div>
             <div id="loadingText"></div>
             <button type="button" onclick="createGame()" class="btn btn-primary">Create</button>
             <a href="/" class="btn btn-danger">Cancel</a>
