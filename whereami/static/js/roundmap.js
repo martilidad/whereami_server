@@ -1,7 +1,6 @@
 //
 // End of round map
 //
-
 function rminitialize() {
   var location = window.loc;
   console.log('End of round called');
@@ -33,14 +32,14 @@ function rminitialize() {
 
   var guessMarker = new google.maps.Marker({
     position: guessLtLng,
-    title: "Your Guess",
+    title: "Your Guess(not on Server)",
     icon: '/static/img/guess.png'
   });
 
   actualMarker.setMap(map);
   guessMarker.setMap(map);
   renderOtherGuesses(map, location);
-};
+}
 
 function renderOtherGuesses() {
   var map = window.map;
@@ -54,11 +53,12 @@ function renderOtherGuesses() {
       success: function (otherGuesses) {
           for (let i = 0; i < otherGuesses.length; i++) {
             var guess = otherGuesses[i];
+            var icon = guess['Own'] ? '/static/img/guess.png' :'/static/img/other.png';
             var ltLng = new google.maps.LatLng(guess['Lat'], guess['Long']);
             var Marker = new google.maps.Marker({
               position: ltLng,
-              label: guess['Name'],
-              icon: '/static/img/other.png',
+              label: guess['Own'] ? null : guess['Name'],
+              icon: icon,
               title: 'Distance: ' + guess['Distance'] + ' Score: ' + guess['Score']
             });
             Marker.setMap(map);

@@ -39,6 +39,7 @@ function mminitialize() {
   // Mini map click
   google.maps.event.addListener(mMap, 'click', function (event) {
     window.guessLatLng = event.latLng;
+    game.timedOut = false;
     setGuessMarker(window.guessLatLng);
   });
 

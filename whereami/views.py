@@ -66,7 +66,7 @@ def get_guesses(request):
         challenge_location = ChallengeLocation.objects.get(id=challenge_location_id)
         guesses = challenge_location.guess_set.all()
         response_dict = [{'Name': guess.user.username, 'Lat': guess.lat, 'Long': guess.long, 'Score': guess.score,
-                          'Distance': guess.distance} for guess in guesses]
+                          'Distance': guess.distance, 'Own': guess.user == request.user} for guess in guesses]
         return JsonResponse(response_dict, safe=False)
     except (KeyError, ChallengeLocation.DoesNotExist):
         return HttpResponseBadRequest()
