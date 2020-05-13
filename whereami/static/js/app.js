@@ -68,6 +68,9 @@ function get_challenge_callback(challenge) {
     if(round >= locations.length){
       return endGame();
     }
+    var realRound = round + ignored_count + 1;
+    var totalRounds = locations.length + ignored_count;
+    $('.round').html('Current Round: <b>' + realRound + '/' + totalRounds + '</b>');
     window.loc = locations[round];
     // Reload maps to refresh coords
     svinitialize();
@@ -161,8 +164,8 @@ function get_challenge_callback(challenge) {
     roundScore = points;
     totalScore = totalScore + points;
     var realRound = round + ignored_count + 1;
-
-    $('.round').html('Current Round: <b>' + realRound + '/' + locations.length + '</b>');
+    var totalRounds = locations.length + ignored_count;
+    $('.round').html('Current Round: <b>' + realRound + '/' + totalRounds + '</b>');
     $('.roundScore').html('Last Round Score: <b>' + roundScore + '</b>');
     $('.totalScore').html('Total Score: <b>' + totalScore + '</b>');
 

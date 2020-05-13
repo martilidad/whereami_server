@@ -111,8 +111,8 @@ html, body {
 #roundEnd {
   position: absolute;
   left: 50%;
-  width: 400px;
-  margin: 40px 0 0 -200px;
+  width: 600px;
+  margin: 40px 0 0 -300px;
   padding: 20px;
   background: white;
   text-align: center;
@@ -122,10 +122,9 @@ html, body {
 }
 
 #roundEnd #roundMap {
-  width: 400px;
-  height: 200px;
-  background: red;
-  margin: 20px 0;
+  width: 600px;
+  height: 400px;
+  right: 20px;
 }
 
 #roundEnd .closeBtn {

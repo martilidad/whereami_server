@@ -1,7 +1,10 @@
 //
 // End of round map
 //
+
+var roundBounds;
 function rminitialize() {
+  roundBounds = new google.maps.LatLngBounds();
   var location = window.loc;
   console.log('End of round called');
 
@@ -12,6 +15,8 @@ function rminitialize() {
   var actualLtLng = new google.maps.LatLng(location['Lat'], location['Long']);
   //use guess array because it might be timeout
   var guessLtLng = new google.maps.LatLng(window.guessArray[0], window.guessArray[1]);
+  roundBounds.extend(guessLtLng);
+  roundBounds.extend(actualLtLng);
 
   var mapOptions = {
     zoom: 2,
@@ -19,7 +24,7 @@ function rminitialize() {
     mapTypeControl: false,
     streetViewControl: false,
     mapTypeId: google.maps.MapTypeId.ROADMAP
-  }
+  };
 
   var map = new google.maps.Map($('#roundMap')[0], mapOptions);
   window.map = map;
@@ -55,6 +60,7 @@ function renderOtherGuesses() {
             var guess = otherGuesses[i];
             var icon = guess['Own'] ? '/static/img/guess.png' :'/static/img/other.png';
             var ltLng = new google.maps.LatLng(guess['Lat'], guess['Long']);
+            roundBounds.extend(ltLng);
             var Marker = new google.maps.Marker({
               position: ltLng,
               label: guess['Own'] ? null : guess['Name'],
@@ -63,6 +69,7 @@ function renderOtherGuesses() {
             });
             Marker.setMap(map);
           }
+          map.fitBounds(roundBounds);
       },
       error: function (result) {
         console.log(result);
