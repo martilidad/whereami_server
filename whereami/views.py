@@ -139,10 +139,10 @@ def post_game(request):
         name = data['Name']
         locations = data['Locations']
         with transaction.atomic():
-            game = Game(name=name)
+            game = Game(name=name[:32])
             game.save()
             db_locations = Location.objects.bulk_create(
-                [Location(name=location['Name'], lat=location['Lat'], long=location['Long'], game=game)
+                [Location(name=location['Name'][:32], lat=location['Lat'], long=location['Long'], game=game)
                  for location in locations])
             # db_locations only have an id if db driver is postgres
             game.locations.through.objects.bulk_create(
