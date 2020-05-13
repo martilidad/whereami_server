@@ -112,22 +112,9 @@ function get_challenge_callback(challenge) {
 
     // use exponential function for points calculation.
     var maxPoints = 10000;
-    var lastPointDistance = 6000;
+    var lastPointDistance = 14000;
 
-    var base = 10;
-    var onePointFactor = -getBaseLog(base, 1/maxPoints)
-    var factor = lastPointDistance / onePointFactor;
-    points = Math.floor(maxPoints * base**(-(distance/factor)))
-  }
-
-  /**
-   *
-   * @param b the base
-   * @param x the value
-   * @returns the logarithm of x to the base b
-   */
-  function getBaseLog(b, x) {
-    return Math.log(x) / Math.log(b);
+    points = Math.floor(maxPoints**(1-distance/lastPointDistance))
   }
 
   function endRound() {
