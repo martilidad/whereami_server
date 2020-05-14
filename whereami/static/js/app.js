@@ -53,7 +53,9 @@ function get_challenge_callback(challenge) {
       endRound();
       clearInterval(counter);
     }
+    //doesn't work as one selection
     $("#timer").text(count);
+    $("#centerTimer").text(count);
   };
 
   // Guess Button
