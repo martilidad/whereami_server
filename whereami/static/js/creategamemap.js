@@ -57,7 +57,8 @@ async function createGame() {
             webService.getPanorama({
                 location: point,
                 radius: checkaround,
-                source: allowPhotoSpheres ? google.maps.StreetViewSource.DEFAULT : google.maps.StreetViewSource.OUTDOOR
+                source: allowPhotoSpheres ? google.maps.StreetViewSource.DEFAULT : google.maps.StreetViewSource.OUTDOOR,
+                preference: google.maps.StreetViewPreference.NEAREST
             }, function (data) {
                 resolve(data);
             })
