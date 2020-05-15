@@ -44,7 +44,7 @@ $(document).ready(function () {
 
 function eventContains(event, latLng) {
     switch (event.type) {
-        case 'polygon': return event.overlay.containsLatLng(latLng);
+        case 'polygon': return google.maps.geometry.poly.containsLocation(latLng, event.overlay);
         case 'circle': return calcCrow(latLng.lat(), latLng.lng(), event.overlay.getCenter().lat(), event.overlay.getCenter().lng()) <= event.overlay.getRadius();
         case 'rectangle': return event.overlay.getBounds().contains(latLng);
         default:
@@ -116,13 +116,24 @@ function randomPoint() {
 
 
 function calculateEventArea(event) {
-    //TODO more precise areas
-    let bounds = event.overlay.getBounds();
-    let southWest = bounds.getSouthWest();
-    let northEast = bounds.getNorthEast();
-    let lngDist = calcCrow(southWest.lat(), southWest.lng(), southWest.lat(), northEast.lng());
-    let latDist = calcCrow(southWest.lat(), northEast.lng(), northEast.lat(), northEast.lng());
-    event.area = lngDist*latDist;
+    switch (event.type) {
+        case 'circle':
+            event.area = (event.overlay.getRadius()**2) * Math.PI;
+            return;
+        case 'polygon':
+            event.area = google.maps.geometry.spherical.computeArea(event.overlay.getPath());
+            return;
+        case 'rectangle':
+            let bounds = event.overlay.getBounds();
+            let southWest = bounds.getSouthWest();
+            let northEast = bounds.getNorthEast();
+            let lngDist = calcCrow(southWest.lat(), southWest.lng(), southWest.lat(), northEast.lng());
+            let latDist = calcCrow(southWest.lat(), northEast.lng(), northEast.lat(), northEast.lng());
+            event.area = lngDist*latDist;
+            return;
+        default:
+            throw new Error("unkown event, aborting map creation");
+    }
 }
 
 async function createGame() {
