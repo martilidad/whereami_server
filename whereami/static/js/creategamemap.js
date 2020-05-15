@@ -1,5 +1,7 @@
 var map;
 var webService = new google.maps.StreetViewService();
+var overLayEvents = [];
+var areaSum = 0;
 $(document).ready(function () {
     // Mini map setup
     var mapOptions = {
@@ -11,7 +13,44 @@ $(document).ready(function () {
     };
 
     map = new google.maps.Map(document.getElementById('createGameMap'), mapOptions);
+    var drawingManager = new google.maps.drawing.DrawingManager({
+          drawingMode: google.maps.drawing.OverlayType.MARKER,
+          drawingControl: true,
+          drawingControlOptions: {
+            position: google.maps.ControlPosition.TOP_CENTER,
+            drawingModes: ['circle', 'polygon', 'rectangle']
+          },
+          circleOptions: {
+            clickable: false,
+            editable: true
+          },
+          rectangleOptions: {
+            clickable: false,
+            editable: true
+          },
+          polygonOptions: {
+            clickable: false,
+            editable: true
+          }
+        });
+    drawingManager.setMap(map);
+    google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
+      if (event.type === 'circle' || event.type === 'rectangle' || event.type === 'polygon') { // rectangle polygon circle
+        overLayEvents.push(event);
+      }
+    });
+
 });
+
+function eventContains(event, latLng) {
+    switch (event.type) {
+        case 'polygon': return event.overlay.containsLatLng(latLng);
+        case 'circle': return calcCrow(latLng.lat(), latLng.lng(), event.overlay.getCenter().lat(), event.overlay.getCenter().lng()) <= event.overlay.getRadius();
+        case 'rectangle': return event.overlay.getBounds().contains(latLng);
+        default:
+            throw new Error("unkown event, aborting map creation");
+    }
+}
 
 //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
 function calcCrow(lat1, lon1, lat2, lon2) {
@@ -33,25 +72,78 @@ function toRad(Value) {
     return Value * Math.PI / 180;
 }
 
+function randomPointFromBounds(bounds) {
+    let southWest = bounds.getSouthWest();
+    let northEast = bounds.getNorthEast();
+    let lngSpan = northEast.lng() - southWest.lng();
+    let latSpan = northEast.lat() - southWest.lat();
+    return new google.maps.LatLng(
+            southWest.lat() + latSpan * Math.random(),
+            southWest.lng() + lngSpan * Math.random());
+}
+
+function pointFromOverlayEvent(event) {
+    switch (event.type) {
+        case 'circle':
+        case 'polygon':
+            //this will only trigger client side stuff, let's just find a point
+            for (let i = 0; i < 100; i++) {
+                let point = randomPointFromBounds(event.overlay.getBounds());
+                if(eventContains(event, point)) {
+                    return point;
+                }
+            }
+            console.log("could not find a point for crazy shape, using random point within bounds.");
+            return randomPointFromBounds(event.overlay.getBounds());
+        case 'rectangle':
+            return randomPointFromBounds(event.overlay.getBounds());
+        default:
+            throw new Error("unkown event, aborting map creation");
+    }
+}
+
+function randomPoint() {
+    let r=Math.random()*areaSum;
+    let sum = 0;
+    for (let i = 0; i < overLayEvents.length; i++) {
+        sum += overLayEvents[i].area;
+        if (r <= sum) return pointFromOverlayEvent(overLayEvents[i]);
+    }
+    //should not happen
+    console.log("Choosing random overlay failed, using last overlay for one point.");
+    return pointFromOverlayEvent(overLayEvents[overLayEvents.length - 1]);
+}
+
+
+function calculateEventArea(event) {
+    //TODO more precise areas
+    let bounds = event.overlay.getBounds();
+    let southWest = bounds.getSouthWest();
+    let northEast = bounds.getNorthEast();
+    let lngDist = calcCrow(southWest.lat(), southWest.lng(), southWest.lat(), northEast.lng());
+    let latDist = calcCrow(southWest.lat(), northEast.lng(), northEast.lat(), northEast.lng());
+    event.area = lngDist*latDist;
+}
+
 async function createGame() {
     // give up after getting 10 duplicate/unusable locations
     var maxIgnores = 10;
     var ignores = 0;
-    var bounds = map.getBounds();
-    var southWest = bounds.getSouthWest();
-    var northEast = bounds.getNorthEast();
-    var lngSpan = northEast.lng() - southWest.lng();
-    var latSpan = northEast.lat() - southWest.lat();
     var quantity = $('#quantity').val();
     var minDist = $('#minDist').val();
     var name = $('#name').val();
     var places = [];
     var checkaround = 500000;
     var allowPhotoSpheres = $('#allowPhotoSpheres').prop('checked');
+    //calculate areas; will be used for weighting random choice
+    overLayEvents.forEach(calculateEventArea);
+    areaSum = overLayEvents.map(event => event.area).reduce((a, b) => a + b);
+    if(areaSum == Number.MAX_VALUE || areaSum == Infinity) {
+        $('#loadingText').text('Sorry, your shapes are too big.');
+        throw new Error("areaSum overflow");
+    }
     while (places.length < quantity && ignores <= maxIgnores) {
-        var point = new google.maps.LatLng(
-            southWest.lat() + latSpan * Math.random(),
-            southWest.lng() + lngSpan * Math.random());
+        let point = randomPoint();
         //synchronus request, wait for api return
         var panoData = await new Promise(function (resolve, reject) {
             webService.getPanorama({
