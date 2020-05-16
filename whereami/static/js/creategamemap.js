@@ -1,7 +1,48 @@
+const worldBounds = new google.maps.LatLngBounds(
+    new google.maps.LatLng(70.4043,-143.5291),	//Top-left
+    new google.maps.LatLng(-46.11251, 163.4288)	 //Bottom-right
+);
 var map;
 var webService = new google.maps.StreetViewService();
 var overLayEvents = [];
 var areaSum = 0;
+var coverageLayer;
+
+function toggleCl() {
+    if(coverageLayer == null) {
+        coverageLayer = new google.maps.StreetViewCoverageLayer();
+    }
+    coverageLayer.setMap(coverageLayer.getMap() == null ? map : null);
+}
+
+function CoverageToggle(controlDiv) {
+        // Set CSS for the control border.
+        var controlUI = document.createElement('div');
+        controlUI.style.backgroundColor = '#fff';
+        controlUI.style.border = '2px solid #fff';
+        controlUI.style.borderRadius = '3px';
+        controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+        controlUI.style.cursor = 'pointer';
+        controlUI.style.marginBottom = '22px';
+        controlUI.style.textAlign = 'center';
+        controlUI.title = 'Toggle the Streetview Coverage Layer';
+        controlDiv.appendChild(controlUI);
+
+        // Set CSS for the control interior.
+        var controlText = document.createElement('div');
+        controlText.style.color = 'rgb(25,25,25)';
+        controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+        controlText.style.fontSize = '16px';
+        controlText.style.lineHeight = '38px';
+        controlText.style.paddingLeft = '5px';
+        controlText.style.paddingRight = '5px';
+        controlText.id = "centerTimer";
+        controlText.innerHTML = "Toggle Coverage";
+
+        controlUI.appendChild(controlText);
+        controlUI.addEventListener('click', toggleCl);
+}
+
 $(document).ready(function () {
     // Mini map setup
     var mapOptions = {
@@ -13,6 +54,13 @@ $(document).ready(function () {
     };
 
     map = new google.maps.Map(document.getElementById('createGameMap'), mapOptions);
+    map.fitBounds(worldBounds);
+
+    var centerControlDiv = document.createElement('div');
+    new CoverageToggle(centerControlDiv);
+    centerControlDiv.index = 1;
+    map.controls[google.maps.ControlPosition.RIGHT_CENTER].push(centerControlDiv);
+
     var drawingManager = new google.maps.drawing.DrawingManager({
           drawingMode: google.maps.drawing.OverlayType.MARKER,
           drawingControl: true,
