@@ -127,4 +127,4 @@ STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = 'index'
 
 GOOGLE_API_KEY = ''
-DEBUG = True
+DEBUG = False

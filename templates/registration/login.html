@@ -2,6 +2,10 @@
 {% load i18n static %}
 
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/login.css" %}">
+<meta property="og:title" content="Whereami"/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content=/static/img/whereami.png"/>
+<meta property="og:description" content="A multiplayer location guessing game based on streetview."/>
 {{ form.media }}
 {% endblock %}
 
