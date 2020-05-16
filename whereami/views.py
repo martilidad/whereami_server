@@ -194,9 +194,10 @@ def challenge_overview(request):
         return Http404()
     challenge_id = request.GET['Challenge_ID']
     challenge = Challenge.objects.get(id=challenge_id)
-    challenge_locations = challenge.challengelocation_set.all().prefetch_related('guess_set', 'location')
-    users = user_challenge_scores(challenge_id)
-    users.order_by('score')
+    challenge_locations = challenge.challengelocation_set.all().prefetch_related(
+        Prefetch('guess_set', queryset=Guess.objects.order_by('-score')),
+        'location')
+    users = user_challenge_scores(challenge_id).order_by('-score')
     winner = users.first()
     winner_name = winner.username if winner else None
     # TODO fix script injection possibility (username), currently admin register only though
