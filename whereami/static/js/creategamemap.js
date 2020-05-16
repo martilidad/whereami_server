@@ -44,6 +44,17 @@ function CoverageToggle(controlDiv) {
 }
 
 $(document).ready(function () {
+
+    if (!google.maps.Polygon.prototype.getBounds) {
+        google.maps.Polygon.prototype.getBounds = function () {
+            var bounds = new google.maps.LatLngBounds();
+            this.getPath().forEach(function (element, index) {
+                bounds.extend(element);
+            });
+            return bounds;
+        }
+    }
+
     // Mini map setup
     var mapOptions = {
         center: new google.maps.LatLng(0, 0, true),
@@ -162,6 +173,12 @@ function randomPoint() {
     return pointFromOverlayEvent(overLayEvents[overLayEvents.length - 1]);
 }
 
+function* randomPointGenerator(count) {
+    for (let i = 0; i < count; i++) {
+        yield randomPoint();
+    }
+}
+
 
 function calculateEventArea(event) {
     switch (event.type) {
@@ -184,6 +201,24 @@ function calculateEventArea(event) {
     }
 }
 
+async function pointsToNearestRoadPoints(latLngs) {
+    //expected url parameter points=lat,lng|lat,lng|lat,lng etc...
+    var urlSuffix = 'points=' + latLngs.map(latLng => latLng.toUrlValue()).reduce((a, b) => a + '|' + b);
+    var data = await new Promise(function (resolve, reject) {$.ajax({
+        url: roadsUrl + urlSuffix,
+        method: "GET",
+        success: resolve,
+        error: reject});
+    });
+    if(data == null || data.snappedPoints == null) {
+        return latLngs;
+    }
+    //there might be duplicate results for some points (bidirectional road entry), these will override the same index
+    data.snappedPoints.foreach(point =>
+        latLngs[point.originalIndex] = new google.maps.LatLng(point.location.latitude, point.location.longitude));
+    return latLngs;
+}
+
 async function createGame() {
     // give up after getting 10 duplicate/unusable locations
     var maxIgnores = 10;
@@ -193,7 +228,8 @@ async function createGame() {
     var name = $('#name').val();
     var places = [];
     var checkaround = 500000;
-    var allowPhotoSpheres = $('#allowPhotoSpheres').prop('checked');
+    let allowPhotoSpheres = $('#allowPhotoSpheres').prop('checked');
+    let forceRoads = $('#forceRoads').prop('checked');
     //calculate areas; will be used for weighting random choice
     overLayEvents.forEach(calculateEventArea);
     areaSum = overLayEvents.map(event => event.area).reduce((a, b) => a + b);
@@ -201,23 +237,26 @@ async function createGame() {
         $('#loadingText').text('Sorry, your shapes are too big.');
         throw new Error("areaSum overflow");
     }
+    let points = [...randomPointGenerator(quantity + maxIgnores)];
+    if(forceRoads) {
+        points = await pointsToNearestRoadPoints(points);
+    }
+    let i = 0;
     while (places.length < quantity && ignores <= maxIgnores) {
-        let point = randomPoint();
+        let point = points[i++];
         //synchronus request, wait for api return
-        var panoData = await new Promise(function (resolve, reject) {
+        let panoData = await new Promise(function (resolve, reject) {
             webService.getPanorama({
                 location: point,
                 radius: checkaround,
                 source: allowPhotoSpheres ? google.maps.StreetViewSource.DEFAULT : google.maps.StreetViewSource.OUTDOOR,
                 preference: google.maps.StreetViewPreference.NEAREST
-            }, function (data) {
-                resolve(data);
-            })
+            }, resolve, reject);
         });
         if (panoData && panoData.location && panoData.location.latLng) {
-            var latLng = panoData.location.latLng;
+            let latLng = panoData.location.latLng;
             //confirm this is a new place
-            var newLocation = true;
+            let newLocation = true;
             for (const i in places) {
                 const dist = calcCrow(places[i]['Lat'], places[i]['Long'], latLng.lat(), latLng.lng());
                 if (dist < minDist) {

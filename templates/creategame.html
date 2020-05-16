@@ -24,6 +24,11 @@
                 <input class="form-control" type="text" id="name" name="name" required>
             </div>
             <div class="form-check">
+                <input class="form-check-input border-primary" type="checkbox" id="forceRoads"
+                       name="forceRoads" checked>
+                <label for="forceRoads" class="form-check-label">Try to find Roads</label>
+            </div>
+            <div class="form-check">
                 <input class="form-check-input border-primary" type="checkbox" id="allowPhotoSpheres"
                        name="allowPhotoSpheres">
                 <label for="allowPhotoSpheres" class="form-check-label">Allow Photospheres(Not Recommended)</label>
@@ -40,6 +45,9 @@
 <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 <script type='text/javascript'
         src='https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=geometry,drawing'></script>
+<script>
+    const roadsUrl = 'https://roads.googleapis.com/v1/nearestRoads?key={{ google_api_key }}&';
+</script>
 <script type='text/javascript' src='/static/js/creategamemap.js'></script>
 </body>
 </html>
