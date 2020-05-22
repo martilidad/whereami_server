@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-select.min.css">
     <link rel="stylesheet" type="text/css" href="/static/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/responsive.bootstrap4.min.css">
 </head>
 <body>
 <div>
@@ -23,7 +24,7 @@
             <h6 class="card-subtitle text-muted">{% if winner is not None %}Easiest game of {{ winner }}'s life.
             {% else %} No one played yet.
             {% endif %}</h6>
-            <a href="location.href='/startChallenge?Challenge_ID={{ challenge_id }}'">Start Challenge</a>
+            <a href="location.href='/startChallenge?Challenge_ID={{ challenge_id }}'" class="btn btn-primary">Start Challenge</a>
             <table class="table table-striped" id="score-board">
                 <thead>
                 <tr>
@@ -88,6 +89,9 @@
 <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/static/js/bootstrap-select.min.js"></script>
 <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript" src="/static/js/responsive.bootstrap4.min.js"></script>
 <script type='text/javascript'
         src='https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=geometry'></script>
 <script>
