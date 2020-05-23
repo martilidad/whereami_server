@@ -16,6 +16,13 @@ function get_challenge_callback(challenge) {
     return;
   }
 
+  //make user confirm leaving
+  window.onbeforeunload = function (ev) {
+    ev.preventDefault();
+    //not actually shown by chrome or firefox
+    ev.returnValue = "Are you sure you want to leave?";
+  }
+
   game = {
     round: {
       id: 0,
@@ -158,6 +165,7 @@ function get_challenge_callback(challenge) {
         `<a class="btn btn-large btn-secondary m-2" href="/startChallenge?Challenge_ID=${ challenge_id }&ignore_previous_guesses=true">Replay(unranked)</a>` +
         `<a class="btn btn-large btn-success m-2" href="/challengeOverview?Challenge_ID=${ challenge_id }">Overview</a></p>`);
     $('#endGame').fadeIn(500);
+    window.onbeforeunload = null;
     // We're done with the game
     window.finished = true;
   }
