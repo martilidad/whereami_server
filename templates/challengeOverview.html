@@ -92,12 +92,25 @@
 <script type="text/javascript" src="/static/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript" src="/static/js/dataTables.responsive.min.js"></script>
 <script type="text/javascript" src="/static/js/responsive.bootstrap4.min.js"></script>
+<script type="text/javascript" src="/static/js/moment-with-locales.js"></script>
 <script type='text/javascript'
         src='https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=geometry'></script>
 <script>
+    moment.locale(navigator.language);
+    function renderDateTime(data, type, row) {
+        if (type === 'display') {
+            if (moment(data).isAfter(moment().subtract(1, 'days'))) {
+                return `<div title='${moment(data).format('LLLL')}'> ${moment(data).fromNow()}</div>`;
+            } else {
+                return moment(data).format('LLLL');
+            }
+        } else {
+            return data;
+        }
+    }
     $('#score-board').DataTable({
         order: [[0, "desc"]], data: {{ scores|safe}},
-        columns: [{data: 'score'}, {data: 'distance'}, {data: 'name'}, {data: 'completed_locations'}, {data: 'last_interaction'}]
+        columns: [{data: 'score'}, {data: 'distance'}, {data: 'name'}, {data: 'completed_locations'}, {data: 'last_interaction', render: renderDateTime}]
     });
 
     function createMap(div, otherGuesses, actualLocation) {
