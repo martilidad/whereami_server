@@ -8,6 +8,14 @@ var overLayEvents = [];
 var areaSum = 0;
 var coverageLayer;
 
+if (!google.maps.Polygon.prototype.getBounds) {
+    google.maps.Polygon.prototype.getBounds = function () {
+        var bounds = new google.maps.LatLngBounds();
+        this.getPath().forEach(function (element, index) { bounds.extend(element); });
+        return bounds;
+    }
+}
+
 function toggleCl() {
     if(coverageLayer == null) {
         coverageLayer = new google.maps.StreetViewCoverageLayer();
