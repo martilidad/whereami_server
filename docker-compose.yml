@@ -3,14 +3,16 @@ version: '3'
 services:
   web:
     build: .
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver --insecure 0.0.0.0:80"
+    command: bash -c "pip install -r requirements.txt && python manage.py makemigrations && python manage.py migrate && python manage.py runserver --insecure 0.0.0.0:80"
     container_name: whereami
     volumes:
       - .:/code
     links:
       - postgresql:db
+      - redis:redis
     depends_on: 
       - postgresql
+      - redis
     ports: 
       - "80:80"
   postgresql:
@@ -22,3 +24,7 @@ services:
       - "POSTGRES_DB=whereami"
     expose: 
       - "5432"
+  redis:
+    image: redis:5
+    expose:
+      - "6379"

@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'whereami.apps.WhereamiConfig',
+    'channels',
+    'debug_toolbar'
 ]
 
 MIDDLEWARE = [
@@ -48,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'whereami_server.urls'
@@ -128,3 +131,18 @@ LOGIN_REDIRECT_URL = 'index'
 
 GOOGLE_API_KEY = ''
 DEBUG = False
+
+# channels config, this is needed for websockets
+ASGI_APPLICATION = "whereami_server.routing.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis', 6379)],
+        },
+    },
+}
+# needed to see debug toolbar
+# INTERNAL_IPS = [
+#     '127.0.0.1',
+# ]

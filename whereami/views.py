@@ -11,6 +11,7 @@ from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpRespo
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from django.core.cache import cache
 from whereami.models import ChallengeLocation, Guess, Challenge, Game, Location
 
 

@@ -20,12 +20,23 @@
                     <h6 class="card-subtitle text-muted">Click on start once you(and your friends) are ready.</h6>
                     <p></p>
                     <div class="container">
+                        <div class="row justify-content-center" id="inviteStatusDiv">
+                        </div>
+                        <div class="row justify-content-center" id="userStatusDiv">
+                        </div>
+                        <p></p>
                         <div class="row justify-content-center">
                             <div class="col-3">
                                 <a class="btn btn-danger" href="/">Main Menu</a>
                             </div>
-                            <div class="col-3">
+                            <div class="col-2">
                                 <a class="btn btn-primary" id="start">Start</a>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-check">
+                                    <input type="checkbox" id="autoStart" class="form-check-input">
+                                    <label for="autostart" class="form-check-label">autostart</label>
+                                </div>
                             </div>
                             <div class="col-3">
                                 <a class="btn btn-warning" id="invite" onclick="invite()">Copy invite link</a>
@@ -46,11 +57,32 @@
 
     function invite() {
         let temp_raw = $("<input>");
-         $("body").append(temp_raw);
-         temp_raw.val(inviteLink);
-         temp_raw.select();
-         console.log(document.execCommand("copy"));
-         temp_raw.remove();
+        $("body").append(temp_raw);
+        temp_raw.val(inviteLink);
+        temp_raw.select();
+        console.log(document.execCommand("copy"));
+        temp_raw.remove();
     }
+
+    $(".checkbox").change(function() {
+    if(this.checked) {
+        //Do stuff
+    }
+});
+
+    //shared web socket worker for this challenge
+    var sharedWorker = new SharedWorker('/static/js/challengeStatusWorker.js' + location.search);
+    sharedWorker.port.onmessage = function (e) {
+        var data = JSON.parse(e.data);
+        var usersHere = data.filter(user => user.status == 'invite_screen').map(user => user.username);
+        var otherUsers = data.filter(user => user.status != 'invite_screen').map(user => user.username);
+        $('#inviteStatusDiv').text(`There are ${usersHere.length} Users waiting here: ${usersHere.toString()}`);
+        $('#userStatusDiv').text(`There are ${otherUsers.length} Users playing or finished: ${otherUsers.toString()}`);
+        console.log('Message received from worker:' + e.data);
+        if($('#autoStart').prop('checked') && data.some(user => user.status == 'playing' && user.round == 0)) {
+            location = "/startChallenge" + location.search;
+        }
+    };
+    sharedWorker.port.postMessage({'status': 'invite_screen', round: -1});
 </script>
 </html>
