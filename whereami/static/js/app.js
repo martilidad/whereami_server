@@ -175,7 +175,7 @@ function get_challenge_callback(challenge) {
             var data = JSON.parse(e.data);
             if ($('#autoStart').prop('checked') && data.some(user => user.status == 'playing' && user.round == round + ignored_count + 1)) {
                 nextRound();
-            } else if(data.some(user => user.status == 'round_end' && user.round == round: round + ignored_count)) {
+            } else if(data.some(user => user.status == 'round_end' && user.round == round + ignored_count)) {
                 renderOtherGuesses();
             }
         };
