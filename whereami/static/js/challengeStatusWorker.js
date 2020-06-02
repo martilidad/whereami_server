@@ -1,7 +1,8 @@
 onconnect = function (e) {
     var port = e.ports[0];
     let urlSearchParams = new URLSearchParams(location.search);
-    var url = "ws://" + location.hostname + "/ws/challenge/" + urlSearchParams.get('Challenge_ID') + "/";
+    let prefix = location.protocol == "https:" ? "wss://" : "ws://";
+    var url = prefix + location.hostname + "/ws/challenge/" + urlSearchParams.get('Challenge_ID') + "/";
     var sync_time = 0;
     var status_dict = {};
     var my_status = null;
@@ -52,18 +53,3 @@ onconnect = function (e) {
         sendStatusIfPossible();
     };
 }
-
-// self.addEventListener("connect", function(e) {
-//     var port = e.ports[0]
-//     port.addEventListener("message", function(e) {
-//         if (e.data === "start") {
-//             if (ws === null) {
-//                 ws = new WebSocket(url);
-//                 port.postMessage("started connection to " + url);
-//             } else {
-//                 port.postMessage("reusing connection to " + url);
-//             }
-//         }
-//     }, false);
-//     port.start();
-// }, false);
