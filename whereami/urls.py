@@ -10,4 +10,5 @@ urlpatterns = [
     path('challenge', views.challenge, name='challenge'),
     path('game', views.game, name='game'),
     path('scores', views.scores, name='scores'),
+    path('invite', views.invite, name='invite'),
 ]

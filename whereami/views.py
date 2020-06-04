@@ -212,3 +212,7 @@ def challenge_overview(request):
                'google_api_key': settings.GOOGLE_API_KEY
                }
     return render(request, 'challengeOverview.html', context)
+
+
+def invite(request):
+    return render(request, 'invite.html', {'is_authenticated': request.user.is_authenticated, 'full_path': request.get_full_path()})
