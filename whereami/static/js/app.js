@@ -81,7 +81,9 @@ function get_challenge_callback(challenge) {
         window.guessLatLng = '';
         game.timedOut = true;
         round++;
-        sharedWorker.port.onmessage = null;
+        sharedWorker.port.onmessage = function (e) {
+            updateStatusTable(JSON.parse(e.data));
+        };
         sharedWorker.port.postMessage({'status': 'playing', round: round + ignored_count});
         game.autoStart = $('#autoStart').prop('checked');
         $('#roundEnd').fadeOut(500);
@@ -162,10 +164,11 @@ function get_challenge_callback(challenge) {
         totalScore = totalScore + points;
         $('.roundScore').html('Last Round Score: <b>' + roundScore + '</b>');
         $('.totalScore').html('Total Score: <b>' + totalScore + '</b>');
+        let isLastRound = round + 1 >= locations.length;
 
         // If distance is undefined, that means they ran out of time and didn't click the guess button
         $('#roundEnd').html('<p>Your guess was<br/><strong><h1>' + distance + '</strong>km</h1> away from the actual location.<br/><div id="roundMap"></div><br/> You have scored<br/><h1>' + roundScore + ' points</h1> this round!<br/><br/>' +
-            '<button class="btn btn-primary closeBtn" type="button">Continue</button>' +
+            `<button class="btn ${isLastRound ? "btn-success": "btn-primary"} closeBtn" type="button">${isLastRound ? "Finish": "Continue"}</button>` +
             '<div class="form-check">' +
             `<input type="checkbox" id="autoStart" class="form-check-input" ${game.autoStart ? 'checked' : ''}>` +
             '<label for="autostart" class="form-check-label">autostart</label>' +
@@ -173,6 +176,7 @@ function get_challenge_callback(challenge) {
         $('#roundEnd').fadeIn();
         sharedWorker.port.onmessage = function (e) {
             var data = JSON.parse(e.data);
+            updateStatusTable(data);
             if ($('#autoStart').prop('checked') && data.some(user => user.status == 'playing' && user.round == round + ignored_count + 1)) {
                 nextRound();
             } else if(data.some(user => user.status == 'round_end' && user.round == round + ignored_count)) {
@@ -197,12 +201,26 @@ function get_challenge_callback(challenge) {
     }
 }
 
+function roundToUserReadable(round){
+    return round != null && round >= 0 ? round + 1 : "-";
+}
+
+function updateStatusTable(data) {
+    let innerHtml = "<tr><th>Name</th><th>Status</th><th>Round</th></tr>"
+    let rowArray = data.map(user => `<tr><td>${user.username}</td><td>${user.status}</td><td>${roundToUserReadable(user.round)}</td></tr>`);
+    innerHtml += rowArray.reduce((a, b) => a+b);
+    $('#statusTable').html(innerHtml);
+}
+
 $(document).ready(function () {
     let urlSearchParams = new URLSearchParams(location.search);
     var challenge_id = urlSearchParams.get('Challenge_ID');
 
     //the point is to share one worker through the challenge, clean other url params
     sharedWorker = new SharedWorker('/static/js/challengeStatusWorker.js?Challenge_ID=' + challenge_id);
+    sharedWorker.port.onmessage = function (e) {
+        updateStatusTable(JSON.parse(e.data));
+    };
     var ignore_previous_guesses = urlSearchParams.get('ignore_previous_guesses');
     //js i hate you because all the reasons
     ignore_previous_guesses = ignore_previous_guesses === true || ignore_previous_guesses === 'true';
