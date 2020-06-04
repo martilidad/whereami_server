@@ -68,12 +68,10 @@
         console.log(document.execCommand("copy"));
         temp_raw.remove();
     }
-
-    $(".checkbox").change(function() {
-    if(this.checked) {
-        //Do stuff
-    }
-});
+    $('#autoStart').prop('checked', JSON.parse(localStorage.getItem('autostart')));
+    $('#autoStart').change(function () {
+        localStorage.setItem('autostart',  this.checked);
+    });
 
     //shared web socket worker for this challenge
     var sharedWorker = new SharedWorker('/static/js/challengeStatusWorker.js' + location.search);

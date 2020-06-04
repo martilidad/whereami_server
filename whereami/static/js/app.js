@@ -35,8 +35,7 @@ function get_challenge_callback(challenge) {
         },
         totalScore: 0,
         timedOut: true,
-        distance: 0,
-        autoStart: false
+        distance: 0
     };
 
 
@@ -85,7 +84,6 @@ function get_challenge_callback(challenge) {
             updateStatusTable(JSON.parse(e.data));
         };
         sharedWorker.port.postMessage({'status': 'playing', round: round + ignored_count});
-        game.autoStart = $('#autoStart').prop('checked');
         $('#roundEnd').fadeOut(500);
         if (round >= locations.length) {
             return endGame();
@@ -170,9 +168,12 @@ function get_challenge_callback(challenge) {
         $('#roundEnd').html('<p>Your guess was<br/><strong><h1>' + distance + '</strong>km</h1> away from the actual location.<br/><div id="roundMap"></div><br/> You have scored<br/><h1>' + roundScore + ' points</h1> this round!<br/><br/>' +
             `<button class="btn ${isLastRound ? "btn-success": "btn-primary"} closeBtn" type="button">${isLastRound ? "Finish": "Continue"}</button>` +
             '<div class="form-check">' +
-            `<input type="checkbox" id="autoStart" class="form-check-input" ${game.autoStart ? 'checked' : ''}>` +
+            `<input type="checkbox" id="autoStart" class="form-check-input" ${JSON.parse(localStorage.getItem('autostart')) ? 'checked' : ''}>` +
             '<label for="autostart" class="form-check-label">autostart</label>' +
             '</div><button class="btn btn-secondary refreshBtn mx-2" type="button">Refresh Map</button></p></p>');
+        $('#autoStart').change(function () {
+            localStorage.setItem('autostart', this.checked);
+        });
         $('#roundEnd').fadeIn();
         sharedWorker.port.onmessage = function (e) {
             var data = JSON.parse(e.data);
