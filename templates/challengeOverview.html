@@ -24,7 +24,7 @@
             <h6 class="card-subtitle text-muted">{% if winner is not None %}Easiest game of {{ winner }}'s life.
             {% else %} No one played yet.
             {% endif %}</h6>
-            <a href="location.href='/startChallenge?Challenge_ID={{ challenge_id }}'" class="btn btn-primary">Start Challenge</a>
+            <a href="/startChallenge?Challenge_ID={{ challenge_id }}" class="btn btn-primary">Start Challenge</a>
             <table class="table table-striped" id="score-board">
                 <thead>
                 <tr>
