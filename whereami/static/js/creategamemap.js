@@ -194,13 +194,13 @@ function calculateEventArea(event) {
 
 async function createGame() {
     // give up after getting 10 duplicate/unusable locations
-    var maxIgnores = 10;
+    var maxIgnores = 1000;
     var ignores = 0;
     var quantity = $('#quantity').val();
     var minDist = $('#minDist').val();
     var name = $('#name').val();
     var places = [];
-    var checkaround = 500000;
+    var checkaround = 10000;
     var allowPhotoSpheres = $('#allowPhotoSpheres').prop('checked');
     //calculate areas; will be used for weighting random choice
     overLayEvents.forEach(calculateEventArea);
@@ -217,7 +217,7 @@ async function createGame() {
                 location: point,
                 radius: checkaround,
                 source: allowPhotoSpheres ? google.maps.StreetViewSource.DEFAULT : google.maps.StreetViewSource.OUTDOOR,
-                preference: google.maps.StreetViewPreference.NEAREST
+                preference: google.maps.StreetViewPreference.BEST
             }, function (data) {
                 resolve(data);
             })

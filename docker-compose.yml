@@ -22,8 +22,8 @@ services:
       - "POSTGRES_USER=whereami"
       - "POSTGRES_PASSWORD=whereami"
       - "POSTGRES_DB=whereami"
-    expose: 
-      - "5432"
+    ports:
+      - "5432:5432"
   redis:
     image: redis:5
     expose:
