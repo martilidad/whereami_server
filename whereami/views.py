@@ -1,3 +1,4 @@
+import itertools
 import json
 import random
 
@@ -6,12 +7,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction, IntegrityError
-from django.db.models import Count, Sum, Q, Max, Prefetch
+from django.db.models import Count, Sum, Q, Max, Prefetch, Min
 from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.safestring import mark_safe
 
-from django.core.cache import cache
 from whereami.models import ChallengeLocation, Guess, Challenge, Game, Location
 
 
@@ -100,8 +101,9 @@ def get_challenge(request):
         list = [{'Challenge_Location_ID': challenge_location.id,
                  'Lat': challenge_location.location.lat, 'Long': challenge_location.location.long}
                 for challenge_location in challenge_locations]
+        boundary_array = game_boundary(obj.game)
         response_dict = {'Challenge_ID': id, 'Time': obj.time, 'Challenge_Locations': list,
-                         'Ignored_Count': len(filtered_ids)}
+                         'Ignored_Count': len(filtered_ids), 'boundary_array': boundary_array}
         return JsonResponse(response_dict, safe=False)
     except (KeyError, Challenge.DoesNotExist):
         return HttpResponseBadRequest()
@@ -215,4 +217,26 @@ def challenge_overview(request):
 
 
 def invite(request):
-    return render(request, 'invite.html', {'is_authenticated': request.user.is_authenticated, 'full_path': request.get_full_path()})
+    is_authenticated = request.user.is_authenticated
+    boundary_array = []
+    api_key = None
+    if is_authenticated:
+        challenge_id = request.GET['Challenge_ID']
+        game = Challenge.objects.get(id=challenge_id).game
+        boundary_array = game_boundary(game)
+        api_key = settings.GOOGLE_API_KEY
+    return render(request, 'invite.html', {'is_authenticated': is_authenticated, 'full_path': request.get_full_path(),
+                                           'boundary_array': mark_safe(json.dumps(boundary_array)),
+                                           'google_api_key': api_key})
+
+
+def game_boundary(game):
+    boundary_array = []
+    aggregates = game.locations.aggregate(Min('lat'), Max('lat'), Min('long'), Max('long'))
+    # create one coord for each lat/long combination
+    for coord in list(itertools.product([aggregates['lat__min'], aggregates['lat__max']],
+                                        [aggregates['long__min'], aggregates['long__max']])):
+        boundary_array.append({'Lat': coord[0], 'Long': coord[1]})
+    any_location = game.locations.first()
+    boundary_array.append({'Lat': any_location.lat, 'Long': any_location.long})
+    return boundary_array

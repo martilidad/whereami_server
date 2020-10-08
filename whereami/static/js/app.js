@@ -1,5 +1,6 @@
 var game;
 var sharedWorker;
+var boundary_bounds;
 
 function get_challenge_callback(challenge) {
 
@@ -7,6 +8,9 @@ function get_challenge_callback(challenge) {
     var locations = challenge['Challenge_Locations'];
     var ignored_count = challenge['Ignored_Count'];
     var challenge_id = challenge["Challenge_ID"];
+    var boundary_array = challenge["boundary_array"];
+    boundary_bounds = new google.maps.LatLngBounds();
+    boundary_array.forEach(coord => boundary_bounds.extend(new google.maps.LatLng(coord.Lat, coord.Long)));
     if (locations.length === 0) {
         $('#miniMap, #pano, #guessButton, #scoreBoard, #timer').hide();
         $('#endGame').html('<h1>You already beat this Map!</h1><a class="btn btn-large btn-primary" href="/">Main Menu</a><p></p>' +

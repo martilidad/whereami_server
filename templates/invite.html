@@ -53,39 +53,14 @@
         </div>
     </div>
 </div>
+<div id="previewMap" style="height: 60%; width: 60%; margin: auto;"></div>
 </body>
+<script>
+    var boundary_array = {{ boundary_array }};
+</script>
 <script type='text/javascript' src='/static/js/jquery.min.js'></script>
 <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-<script>
-    const inviteLink = location;
-    $('#start').prop("href", "/startChallenge" + location.search);
-
-    function invite() {
-        let temp_raw = $("<input>");
-        $("body").append(temp_raw);
-        temp_raw.val(inviteLink);
-        temp_raw.select();
-        console.log(document.execCommand("copy"));
-        temp_raw.remove();
-    }
-    $('#autoStart').prop('checked', JSON.parse(localStorage.getItem('autostart')));
-    $('#autoStart').change(function () {
-        localStorage.setItem('autostart',  this.checked);
-    });
-
-    //shared web socket worker for this challenge
-    var sharedWorker = new SharedWorker('/static/js/challengeStatusWorker.js' + location.search);
-    sharedWorker.port.onmessage = function (e) {
-        var data = JSON.parse(e.data);
-        var usersHere = data.filter(user => user.status == 'invite_screen').map(user => user.username);
-        var otherUsers = data.filter(user => user.status != 'invite_screen').map(user => user.username);
-        $('#inviteStatusDiv').text(`There are ${usersHere.length} Users waiting here: ${usersHere.toString()}`);
-        $('#userStatusDiv').text(`There are ${otherUsers.length} Users playing or finished: ${otherUsers.toString()}`);
-        console.log('Message received from worker:' + e.data);
-        if($('#autoStart').prop('checked') && data.some(user => user.status == 'playing' && user.round == 0)) {
-            location = "/startChallenge" + location.search;
-        }
-    };
-    sharedWorker.port.postMessage({'status': 'invite_screen', round: -1});
-</script>
+<script type='text/javascript'
+        src='https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=geometry,drawing'></script>
+<script type="text/javascript" src="/static/js/invite.js"></script>
 </html>

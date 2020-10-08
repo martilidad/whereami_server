@@ -44,6 +44,15 @@ function rminitialize() {
   actualMarker.setMap(map);
   guessMarker.setMap(map);
   renderOtherGuesses(map, location);
+  const rectangle = new google.maps.Rectangle({
+    strokeColor: "#FF0000",
+    strokeOpacity: 0.8,
+    strokeWeight: 2,
+    fillColor: "#FF0000",
+    fillOpacity: 0.1,
+    bounds: boundary_bounds
+  });
+  rectangle.setMap(map);
 }
 
 function renderOtherGuesses() {
