@@ -18,7 +18,7 @@ onconnect = function (e) {
             sendStatusIfPossible();
         }
         if (data.type === 'client_update' && data.sync_time == sync_time) {
-            status_dict[data.id] = {
+            status_dict[data.username] = {
                 'username': data.username,
                 'status': data.user_data.status,
                 'round': data.user_data.round
