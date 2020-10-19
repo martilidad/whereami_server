@@ -77,7 +77,6 @@ $(document).ready(function () {
     map.controls[google.maps.ControlPosition.RIGHT_CENTER].push(centerControlDiv);
 
     drawingManager = new google.maps.drawing.DrawingManager({
-          drawingMode: google.maps.drawing.OverlayType.MARKER,
           drawingControl: true,
           drawingControlOptions: {
             position: google.maps.ControlPosition.TOP_CENTER,
