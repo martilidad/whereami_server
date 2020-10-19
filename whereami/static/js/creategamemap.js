@@ -296,6 +296,8 @@ function toggleMode(handpicked) {
         $("#createGamePano").hide();
         google.maps.event.clearListeners(map, 'click');
     }
+    const cursor = handpicked ? 'crosshair' : null;
+    map.setOptions({draggableCursor: cursor});
     drawingManager.setMap(handpicked ? null : map);
     for (let i=0; i < handpickedMarkers.length; i++) {
         handpickedMarkers[i].setMap(handpicked ? map : null);
