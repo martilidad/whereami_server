@@ -3,10 +3,14 @@ const worldBounds = new google.maps.LatLngBounds(
     new google.maps.LatLng(-46.11251, 163.4288)	 //Bottom-right
 );
 var map;
+var pano;
+var activeMarker;
+var handpickedMarkers = [];
 var webService = new google.maps.StreetViewService();
 var overLayEvents = [];
 var areaSum = 0;
 var coverageLayer;
+var drawingManager;
 
 if (!google.maps.Polygon.prototype.getBounds) {
     google.maps.Polygon.prototype.getBounds = function () {
@@ -61,6 +65,9 @@ $(document).ready(function () {
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 
+    pano = new google.maps.StreetViewPanorama(document.getElementById("pano"));
+    pano.setVisible(true)
+    $("#createGamePano").hide()
     map = new google.maps.Map(document.getElementById('createGameMap'), mapOptions);
     map.fitBounds(worldBounds);
 
@@ -69,7 +76,7 @@ $(document).ready(function () {
     centerControlDiv.index = 1;
     map.controls[google.maps.ControlPosition.RIGHT_CENTER].push(centerControlDiv);
 
-    var drawingManager = new google.maps.drawing.DrawingManager({
+    drawingManager = new google.maps.drawing.DrawingManager({
           drawingMode: google.maps.drawing.OverlayType.MARKER,
           drawingControl: true,
           drawingControlOptions: {
@@ -261,4 +268,128 @@ async function createGame() {
         }
     });
 }
+
+function clearDrawings() {
+    for (var i=0; i < overLayEvents.length; i++) {
+        overLayEvents[i].overlay.setMap(null);
+    }
+    overLayEvents = []
+}
+
+function toggleMode(handpicked) {
+    const activeButton = handpicked ? $("#handPickedButton") : $("#areaButton");
+    const inactiveButton = handpicked ? $("#areaButton") : $("#handPickedButton");
+    activeButton.addClass("btn-primary");
+    activeButton.removeClass("btn-secondary");
+    inactiveButton.addClass("btn-secondary");
+    inactiveButton.removeClass("btn-primary");
+    if(handpicked) {
+        $("#areaForm").hide();
+        $("#handpickedForm").show();
+        if (activeMarker != null) $("#createGamePano").show();
+        map.addListener("click", (event) => {
+            // TODO radius depending on zoom
+            webService.getPanorama({ location: event.latLng, radius: 1000 }, processPano);
+        });
+    } else {
+        $("#areaForm").show();
+        $("#handpickedForm").hide();
+        $("#createGamePano").hide();
+        google.maps.event.clearListeners(map, 'click');
+    }
+    drawingManager.setMap(handpicked ? null : map);
+    for (let i=0; i < handpickedMarkers.length; i++) {
+        handpickedMarkers[i].setMap(handpicked ? map : null);
+    }
+    for (let i=0; i < overLayEvents.length; i++) {
+        overLayEvents[i].overlay.setMap(handpicked ? null : map);
+    }
+}
+
+function processPano(data, status) {
+    $('#infoText').text("");
+    if (status === "OK") {
+        const location = data.location;
+        const marker = new google.maps.Marker({
+            position: location.latLng,
+            map,
+            title: location.description,
+        });
+        handpickedMarkers.push(marker);
+        activateMarker(marker);
+        marker.addListener("click", activateMarkerCallback);
+        $("#locationCount").text(handpickedMarkers.length);
+    } else {
+        $('#infoText').text("no Street view for this area");
+    }
+}
+
+function activateMarkerCallback() {
+    activateMarker(this);
+}
+
+function activateMarker(marker) {
+    if (activeMarker != null) {
+        activeMarker.setIcon({
+            url: "/static/img/marker.png",
+            scaledSize: new google.maps.Size(27, 43)
+        });
+    }
+    marker.setIcon(null);
+    google.maps.event.clearListeners(pano, "position_changed");
+    activeMarker = marker;
+    pano.setPosition(marker.getPosition());
+    pano.addListener("position_changed", () => {
+        marker.setPosition(pano.getPosition());
+    });
+    $("#createGamePano").show()
+}
+
+function focusMarker() {
+    if (activeMarker != null) {
+        map.panTo(activeMarker.getPosition());
+        map.setZoom(12);
+    }
+}
+
+function deleteMarker() {
+    if (activeMarker != null) {
+        activeMarker.setMap(null);
+        const index = handpickedMarkers.indexOf(activeMarker);
+        if (index > -1) {
+            handpickedMarkers.splice(index, 1);
+        }
+        activeMarker = null;
+        $("#createGamePano").hide()
+        $("#locationCount").text(handpickedMarkers.length);
+    }
+}
+
+function createHandpickedGame() {
+    const places = [];
+    for (let i=0; i < handpickedMarkers.length; i++) {
+        const latLng = handpickedMarkers[i].getPosition();
+        places.push({Lat: latLng.lat(), Long: latLng.lng(), Name: handpickedMarkers[i].getTitle()});
+    }
+    const name = $('#handpickedName').val();
+    $('#infoText').text('Sending to Server, this can take some time.');
+    $.ajax({
+        url: "/game",
+        method: "POST",
+        headers: {"X-CSRFToken": Cookies.get('csrftoken')},
+        contentType: 'application/json',
+        data: JSON.stringify({
+            Name: name,
+            Locations: places
+        }),
+        success: function () {
+            $('#infoText').text('Success');
+        },
+        error: function (result) {
+            $('#infoText').text('Error while Sending');
+            console.log(result);
+        }
+    });
+}
+
 

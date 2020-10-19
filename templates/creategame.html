@@ -7,34 +7,69 @@
     <link rel='stylesheet' href='/static/css/style.css'/>
 </head>
 <body>
-<div class="card col-3">
-    <div class="card-body">
-        <form onsubmit="submit()">
-            <h4 class="card-body">Create a new game: </h4>
-            <div class="form-group">
-                <label for="quantity">Numer of locations.
-                    (please check Streetview availability)</label>
-                <input class="form-control" type="number" id="quantity" name="quantity" min="1" value="50">
+<div class="container-fluid">
+    <div class="row" style="height: 850px">
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-body">Create a new game: </h4>
+                    <div class="form-group">
+                        <span>Creation-Mode</span>
+                        <button id="areaButton" type="button" onclick="toggleMode(false)" class="btn btn-primary">Area</button>
+                        <button id="handPickedButton" type="button" onclick="toggleMode(true)" class="btn btn-secondary">Handpicked</button>
+                    </div>
+                    <form onsubmit="submit()" id="areaForm">
+                        <div class="form-group">
+                            <label for="quantity">Numer of locations.
+                                (please check Streetview availability)</label>
+                            <input class="form-control" type="number" id="quantity" name="quantity" min="1" value="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="minDist">Minimum distance between locations in km.</label>
+                            <input class="form-control" type="number" id="minDist" name="minDist" min="1" value="10"></div>
+                        <div class="form-group">
+                            <label for="name">Game name (e.g. Spain)</label>
+                            <input class="form-control" type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input border-primary" type="checkbox" id="allowPhotoSpheres"
+                                   name="allowPhotoSpheres">
+                            <label for="allowPhotoSpheres" class="form-check-label">Allow Photospheres(Not Recommended)</label>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" onclick="clearDrawings()" class="btn btn-warning">Clear Drawings</button>
+                        </div>
+                        <div id="loadingText"></div>
+                        <button type="button" onclick="createGame()" class="btn btn-primary">Create</button>
+                        <a href="/" class="btn btn-danger">Cancel</a>
+                    </form>
+                    <form onsubmit="submit()" id="handpickedForm" style="display: none">
+                        <div class="form-group">
+                            <label for="handpickedName">Game name (e.g. Spain)</label>
+                            <input class="form-control" type="text" id="handpickedName" name="handpickedName" required>
+                        </div>
+                        <div class="form-group">
+                             <span>Number of Locations: </span><span id="locationCount">0</span>
+                        </div>
+                        <div id="infoText"></div>
+                        <button type="button" onclick="createHandpickedGame()" class="btn btn-primary">Create</button>
+                        <a href="/" class="btn btn-danger">Cancel</a>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="minDist">Minimum distance between locations in km.</label>
-                <input class="form-control" type="number" id="minDist" name="minDist" min="1" value="10"></div>
-            <div class="form-group">
-                <label for="name">Game name (e.g. Spain)</label>
-                <input class="form-control" type="text" id="name" name="name" required>
+        </div>
+        <div class="col-9">
+            <div id="createGameMap"></div>
+            <div id="createGamePano">
+                <div id="pano"></div>
+                <div style="background-color: gray; margin: 0px;" class="row">
+                    <button type="button" onclick="focusMarker()" class="btn btn-warning col-6">Focus</button>
+                    <button type="button" onclick="deleteMarker()" class="btn btn-danger col-6">Delete</button>
+                </div>
             </div>
-            <div class="form-check">
-                <input class="form-check-input border-primary" type="checkbox" id="allowPhotoSpheres"
-                       name="allowPhotoSpheres">
-                <label for="allowPhotoSpheres" class="form-check-label">Allow Photospheres(Not Recommended)</label>
-            </div>
-            <div id="loadingText"></div>
-            <button type="button" onclick="createGame()" class="btn btn-primary">Create</button>
-            <a href="/" class="btn btn-danger">Cancel</a>
-        </form>
+        </div>
     </div>
 </div>
-<div class="col-9" id="createGameMap"></div>
 <script type='text/javascript' src='/static/js/js.cookie.min.js'></script>
 <script type='text/javascript' src='/static/js/jquery.min.js'></script>
 <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
