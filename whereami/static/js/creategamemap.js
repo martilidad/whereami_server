@@ -287,8 +287,8 @@ function toggleMode(handpicked) {
         $("#handpickedForm").show();
         if (activeMarker != null) $("#createGamePano").show();
         map.addListener("click", (event) => {
-            // TODO radius depending on zoom
-            webService.getPanorama({ location: event.latLng, radius: 1000 }, processPano);
+            const radius = 50000/Math.pow(1.6, map.getZoom());
+            webService.getPanorama({ location: event.latLng, radius:radius }, processPano);
         });
     } else {
         $("#areaForm").show();
@@ -313,13 +313,38 @@ function processPano(data, status) {
             position: location.latLng,
             map,
             title: location.description,
+            draggable: true,
         });
         handpickedMarkers.push(marker);
         activateMarker(marker);
         marker.addListener("click", activateMarkerCallback);
+        marker.addListener("dragstart", startDrag)
+        marker.addListener("dragend", () => {
+            const radius = 50000/Math.pow(1.4, map.getZoom());
+            webService.getPanorama({ location: marker.getPosition(), radius:radius }, moveMarker);
+        });
         $("#locationCount").text(handpickedMarkers.length);
     } else {
         $('#infoText').text("no Street view for this area");
+    }
+}
+
+let dragStartPos;
+
+function startDrag() {
+    activateMarker(this);
+    dragStartPos = this.getPosition();
+}
+
+function moveMarker(data, status) {
+    $('#infoText').text("");
+    if (status === "OK") {
+        const pos = data.location.latLng;
+        activeMarker.setPosition(pos);
+        pano.setPosition(pos);
+    } else {
+        activeMarker.setPosition(dragStartPos);
+        $('#infoText').text("no street view found for dragged area");
     }
 }
 
