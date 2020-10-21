@@ -130,7 +130,8 @@
         var actualMarker = new google.maps.Marker({
             position: actualLatLng,
             title: "Actual Location",
-            icon: '/static/img/actual.png'
+            label: "Target",
+            icon: '/static/img/red_marker.png'
         });
 
         actualMarker.setMap(map);
@@ -141,7 +142,7 @@
             var Marker = new google.maps.Marker({
                 position: ltLng,
                 label: guess['Name'],
-                icon: '/static/img/other.png',
+                icon: '/static/img/orange_marker.png',
                 title: 'Distance: ' + guess['Distance'] + ' Score: ' + guess['Score']
             });
 

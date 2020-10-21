@@ -32,13 +32,15 @@ function rminitialize() {
   var actualMarker = new google.maps.Marker({
     position: actualLtLng,
     title: "Actual Location",
-    icon: '/static/img/actual.png'
+    label: "Target",
+    icon: '/static/img/red_marker.png'
   });
 
   var guessMarker = new google.maps.Marker({
     position: guessLtLng,
     title: "Your Guess(not on Server)",
-    icon: '/static/img/guess.png'
+    label: "You",
+    icon: '/static/img/green_marker.png'
   });
 
   actualMarker.setMap(map);
@@ -67,12 +69,12 @@ function renderOtherGuesses() {
       success: function (otherGuesses) {
           for (let i = 0; i < otherGuesses.length; i++) {
             var guess = otherGuesses[i];
-            var icon = guess['Own'] ? '/static/img/guess.png' :'/static/img/other.png';
+            var icon = guess['Own'] ? '/static/img/green_marker.png' :'/static/img/orange_marker.png';
             var ltLng = new google.maps.LatLng(guess['Lat'], guess['Long']);
             roundBounds.extend(ltLng);
             var Marker = new google.maps.Marker({
               position: ltLng,
-              label: guess['Own'] ? null : guess['Name'],
+              label: guess['Own'] ? "You" : guess['Name'],
               icon: icon,
               title: 'Distance: ' + guess['Distance'] + ' Score: ' + guess['Score']
             });
