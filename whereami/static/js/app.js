@@ -66,6 +66,7 @@ function get_challenge_callback(challenge) {
         count = count - 1;
         if (count <= 0) {
             console.log('finished');
+            exitFullscreen();
             endRound();
             clearInterval(counter);
         }
@@ -241,3 +242,21 @@ $(document).ready(function () {
         }
     });
 });
+
+function exitFullscreen() {
+    var isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
+        (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
+        (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
+        (document.msFullscreenElement && document.msFullscreenElement !== null);
+    if(isInFullScreen) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+}
