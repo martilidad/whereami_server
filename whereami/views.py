@@ -10,7 +10,7 @@ from django.db import transaction, IntegrityError
 from django.db.models import Count, Sum, Q, Max, Prefetch, Min
 from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseRedirect
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils.safestring import mark_safe
 
 from whereami.models import ChallengeLocation, Guess, Challenge, Game, Location
@@ -220,14 +220,15 @@ def invite(request):
     is_authenticated = request.user.is_authenticated
     boundary_array = []
     api_key = None
+    challenge_id = request.GET['Challenge_ID']
+    challenge = get_object_or_404(Challenge, id=challenge_id)
     if is_authenticated:
-        challenge_id = request.GET['Challenge_ID']
-        game = Challenge.objects.get(id=challenge_id).game
+        game = challenge.game
         boundary_array = game_boundary(game)
         api_key = settings.GOOGLE_API_KEY
     return render(request, 'invite.html', {'is_authenticated': is_authenticated, 'full_path': request.get_full_path(),
                                            'boundary_array': mark_safe(json.dumps(boundary_array)),
-                                           'google_api_key': api_key})
+                                           'google_api_key': api_key, 'challenge': challenge})
 
 
 def game_boundary(game):
