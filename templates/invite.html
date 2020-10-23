@@ -9,7 +9,7 @@
     <meta property="og:type" content="website"/>
     <meta property="og:image" content="/static/img/whereami.png"/>
     <meta property="og:description"
-          content="You have been invited to find {{ challenge.challengelocation_set.count }} Streetview locations in {{ challenge.game.name }} within {{ challenge.time }} seconds each."/>
+          content="You have been challenged to find {{ challenge.challengelocation_set.count }} Streetview locations in {{ challenge.game.name }} within {{ challenge.time }} seconds each."/>
     {% if not is_authenticated %}
         <meta http-equiv="expires" content="-1"/>
         <meta http-equiv="refresh" content="1; url=/accounts/login/?next={{ full_path }}"/>
