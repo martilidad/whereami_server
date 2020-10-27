@@ -35,7 +35,7 @@ class Guess(models.Model):
     lat = models.FloatField()
     long = models.FloatField()
     score = models.IntegerField()
-    distance = models.IntegerField()
+    distance = models.FloatField()
     pub_date = models.DateTimeField(default=datetime.now, blank=True)
 
     class Meta:
