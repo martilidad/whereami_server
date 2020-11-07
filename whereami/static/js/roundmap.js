@@ -1,3 +1,6 @@
+const INTERACT_GRACE_PERIOD = 2000;
+var lastInteraction = 0;
+
 //
 // End of round map
 //
@@ -27,6 +30,9 @@ function rminitialize() {
   };
 
   var map = new google.maps.Map($('#roundMap')[0], mapOptions);
+  map.addListener("bounds_changed", () => { 
+    lastInteraction = new Date().getTime();
+  });
   window.map = map;
 
   var actualMarker = new google.maps.Marker({
@@ -45,7 +51,8 @@ function rminitialize() {
 
   actualMarker.setMap(map);
   guessMarker.setMap(map);
-  renderOtherGuesses(map, location);
+  markerCount = 0;
+  renderOtherGuesses();
   const rectangle = new google.maps.Rectangle({
     strokeColor: "#FF0000",
     strokeOpacity: 0.8,
@@ -57,9 +64,10 @@ function rminitialize() {
   rectangle.setMap(map);
 }
 
-function renderOtherGuesses() {
+var markerCount = 0;
+
+function renderOtherGuesses(forceFit = false) {
   var map = window.map;
-  //intermediate static object before I figure out how to get the data
   $.ajax({
       url: "/guess",
       method: "GET",
@@ -80,7 +88,16 @@ function renderOtherGuesses() {
             });
             Marker.setMap(map);
           }
-          map.fitBounds(roundBounds);
+          if (forcefit || otherGuesses.length > markerCount) {
+            if(forcefit || lastInteraction + INTERACT_GRACE_PERIOD < new Date().getTime()) {
+              //copy by value
+              var interaction = lastInteraction.getValue();
+              //lastinteraction listener can't differentiate system events
+              map.fitBounds(roundBounds);
+              lastInteraction = interaction;
+            }
+            markerCount = otherGuesses.length
+          }
       },
       error: function (result) {
         console.log(result);
