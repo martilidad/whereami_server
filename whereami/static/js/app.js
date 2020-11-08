@@ -50,7 +50,7 @@ function get_challenge_callback(challenge) {
     var distance = game.distance;
     window.loc = locations[game.round.id];
 
-    $('#roundEnd').on('click', '.closeBtn', nextRound.bind(round+1));
+    $('#roundEnd').on('click', '.closeBtn', function() {nextRound(round+1);});
     sharedWorker.port.postMessage({'status': 'playing', round: round + ignored_count});
 
     // Init maps
@@ -91,7 +91,7 @@ function get_challenge_callback(challenge) {
         game.timedOut = true;
         round++;
         //bind new nextround to button
-        $('#roundEnd').off('click').on('click', '.closeBtn', nextRound.bind(round+1));
+        $('#roundEnd').off('click').on('click', '.closeBtn', function() {nextRound(round+1);});
         sharedWorker.port.onmessage = function (e) {
             updateStatusTable(JSON.parse(e.data));
         };
