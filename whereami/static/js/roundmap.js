@@ -88,8 +88,8 @@ function renderOtherGuesses(forceFit = false) {
             });
             Marker.setMap(map);
           }
-          if (forcefit || otherGuesses.length > markerCount) {
-            if(forcefit || lastInteraction + INTERACT_GRACE_PERIOD < new Date().getTime()) {
+          if (forceFit || otherGuesses.length > markerCount) {
+            if(forceFit || lastInteraction + INTERACT_GRACE_PERIOD < new Date().getTime()) {
               //copy by value
               var interaction = lastInteraction.getValue();
               //lastinteraction listener can't differentiate system events
