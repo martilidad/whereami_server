@@ -143,7 +143,7 @@ function get_challenge_callback(challenge) {
         }
 
         // Calculate distance between points, and convert to kilometers
-        distance = Math.floor(calcDistance(window.loc['Lat'], window.loc['Long'], window.guessArray[0], window.guessArray[1]) / 100) / 10;
+        distance = Math.floor(calcDistance(window.loc['Lat'], window.loc['Long'], window.guessArray[0], window.guessArray[1]) / 10) / 100;
 
         // use exponential function for points calculation.
         var maxPoints = 10000;
