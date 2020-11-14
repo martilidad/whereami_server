@@ -90,10 +90,9 @@ function get_challenge_callback(challenge) {
         }
         window.guessLatLng = '';
         game.timedOut = true;
+        $('#roundEnd').off('click');
         round++;
         var theParticularNextRound = round+1;
-        //bind new nextround to button
-        $('#roundEnd').off('click').on('click', '.closeBtn', function() {nextRound(theParticularNextRound);});
         sharedWorker.port.onmessage = function (e) {
             updateStatusTable(JSON.parse(e.data));
         };
@@ -197,6 +196,8 @@ function get_challenge_callback(challenge) {
                 renderOtherGuesses();
             }
         };
+        //bind new nextround to button
+        $('#roundEnd').on('click', '.closeBtn', function() {nextRound(theParticularNextRound);});
 
         // Reset Params
         rminitialize();
