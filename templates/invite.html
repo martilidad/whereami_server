@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Whereami - Challenge invite</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css?{{ version }}">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css?{{ version }}">
     <meta property="og:title" content="Whereami - Challenge invite"/>
     <meta property="og:type" content="website"/>
     <meta property="og:image" content="/static/img/whereami.png"/>
@@ -60,9 +60,9 @@
 <script>
     var boundary_array = {{ boundary_array }};
 </script>
-<script type='text/javascript' src='/static/js/jquery.min.js'></script>
-<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+<script type='text/javascript' src='/static/js/jquery.min.js?{{ version }}'></script>
+<script type="text/javascript" src="/static/js/bootstrap.min.js?{{ version }}"></script>
 <script type='text/javascript'
         src='https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=geometry,drawing'></script>
-<script type="text/javascript" src="/static/js/invite.js"></script>
+<script type="text/javascript" src="/static/js/invite.js?{{ version }}"></script>
 </html>
