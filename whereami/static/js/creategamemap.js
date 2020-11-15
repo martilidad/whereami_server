@@ -11,6 +11,7 @@ var overLayEvents = [];
 var areaSum = 0;
 var coverageLayer;
 var drawingManager;
+var changed = false;
 
 if (!google.maps.Polygon.prototype.getBounds) {
     google.maps.Polygon.prototype.getBounds = function () {
@@ -98,7 +99,8 @@ $(document).ready(function () {
     drawingManager.setMap(map);
     google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
       if (event.type === 'circle' || event.type === 'rectangle' || event.type === 'polygon') { // rectangle polygon circle
-        overLayEvents.push(event);
+          changed = true;
+          overLayEvents.push(event);
       }
     });
 
@@ -260,6 +262,7 @@ async function createGame() {
         }),
         success: function () {
             $('#loadingText').text('Success');
+            changed = false;
         },
         error: function (result) {
             $('#loadingText').text('Error while Sending');
@@ -272,7 +275,8 @@ function clearDrawings() {
     for (var i=0; i < overLayEvents.length; i++) {
         overLayEvents[i].overlay.setMap(null);
     }
-    overLayEvents = []
+    overLayEvents = [];
+    changed = false;
 }
 
 function toggleMode(handpicked) {
@@ -287,6 +291,7 @@ function toggleMode(handpicked) {
         $("#handpickedForm").show();
         if (activeMarker != null) $("#createGamePano").show();
         map.addListener("click", (event) => {
+            changed = true;
             const radius = 50000/Math.pow(1.6, map.getZoom());
             webService.getPanorama({ location: event.latLng, radius:radius }, processPano);
         });
@@ -410,6 +415,7 @@ function createHandpickedGame() {
         }),
         success: function () {
             $('#infoText').text('Success');
+            changed = false;
         },
         error: function (result) {
             $('#infoText').text('Error while Sending');
@@ -418,4 +424,10 @@ function createHandpickedGame() {
     });
 }
 
-
+function cancelCreation() {
+    if (changed) {
+        $('#cancelConfirmationModal').modal('show');
+    } else {
+        location.href = "/";
+    }
+}

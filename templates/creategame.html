@@ -41,7 +41,7 @@
                         </div>
                         <div id="loadingText"></div>
                         <button type="button" onclick="createGame()" class="btn btn-primary">Create</button>
-                        <a href="/" class="btn btn-danger">Cancel</a>
+                        <button type="button" onclick="cancelCreation()" class="btn btn-danger">Cancel</button>
                     </form>
                     <form onsubmit="submit()" id="handpickedForm" style="display: none">
                         <div class="form-group">
@@ -53,7 +53,7 @@
                         </div>
                         <div id="infoText"></div>
                         <button type="button" onclick="createHandpickedGame()" class="btn btn-primary">Create</button>
-                        <a href="/" class="btn btn-danger">Cancel</a>
+                        <button type="button" onclick="cancelCreation()" class="btn btn-danger">Cancel</button>
                     </form>
                 </div>
             </div>
@@ -70,6 +70,28 @@
         </div>
     </div>
 </div>
+
+<!-- Cancel-Confirmation-Modal -->
+<div class="modal fade" id="cancelConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Return to Main Menu</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        There are unsaved changes. Are you sure you want to return to the main menu?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">No, stay at create-page.</button>
+        <a href="/" class="btn btn-danger">Yes, I am sure.</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type='text/javascript' src='/static/js/js.cookie.min.js?{{ version }}'></script>
 <script type='text/javascript' src='/static/js/jquery.min.js?{{ version }}'></script>
 <script type="text/javascript" src="/static/js/bootstrap.min.js?{{ version }}"></script>
