@@ -197,6 +197,7 @@ function get_challenge_callback(challenge) {
             }
         };
         //bind new nextround to button
+        var theParticularNextRound = round+1;
         $('#roundEnd').on('click', '.closeBtn', function() {nextRound(theParticularNextRound);});
 
         // Reset Params
