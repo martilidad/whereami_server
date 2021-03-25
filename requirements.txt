@@ -1,7 +1,7 @@
 # pigar doesn't work :/
 django == 3.0.7
 datetime == 4.3
-pyyaml == 5.3.1
+pyyaml == 5.4
 psycopg2 == 2.8.5
 channels == 2.4.0
 channels_redis == 2.4.2
