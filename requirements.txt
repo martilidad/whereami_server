@@ -1,5 +1,5 @@
 # pigar doesn't work :/
-django == 3.1.7
+django == 3.1.12
 datetime == 4.3
 pyyaml == 5.4.1
 psycopg2 == 2.8.5
