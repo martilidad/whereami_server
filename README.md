@@ -2,6 +2,38 @@
 
 ## Start the Server with Docker:
 
+Example docker-compose.yml:
+```
+version: '3'
+
+services:
+  web:
+    image: ghcr.io/martilidad/whereami-server
+    links:
+      - postgresql:db
+      - redis:redis
+    depends_on: 
+      - postgresql
+      - redis
+    ports: 
+      - "80:80"
+    environment:
+      - "POST
+  postgresql:
+    image: postgres
+    container_name: "whereami-postgresql"
+    environment:
+      - "POSTGRES_USER=whereami"
+      - "POSTGRES_PASSWORD=whereami"
+      - "POSTGRES_DB=whereami"
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis:5
+    expose:
+      - "6379"
+
+```
 Set the Google API-Key in 
 > whereami_server/settings.py
   

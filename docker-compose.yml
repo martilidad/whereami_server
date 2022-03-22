@@ -2,19 +2,32 @@ version: '3'
 
 services:
   web:
-    build: .
-    command: bash -c "pip install -r requirements.txt && python manage.py migrate && python manage.py runserver --insecure 0.0.0.0:80"
-    container_name: whereami
-    volumes:
-      - .:/code
+    image: ghcr.io/martilidad/whereami-server
     links:
       - postgresql:db
       - redis:redis
-    depends_on: 
+    depends_on:
       - postgresql
       - redis
-    ports: 
+    volumes:
+      - /var/www/whereami/static:/var/www/whereami/static
+    ports:
       - "80:80"
+    environment:
+      - "DB_NAME=whereami"
+      - "DB_USER=whereami"
+      - "DB_PW=whereami"
+      - "DB_HOST=db"
+      - "REDIS_HOST=redis"
+      - "ALLOWED_HOSTS=your-domain-here.com"
+# The free recurring monthly credit on the Maps Platform is more than enough to play self-hosted with friends, but you need a valid credit card.
+# See https://developers.google.com/maps/gmp-get-started
+#      - "GOOGLE_API_KEY="
+      - "STATIC_ROOT=/var/www/whereami/static"
+# required on intial start or you'd have to call 'manage.py createsuperuser' manually
+      - "INITIAL_SUPER_USER=user"
+      - "INITIAL_SUPER_PW=changeme"
+
   postgresql:
     image: postgres
     container_name: "whereami-postgresql"
@@ -28,3 +41,7 @@ services:
     image: redis:5
     expose:
       - "6379"
+  nginx:
+#    TODO
+    volumes:
+      - /var/www/whereami/static:/var/www/whereami/static
