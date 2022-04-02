@@ -1,32 +1,40 @@
+# This is only an example file on how to use whereami_server.
+# This example includes hosting files with nginx
 version: '3'
 
 services:
-  web:
-    image: ghcr.io/martilidad/whereami-server
+  whereami:
+#    image: ghcr.io/martilidad/whereami-server
+    build: .
     links:
       - postgresql:db
       - redis:redis
     depends_on:
       - postgresql
       - redis
-    volumes:
-      - /var/www/whereami/static:/var/www/whereami/static
-    ports:
-      - "80:80"
+#    why is connection refused from nginx?????????????????
+    # nc -v whereami 8000 returns connection refused????????
+    expose:
+      - "8000"
     environment:
       - "DB_NAME=whereami"
       - "DB_USER=whereami"
       - "DB_PW=whereami"
       - "DB_HOST=db"
       - "REDIS_HOST=redis"
-      - "ALLOWED_HOSTS=your-domain-here.com"
+      - "DEBUG=false"
+      #todo figure out how to accept nginx's forwarded host header
+      - "ALLOWED_HOSTS=[whereami,localhost,127.26.0.4]"
 # The free recurring monthly credit on the Maps Platform is more than enough to play self-hosted with friends, but you need a valid credit card.
 # See https://developers.google.com/maps/gmp-get-started
 #      - "GOOGLE_API_KEY="
-      - "STATIC_ROOT=/var/www/whereami/static"
 # required on intial start or you'd have to call 'manage.py createsuperuser' manually
       - "INITIAL_SUPER_USER=user"
       - "INITIAL_SUPER_PW=changeme"
+# You can use the following if you want to let e.g. nginx host the static files
+      - "STATIC_ROOT=/var/www/whereami/static"
+    volumes:
+      - /var/www/whereami/static:/var/www/whereami/static
 
   postgresql:
     image: postgres
@@ -35,13 +43,18 @@ services:
       - "POSTGRES_USER=whereami"
       - "POSTGRES_PASSWORD=whereami"
       - "POSTGRES_DB=whereami"
-    ports:
-      - "5432:5432"
   redis:
     image: redis:5
     expose:
       - "6379"
   nginx:
-#    TODO
+    image: nginx:stable
+    ports:
+      - 80:80
+    depends_on:
+      - whereami
+    links:
+      - whereami:whereami
     volumes:
       - /var/www/whereami/static:/var/www/whereami/static
+      - ./nginx:/etc/nginx/conf.d

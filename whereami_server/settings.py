@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import mimetypes
+
+from django.core.management import utils
 from environs import Env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -40,16 +42,20 @@ STATIC_ROOT = env.str('STATIC_ROOT', 'static-out')
 os.makedirs(STATIC_ROOT, exist_ok=True)
 INITIAL_SUPER_USER = env.str('INITIAL_SUPER_USER', None)
 INITIAL_SUPER_PW = env.str('INITIAL_SUPER_PW', None)
+MAX_DB_CONNECTION_RETRIES = 15
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# TODO find a solution to create one one on initial start only
-# django.core.management.utils.get_random_secret_key()
-# but can be nearly any proper random key
-SECRET_KEY = env.str('SECRET_KEY', 'cnjj96w*_vvtu%3v4h(fo+p#6x4bzg_c-usx))4x0t-&-8mj^j')
+# the secret will be created in .env on first boot
+SECRET_KEY = env.str('SECRET_KEY', None)
+if SECRET_KEY is None:
+    SECRET_KEY = utils.get_random_secret_key()
+    f = open(".env", "w")
+    f.write("SECRET_KEY=" + SECRET_KEY)
+    f.close()
 
 mimetypes.add_type("application/javascript", ".js", True)
 
