@@ -1,4 +1,3 @@
-
 FROM python:3.10
 ENV PYTHONUNBUFFERED 1
 RUN mkdir /code
@@ -12,5 +11,9 @@ LABEL org.opencontainers.image.title="whereami_server"
 LABEL org.opencontainers.image.licenses="MIT"
 RUN apt-get update
 RUN apt-get install netcat --force-yes -y
-CMD python manage.py migrate && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 wsgi:application
+CMD python manage.py migrate && \
+    python manage.py collectstatic --noinput && \
+    gunicorn --bind 0.0.0.0:8000 wsgi:application \
+    --log-file "-" --error-logfile "-" \
+    --enable-stdio-inheritance
 COPY . /code/

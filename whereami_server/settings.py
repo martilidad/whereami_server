@@ -34,6 +34,7 @@ REDIS_HOST = env.str('REDIS_HOST', 'localhost')
 REDIS_PORT = env.int('REDIS_PORT', 6379)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', [])
+print(f'Allowing the following hosts: { ALLOWED_HOSTS }', flush=True)
 
 GOOGLE_API_KEY = env.str('GOOGLE_API_KEY', '')
 DEBUG = env.bool('DEBUG', False)

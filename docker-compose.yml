@@ -24,7 +24,7 @@ services:
       - "REDIS_HOST=redis"
       - "DEBUG=false"
       #todo figure out how to accept nginx's forwarded host header
-      - "ALLOWED_HOSTS=[whereami,localhost,127.26.0.4]"
+      - "ALLOWED_HOSTS=localhost"
 # The free recurring monthly credit on the Maps Platform is more than enough to play self-hosted with friends, but you need a valid credit card.
 # See https://developers.google.com/maps/gmp-get-started
 #      - "GOOGLE_API_KEY="
