@@ -22,7 +22,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 env = Env()
 
 # Please keep env bindings at the top of this file
-# TODO Whereami HOST AND PORT
 
 DB_NAME = env.str('DB_NAME', 'whereami')
 DB_USER = env.str('DB_USER', 'whereami')
@@ -44,6 +43,8 @@ os.makedirs(STATIC_ROOT, exist_ok=True)
 INITIAL_SUPER_USER = env.str('INITIAL_SUPER_USER', None)
 INITIAL_SUPER_PW = env.str('INITIAL_SUPER_PW', None)
 MAX_DB_CONNECTION_RETRIES = 15
+# needed to see debug toolbar
+INTERNAL_IPS = env.list('INTERNAL_IPS', [])
 
 
 # Quick-start development settings - unsuitable for production
@@ -59,6 +60,10 @@ if SECRET_KEY is None:
     f.close()
 
 mimetypes.add_type("application/javascript", ".js", True)
+
+# see https://docs.djangoproject.com/en/4.0/releases/3.2/
+# keeping backwards compatability with old migrations here
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
 # Application definition
@@ -84,7 +89,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 if DEBUG:
@@ -175,7 +179,3 @@ CHANNEL_LAYERS = {
         },
     },
 }
-# needed to see debug toolbar
-# INTERNAL_IPS = [
-#     '127.0.0.1',
-# ]

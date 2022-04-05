@@ -33,7 +33,7 @@ Create one superuser:
 
 #### Allowed Hosts
 
-Set `ALLOWED_HOSTS` to the domain(s) where you host the application. Expects a list in the format `[localhost,example.com]`.
+Set `ALLOWED_HOSTS` to the domain(s) where you host the application. Expects a list in the format `localhost,example.com`.
 https://docs.djangoproject.com/en/4.0/ref/settings/#allowed-hosts
 
 #### Complete list of Environment Keys
@@ -52,3 +52,5 @@ https://docs.djangoproject.com/en/4.0/ref/settings/#allowed-hosts
 | STATIC_ROOT        | The folder static files will be copied to. (Expected to be hosted somewhere else.) |
 | INITIAL_SUPER_USER | Admin User created on the first Database connection. (if not empty) |
 | INITIAL_SUPER_PW   | Admin Password created on the first Database connection. (if not empty) |
+| DEBUG              | (True/False) Enables delivery of static files, debug toolbar and more. |
+| INTERNAL_IPS       | Client IPs to expose the debug toolbar to. (if DEBUG=True) |
