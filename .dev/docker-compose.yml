@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  postgresql:
+    image: postgres
+    environment:
+      - "POSTGRES_USER=whereami"
+      - "POSTGRES_PASSWORD=whereami"
+      - "POSTGRES_DB=whereami"
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis:5
+    ports:
+      - "6379:6379"

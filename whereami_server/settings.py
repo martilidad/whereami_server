@@ -13,19 +13,57 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 import mimetypes
 
-mimetypes.add_type("application/javascript", ".js", True)
+from django.core.management import utils
+from environs import Env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+env = Env()
+
+# Please keep env bindings at the top of this file
+
+DB_NAME = env.str('DB_NAME', 'whereami')
+DB_USER = env.str('DB_USER', 'whereami')
+DB_PW = env.str('DB_PW', 'whereami')
+DB_HOST = env.str('DB_HOST', 'localhost')
+DB_PORT = env.int('DB_PORT', 5432)
+
+REDIS_HOST = env.str('REDIS_HOST', 'localhost')
+REDIS_PORT = env.int('REDIS_PORT', 6379)
+
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', [])
+print(f'Allowing the following hosts: { ALLOWED_HOSTS }', flush=True)
+
+GOOGLE_API_KEY = env.str('GOOGLE_API_KEY', '')
+DEBUG = env.bool('DEBUG', False)
+# Does not default to /var/www/whereami/, because it would break on windows.
+STATIC_ROOT = env.str('STATIC_ROOT', 'static-out')
+os.makedirs(STATIC_ROOT, exist_ok=True)
+INITIAL_SUPER_USER = env.str('INITIAL_SUPER_USER', None)
+INITIAL_SUPER_PW = env.str('INITIAL_SUPER_PW', None)
+MAX_DB_CONNECTION_RETRIES = 15
+# needed to see debug toolbar
+INTERNAL_IPS = env.list('INTERNAL_IPS', [])
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'cnjj96w*_vvtu%3v4h(fo+p#6x4bzg_c-usx))4x0t-&-8mj^j'
+# the secret will be created in .env on first boot
+SECRET_KEY = env.str('SECRET_KEY', None)
+if SECRET_KEY is None:
+    SECRET_KEY = utils.get_random_secret_key()
+    f = open(".env", "w")
+    f.write("SECRET_KEY=" + SECRET_KEY)
+    f.close()
 
-ALLOWED_HOSTS = []
+mimetypes.add_type("application/javascript", ".js", True)
+
+# see https://docs.djangoproject.com/en/4.0/releases/3.2/
+# keeping backwards compatability with old migrations here
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
 # Application definition
@@ -38,9 +76,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'whereami.apps.WhereamiConfig',
-    'channels',
-    'debug_toolbar'
+    'channels'
 ]
+if DEBUG:
+    INSTALLED_APPS.append('debug_toolbar')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,16 +89,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+if DEBUG:
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
 ROOT_URLCONF = 'whereami_server.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,18 +115,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'whereami_server.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'whereami',
-        'USER': 'whereami',
-        'PASSWORD': 'whereami',
-        'HOST': 'db',
-        'PORT': 5432
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PW,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT
     }
 }
 
@@ -130,8 +168,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = 'index'
 
-GOOGLE_API_KEY = ''
-DEBUG = False
 
 # channels config, this is needed for websockets
 ASGI_APPLICATION = "whereami_server.routing.application"
@@ -139,11 +175,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('redis', 6379)],
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
         },
     },
 }
-# needed to see debug toolbar
-# INTERNAL_IPS = [
-#     '127.0.0.1',
-# ]
