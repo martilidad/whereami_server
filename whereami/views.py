@@ -12,36 +12,39 @@ from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpRespo
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.safestring import mark_safe
+from rest_framework import viewsets, permissions
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 from whereami.models import ChallengeLocation, Guess, Challenge, Game, Location
+from whereami.serializers import ChallengeSerializer, GameSerializer
 
 
-# Create your views here.
+class ChallengeViewSet(viewsets.ModelViewSet):
+    queryset = Challenge.objects.all()
+    serializer_class = ChallengeSerializer
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [permissions.IsAuthenticated()]
+        return [permissions.IsAdminUser()]
+
+    def get_queryset(self):
+        return Challenge.objects.annotate(location_count=Count('challengelocation'))\
+            .prefetch_related(Prefetch('game', Game.objects.annotate(location_count=Count('locations'))))
 
 
-# TODO login functionality in angular
-# @login_required
-def challenges(request):
-    challenge_entities = Challenge.objects.annotate(Count('challengelocation'))
-    # TODO proper DTOs?
-    return JsonResponse({'challenges':
-                             [{'id': c.id,
-                               'pub_date': c.pub_date,
-                               'location_count': c.challengelocation__count,
-                               'time': c.time,
-                               'game':
-                                   {'name': c.game.name}
-                               } for c in challenge_entities]})
+class GameViewSet(viewsets.ModelViewSet):
+    queryset = Game.objects.all()
+    serializer_class = GameSerializer
 
-# TODO login functionality in angular
-# @login_required
-def games(request):
-    game_entities = Game.objects.annotate(Count('locations'))
-    return JsonResponse({'games':
-                             [{'id': g.id,
-                               'name': g.name,
-                               'location_count': g.locations__count
-                               } for g in game_entities]})
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [permissions.IsAuthenticated()]
+        return [permissions.IsAdminUser()]
+
+    def get_queryset(self):
+        return Game.objects.annotate(location_count=Count('locations'))
 
 
 @login_required
@@ -50,7 +53,9 @@ def start_challenge(request):
     return render(request, "startChallenge.html", context)
 
 
-@login_required
+# TODO remove the if else, use annotation on base methods
+@api_view(['GET', 'POST'])
+@permission_classes((IsAuthenticated,))
 def guess(request):
     if request.method == 'POST':
         return post_guess(request)
@@ -91,7 +96,8 @@ def get_guesses(request):
         return HttpResponseBadRequest()
 
 
-@login_required
+@api_view(['GET', 'POST'])
+@permission_classes((IsAuthenticated,))
 def challenge(request):
     if request.method == 'GET':
         return get_challenge(request)
@@ -172,7 +178,8 @@ def post_game(request):
         return HttpResponseBadRequest()
 
 
-@login_required
+@api_view(['GET', 'POST'])
+@permission_classes((IsAuthenticated,))
 def game(request):
     if request.method == 'GET':
         return render(request, "creategame.html", context={'google_api_key': settings.GOOGLE_API_KEY})
@@ -182,10 +189,9 @@ def game(request):
         return Http404()
 
 
-@login_required
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
 def scores(request):
-    if request.method != 'GET':
-        return Http404()
     challenge_id = request.GET['Challenge_ID']
     users = user_challenge_scores(challenge_id)
     return JsonResponse([{'name': user.username, 'score': user.score, 'distance': user.distance,
@@ -208,10 +214,9 @@ def user_challenge_scores(challenge_id):
     return users
 
 
-@login_required
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
 def challenge_overview(request):
-    if request.method != 'GET':
-        return Http404()
     challenge_id = request.GET['Challenge_ID']
     challenge = Challenge.objects.get(id=challenge_id)
     challenge_locations = challenge.challengelocation_set.all().prefetch_related(

@@ -76,10 +76,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'whereami.apps.WhereamiConfig',
-    'channels'
+    'channels',
+    'rest_framework'
 ]
 if DEBUG:
     INSTALLED_APPS.append('debug_toolbar')
+    #no cors requests are needed during non debug
+    INSTALLED_APPS.append('corsheaders')
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -93,6 +107,9 @@ MIDDLEWARE = [
 
 if DEBUG:
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+    #no cors requests are needed during non debug
+    #needs to be one of the first middlewares
+    MIDDLEWARE.insert(0, 'corsheaders.middleware.CorsMiddleware')
 
 ROOT_URLCONF = 'whereami_server.urls'
 
@@ -179,3 +196,10 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_HTTPONLY = False  # this is the default, and should be kept this way
+CSRF_COOKIE_NAME = 'XSRF-TOKEN'
+CSRF_HEADER_NAME = 'HTTP_X_XSRF_TOKEN'
+CORS_ORIGIN_ALLOW_ALL = DEBUG
