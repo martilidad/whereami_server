@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {User} from "./user";
 import {catchError} from "rxjs";
-import {HandleError, HttpErrorHandler} from "./http-error-handler.service";
+import {HandleError, HttpErrorHandler} from "../../http-error-handler.service";
 
 export class TokenResponse {
   token: string;
