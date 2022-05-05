@@ -2,9 +2,7 @@ import {Injectable} from '@angular/core';
 import {HandleError, HttpErrorHandler} from "../../http-error-handler.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Challenge} from "./challenge";
-import {catchError, map, Observable} from "rxjs";
-import {Game} from "../game/game";
-import {Games} from "../game/games.service";
+import {catchError, Observable} from "rxjs";
 import {UserService} from "../user/user.service";
 
 

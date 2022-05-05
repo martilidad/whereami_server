@@ -1,5 +1,11 @@
 import {Component, Inject, Input, OnDestroy, OnInit} from '@angular/core';
 import {GoogleMap} from "@angular/google-maps";
+import {NonNullAssert} from "@angular/compiler";
+
+export interface DrawingEvents extends google.maps.drawing.OverlayCompleteEvent {
+  area: number;
+}
+
 
 @Component({
   selector: 'drawing-manager',
@@ -37,13 +43,13 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
 
   @Input()
   set hidden(hidden: boolean) {
-    if(hidden) {
+    if (hidden) {
       this.drawingManager.setMap(null);
       this.events.forEach(e => e.overlay.setMap(null));
     } else {
-      if(this.parent.googleMap instanceof google.maps.Map) {
+      if (this.parent.googleMap instanceof google.maps.Map) {
         this.drawingManager.setMap(this.parent.googleMap);
-        this.events.forEach(e => e.overlay.setMap(<google.maps.Map> this.parent.googleMap));
+        this.events.forEach(e => e.overlay.setMap(<google.maps.Map>this.parent.googleMap));
       }
     }
   }
@@ -55,6 +61,17 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.drawingManager.setMap(this.parent.googleMap);
     google.maps.event.addListener(this.drawingManager, 'overlaycomplete', this.overlayCompleteHandler)
+    // @ts-ignore
+    if (!google.maps.Polygon.prototype.getBounds) {
+      // @ts-ignore
+      google.maps.Polygon.prototype.getBounds = function () {
+        var bounds = new google.maps.LatLngBounds();
+        this.getPath().forEach(function (element, index) {
+          bounds.extend(element);
+        });
+        return bounds;
+      }
+    }
   }
 
   public clear() {
@@ -65,22 +82,23 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
 
   //TODO fix event typing
   //if you declare it regularly it is not an instance function! -_-
-  private overlayCompleteHandler: Function = (event: any) => {
+  private overlayCompleteHandler: Function = (event: google.maps.drawing.OverlayCompleteEvent) => {
     if (event.type === 'circle' || event.type === 'rectangle' || event.type === 'polygon') { // rectangle polygon circle
+      let drawEvent = <DrawingEvents>event;
       this.changed = true;
-      event.area = DrawingManagerComponent.calculateEventArea(event)
-      this.events.push(event);
+      drawEvent.area = DrawingManagerComponent.calculateEventArea(drawEvent)
+      this.events.push(drawEvent);
     }
   }
 
-  private static calculateEventArea(event: any): number {
-    switch (event.type) {
-      case 'circle':
-        return (event.overlay.getRadius() ** 2) * Math.PI;
-      case 'polygon':
-        return google.maps.geometry.spherical.computeArea(event.overlay.getPath());
-      case 'rectangle':
-        let bounds = event.overlay.getBounds();
+  private static calculateEventArea(event: DrawingEvents): number {
+    switch (event.overlay!.constructor) {
+      case google.maps.Circle:
+        return ((<google.maps.Circle>event.overlay).getRadius() ** 2) * Math.PI;
+      case google.maps.Polygon:
+        return google.maps.geometry.spherical.computeArea(((<google.maps.Polygon>event.overlay).getPath()));
+      case google.maps.Rectangle:
+        let bounds = (<google.maps.Rectangle>event.overlay).getBounds()!;
         let southWest = bounds.getSouthWest();
         let northEast = bounds.getNorthEast();
         let lngDist = DrawingManagerComponent.calcCrow(southWest, new google.maps.LatLng(southWest.lat(), northEast.lng()));
@@ -93,7 +111,7 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
 
 
   public randomPoint = () => {
-    if(this.events.length == 0) {
+    if (this.events.length == 0) {
       throw new Error("no events");
     }
     let areaSum = this.events.map(event => event.area).reduce((a, b) => a + b);
@@ -111,28 +129,45 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
     return DrawingManagerComponent.pointFromEvent(this.events[this.events.length - 1]);
   }
 
-  private static pointFromEvent(event: any) {
-    switch (event.type) {
-      case 'circle':
-      case 'polygon':
+  private static pointFromEvent(event: DrawingEvents) {
+    switch (event.overlay!.constructor) {
+      case google.maps.Circle:
+      case google.maps.Polygon:
+        let overlay = <google.maps.Polygon | google.maps.Circle>event.overlay;
         //this will only trigger client side stuff, let's just find a point
         for (let i = 0; i < 100; i++) {
-          let point = DrawingManagerComponent.randomPointFromBounds(event.overlay.getBounds());
+          let point = DrawingManagerComponent.randomPointFromBounds(this.getBounds(overlay));
           if (DrawingManagerComponent.eventContains(event, point)) {
             return point;
           }
         }
         console.log("could not find a point for crazy shape, using random point within bounds.");
-        return DrawingManagerComponent.randomPointFromBounds(event.overlay.getBounds());
-      case 'rectangle':
-        return DrawingManagerComponent.randomPointFromBounds(event.overlay.getBounds());
+        return DrawingManagerComponent.randomPointFromBounds(this.getBounds(overlay));
+      case google.maps.Rectangle:
+        return DrawingManagerComponent.randomPointFromBounds((<google.maps.Rectangle>event.overlay).getBounds()!);
       default:
-        throw new Error("unkown event, aborting map creation");
+        throw new Error("unknown event, aborting map creation");
+    }
+  }
+
+  private static getBounds(element: google.maps.Circle | google.maps.Polygon): google.maps.LatLngBounds {
+    if (element instanceof google.maps.Polygon) {
+      let bounds = new google.maps.LatLngBounds();
+      element.getPath().forEach((element) => bounds.extend(element));
+      return bounds;
+    } else {
+      return element.getBounds()!;
     }
   }
 
 
-  private static randomPointFromBounds(bounds: google.maps.LatLngBounds): google.maps.LatLng {
+  private static
+
+  randomPointFromBounds(bounds
+                          :
+                          google.maps.LatLngBounds
+  ):
+    google.maps.LatLng {
     let southWest = bounds.getSouthWest();
     let northEast = bounds.getNorthEast();
     let lngSpan = northEast.lng() - southWest.lng();
@@ -148,7 +183,14 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
    * @param latLng
    * @private
    */
-  private static eventContains(event: any, latLng: google.maps.LatLng) {
+  private static
+
+  eventContains(event
+                  :
+                  any, latLng
+                  :
+                  google.maps.LatLng
+  ) {
     switch (event.type) {
       case 'polygon':
         return google.maps.geometry.poly.containsLocation(latLng, event.overlay);
