@@ -1,9 +1,10 @@
 import {Game} from "./game";
+import {Moment} from 'moment';
 
 export interface Challenge {
   id: number,
   // todo proper date object
-  pub_date: Date,
+  pub_date: Moment,
   location_count: number,
   time: number,
   name: string,

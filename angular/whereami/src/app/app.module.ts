@@ -14,6 +14,9 @@ import {MessageService} from "./message.service";
 import {FormsModule} from "@angular/forms";
 import {ApiInterceptor} from "./api-interceptor";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {DataTablesModule} from 'angular-datatables';
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,7 +31,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     AppRoutingModule,
     RouterModule,
     FormsModule,
-    NgbModule
+    NgbModule,
+    DataTablesModule
   ],
   providers: [
     HttpErrorHandler,

@@ -3,7 +3,7 @@
   <div class="card-body">
     <h5 class="card-title">Challenges.</h5>
     <h6 class="card-subtitle text-muted">Please click on the challenge you would like to start.</h6>
-    <table class="table table-striped table-bordered" id="challenges">
+    <table class="table table-striped table-bordered" id="challenges" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
       <thead>
       <tr>
         <th scope="col">Created on</th>
@@ -16,7 +16,7 @@
       </thead>
       <tbody>
       <tr *ngFor="let challenge of challenges">
-        <td>{{ challenge.pub_date | date:"c" }}</td>
+        <td>{{ challenge.pub_date }}</td>
         <td>{{ challenge.game.name }}</td>
         <td>{{ challenge.location_count }}</td>
         <td>{{ challenge.time }}</td>
