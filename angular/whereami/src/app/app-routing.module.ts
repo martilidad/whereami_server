@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import {IndexComponent} from "./views/index/index.component";
 import {NotFoundComponent} from "./views/not-found/not-found.component";
 import {CreateGameComponent} from "./views/create-game/create-game.component";
+import {StartChallengeComponent} from "./views/start-challenge/start-challenge.component";
 
 const routes: Routes = [
   {
@@ -14,6 +15,10 @@ const routes: Routes = [
   {
     path:"createGame",
     component: CreateGameComponent,
+  },
+  {
+    path:"startChallenge",
+    component: StartChallengeComponent,
   },
   {
     path:"**",
