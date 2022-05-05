@@ -4,6 +4,7 @@ import {catchError, map, Observable} from "rxjs";
 import {Game} from "./game";
 import {HandleError, HttpErrorHandler} from "../../http-error-handler.service";
 import {UserService} from "../user/user.service";
+import {CreateGame} from "./create-game";
 
 export interface Games {
   games: Game[]
@@ -13,8 +14,10 @@ export interface Games {
   providedIn: 'root'
 })
 export class GamesService {
-  gamesUrl = "/games/"
-  private handleError: HandleError;
+  static gamesUrl = "/games/"
+  static postUrl = "/game"
+
+  private readonly handleError: HandleError;
 
   constructor(private http: HttpClient,
               private userService: UserService,
@@ -23,14 +26,22 @@ export class GamesService {
   }
 
   getGames(): Observable<Game[]> {
-    return this.http.get<Game[]>(this.gamesUrl,{
+    return this.http.get<Game[]>(GamesService.gamesUrl,{
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': 'JWT ' + this.userService.token
       })})
       .pipe(
         catchError(this.handleError('getGames', []))
-      );
+      )
+  }
+
+  createGame(game: CreateGame): Observable<void> {
+    return this.http.post<void>(GamesService.postUrl,game,{
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': 'JWT ' + this.userService.token
+      })})
   }
 
 }

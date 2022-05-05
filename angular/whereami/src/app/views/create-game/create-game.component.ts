@@ -7,6 +7,8 @@ import {DrawingManagerComponent} from "../../embedabble/drawing-manager/drawing-
 import {HandPickedComponent} from "../../embedabble/hand-picked/hand-picked.component";
 import {StreetViewPlaceService} from "../../service/street-view-place/street-view-place.service";
 import {CreateDrawnGame} from "./create-drawn-game";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {GamesService} from "../../service/game/games.service";
 
 @Component({
   selector: 'app-create-game',
@@ -41,7 +43,8 @@ export class CreateGameComponent extends AbstractGoogleMapsComponent {
     mapTypeId: 'roadmap'
   };
 
-  constructor(httpClient: HttpClient, httpErrorHandler: HttpErrorHandler, private placeService: StreetViewPlaceService) {
+  constructor(httpClient: HttpClient, httpErrorHandler: HttpErrorHandler, private placeService: StreetViewPlaceService,
+              public modalService: NgbModal, private gamesService: GamesService) {
     super(httpClient, httpErrorHandler.createHandleError('CreateGameComponent'));
   }
 
@@ -61,13 +64,16 @@ export class CreateGameComponent extends AbstractGoogleMapsComponent {
     }
   }
 
-  public createGame() {
-    if(this.drawingManager) {
-      let dm = this.drawingManager;
-      let places = this.placeService.getPlaces(() => dm.randomPoint(), message => this.drawingStatusText = message,
-        this.drawnGameModel.quantity, this.drawnGameModel.minDist, this.drawnGameModel.allowPhotoSpheres);
-      places.then(value => console.log(value));
-    }
+  public createGameFromDrawings() {
+    //TODO report errors?
+      this.placeService.getPlaces(() => this.drawingManager!.randomPoint(), message => this.drawingStatusText = message,
+        this.drawnGameModel.quantity, this.drawnGameModel.minDist, this.drawnGameModel.allowPhotoSpheres)
+        .then(places => this.gamesService.createGame({Name: this.drawnGameModel.name, Locations: places})
+          .subscribe(value => {
+            this.drawingManager?.clear()
+            this.drawingStatusText = "Success"
+          }, error => this.drawingStatusText = error.statusText))
+        .catch(reason => this.drawingStatusText = reason)
   }
 
 

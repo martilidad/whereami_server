@@ -29,11 +29,12 @@
               <label for="allowPhotoSpheres" class="form-check-label">Allow Photospheres(Not Recommended)</label>
             </div>
             <div class="form-group">
+              <div [innerText]="drawingStatusText"></div>
               <button type="button" (click)="clearDrawings()" class="btn btn-warning">Clear Drawings</button>
             </div>
             <div [innerText]="handPickedStatusText"></div>
-            <button type="button" (click)="createGame()" class="btn btn-primary">Create</button>
-            <button type="button" onclick="cancelCreation()" class="btn btn-danger">Cancel</button>
+            <button type="button" (click)="createGameFromDrawings()" class="btn btn-primary">Create</button>
+            <button type="button" (click)="modalService.open(cancelModal)" class="btn btn-danger">Cancel</button>
           </form>
           <form onsubmit="submit()" id="handpickedForm" *ngIf="handPicked">
             <div class="form-group">
@@ -45,7 +46,7 @@
             </div>
             <div [innerText]="handPickedStatusText"></div>
             <button type="button" onclick="createHandpickedGame()" class="btn btn-primary">Create</button>
-            <button type="button" onclick="cancelCreation()" class="btn btn-danger">Cancel</button>
+            <button type="button" (click)="modalService.open(cancelModal)" class="btn btn-danger">Cancel</button>
           </form>
         </div>
       </div>
@@ -59,3 +60,19 @@
     </div>
   </div>
 </div>
+<!-- Cancel-Confirmation-Modal -->
+<ng-template let-modal #cancelModal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="modalLabel">Return to Main Menu</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    There are unsaved changes. Are you sure you want to return to the main menu?
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close('Clicked Button')">No, stay at create-page.</button>
+    <a href="/" class="btn btn-danger">Yes, I am sure.</a>
+  </div>
+</ng-template>
