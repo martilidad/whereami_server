@@ -49,7 +49,7 @@ export class HandPickedComponent {
       if (hidden) {
         google.maps.event.clearListeners(this.parent.googleMap, 'click');
       } else {
-        this.parent.googleMap.addListener("click", (event: any) => {
+        this.parent.googleMap.addListener("click", (event: google.maps.MapMouseEvent | google.maps.IconMouseEvent) => {
           this.changed = true;
           const radius = 50000 / Math.pow(1.6, <number>this.parent.getZoom());
           this.streetViewService.getPanorama({location: event.latLng, radius: radius}, this.processPano);
@@ -76,27 +76,46 @@ export class HandPickedComponent {
       });
       this.markers.push(marker);
       this.activateMarker(marker);
-      marker.addListener("click", this.activateMarker);
-      marker.addListener("dragstart", this.onDragStart)
-      marker.addListener("dragend", this.onDragEnd);
+      marker.addListener("click", () => this.activateMarker(marker));
+      marker.addListener("dragstart", () => this.onDragStart(marker))
+      marker.addListener("dragend", () => this.onDragEnd(marker));
     } else {
       this.statusText = "no Street view for this area";
     }
   }
 
-  activateMarker(marker: any) {
+  //not static because it needs Maps api import!
+  private readonly inactiveMarkerIcon = {
+    url: INCACTIVE_MARKER_URL,
+    scaledSize: new google.maps.Size(27, 43)
+  };
+
+  private readonly activeMarkerIcon = {
+    path: "M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
+    fillColor: "blue",
+    fillOpacity: 0.6,
+    strokeWeight: 0,
+    rotation: 0,
+    scale: 2,
+    anchor: new google.maps.Point(15, 30),
+  };
+
+
+  activateMarker(marker: google.maps.Marker) {
     if (this.activeMarker != null) {
-      this.activeMarker.setIcon({
-        url: INCACTIVE_MARKER_URL,
-        scaledSize: new google.maps.Size(27, 43)
-      });
+      this.activeMarker.setIcon(this.inactiveMarkerIcon);
     }
-    marker.setIcon(null);
+    if(marker.setIcon) {
+      marker.setIcon(this.activeMarkerIcon);
+    }
     this.activeMarker = marker;
     if (this.pano) {
       google.maps.event.clearListeners(this.pano, "position_changed");
       this.pano = new google.maps.StreetViewPanorama(document.getElementById("pano") as HTMLElement);
-      this.pano.setPosition(marker.getPosition());
+      let position;
+      if(marker.getPosition && (position = marker.getPosition())) {
+        this.pano.setPosition(position);
+      }
       this.pano.addListener("position_changed", () => {
         if (this.pano) {
           marker.setPosition(this.pano.getPosition());
@@ -105,15 +124,15 @@ export class HandPickedComponent {
     }
   }
 
-  private onDragStart: Function = (marker: any) => {
+  private onDragStart(marker: google.maps.Marker) {
     this.activateMarker(marker);
     this.dragStartPos = marker.getPosition();
   }
 
-  private onDragEnd = (marker: any) => {
+  private onDragEnd(marker: google.maps.Marker) {
     const radius = 50000 / Math.pow(1.4, <number>this.parent.getZoom());
     this.streetViewService.getPanorama({
-      location: new google.maps.LatLng(marker.latLng.lat(), marker.latLng.lng()),
+      location: marker.getPosition(),
       radius: radius
     }, this.onPanoRetrieved);
   }

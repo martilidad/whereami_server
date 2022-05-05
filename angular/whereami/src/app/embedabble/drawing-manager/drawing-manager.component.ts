@@ -93,6 +93,9 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
 
 
   public randomPoint = () => {
+    if(this.events.length == 0) {
+      throw new Error("no events");
+    }
     let areaSum = this.events.map(event => event.area).reduce((a, b) => a + b);
     if (areaSum == Number.MAX_VALUE || areaSum == Infinity) {
       throw new Error("areaSum overflow");

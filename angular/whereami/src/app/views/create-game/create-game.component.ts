@@ -5,6 +5,8 @@ import {HttpErrorHandler} from "../../http-error-handler.service";
 import {GoogleMap} from "@angular/google-maps";
 import {DrawingManagerComponent} from "../../embedabble/drawing-manager/drawing-manager.component";
 import {HandPickedComponent} from "../../embedabble/hand-picked/hand-picked.component";
+import {StreetViewPlaceService} from "../../service/street-view-place/street-view-place.service";
+import {CreateDrawnGame} from "./create-drawn-game";
 
 @Component({
   selector: 'app-create-game',
@@ -23,6 +25,8 @@ export class CreateGameComponent extends AbstractGoogleMapsComponent {
 
   public handPicked: boolean = false;
   public handPickedStatusText: string = "";
+  public drawingStatusText: string = "";
+  drawnGameModel = new CreateDrawnGame(50, 10, "", false);
 
   @ViewChild('drawingManager')
   public drawingManager: DrawingManagerComponent | undefined;
@@ -37,7 +41,7 @@ export class CreateGameComponent extends AbstractGoogleMapsComponent {
     mapTypeId: 'roadmap'
   };
 
-  constructor(httpClient: HttpClient, httpErrorHandler: HttpErrorHandler) {
+  constructor(httpClient: HttpClient, httpErrorHandler: HttpErrorHandler, private placeService: StreetViewPlaceService) {
     super(httpClient, httpErrorHandler.createHandleError('CreateGameComponent'));
   }
 
@@ -54,6 +58,15 @@ export class CreateGameComponent extends AbstractGoogleMapsComponent {
   public clearDrawings() {
     if(this.drawingManager) {
       this.drawingManager.clear();
+    }
+  }
+
+  public createGame() {
+    if(this.drawingManager) {
+      let dm = this.drawingManager;
+      let places = this.placeService.getPlaces(() => dm.randomPoint(), message => this.drawingStatusText = message,
+        this.drawnGameModel.quantity, this.drawnGameModel.minDist, this.drawnGameModel.allowPhotoSpheres);
+      places.then(value => console.log(value));
     }
   }
 
