@@ -1,0 +1,10 @@
+
+
+#createGamePano {
+  width: 100%;
+  height: 30%;
+  position: absolute;
+  left: 0px;
+  bottom: 38px;
+  z-index: 1000;
+}
