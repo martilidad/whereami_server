@@ -19,12 +19,29 @@ from whereami.models import ChallengeLocation, Guess, Challenge, Game, Location
 # Create your views here.
 
 
-@login_required
-def index(request):
-    challenges = Challenge.objects.annotate(Count('challengelocation'))
-    games = Game.objects.annotate(Count('locations'))
-    context = {'challenges': challenges, 'games': games}
-    return render(request, "index.html", context)
+# TODO login functionality in angular
+# @login_required
+def challenges(request):
+    challenge_entities = Challenge.objects.annotate(Count('challengelocation'))
+    # TODO proper DTOs?
+    return JsonResponse({'challenges':
+                             [{'id': c.id,
+                               'pub_date': c.pub_date,
+                               'location_count': c.challengelocation__count,
+                               'time': c.time,
+                               'game':
+                                   {'name': c.game.name}
+                               } for c in challenge_entities]})
+
+# TODO login functionality in angular
+# @login_required
+def games(request):
+    game_entities = Game.objects.annotate(Count('locations'))
+    return JsonResponse({'games':
+                             [{'id': g.id,
+                               'name': g.name,
+                               'location_count': g.locations__count
+                               } for g in game_entities]})
 
 
 @login_required
