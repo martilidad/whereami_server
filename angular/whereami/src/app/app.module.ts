@@ -8,9 +8,11 @@ import { IndexComponent } from './index/index.component';
 import { TestComponent } from './test/test.component';
 
 import { RouterModule } from "@angular/router";
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule} from "@angular/common/http";
 import {HttpErrorHandler} from "./http-error-handler.service";
 import {MessageService} from "./message.service";
+import {FormsModule} from "@angular/forms";
+import {ApiInterceptor} from "./api-interceptor";
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,12 +23,19 @@ import {MessageService} from "./message.service";
   imports: [
     BrowserModule,
     HttpClientModule,
+    HttpClientXsrfModule,
     AppRoutingModule,
-    RouterModule
+    RouterModule,
+    FormsModule
   ],
   providers: [
     HttpErrorHandler,
-    MessageService
+    MessageService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ApiInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

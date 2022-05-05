@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {catchError, map, Observable} from "rxjs";
 import {Game} from "./game";
 import {HandleError, HttpErrorHandler} from "./http-error-handler.service";
+import {UserService} from "./user.service";
 
 export interface Games {
   games: Game[]
@@ -12,21 +13,23 @@ export interface Games {
   providedIn: 'root'
 })
 export class GamesService {
-  gamesUrl = "/games"
+  gamesUrl = "/games/"
   private handleError: HandleError;
 
   constructor(private http: HttpClient,
+              private userService: UserService,
               httpErrorHandler: HttpErrorHandler) {
     this.handleError = httpErrorHandler.createHandleError('HeroesService');
   }
 
   getGames(): Observable<Game[]> {
-    return this.http.get<Games>(this.gamesUrl)
+    return this.http.get<Game[]>(this.gamesUrl,{
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': 'JWT ' + this.userService.token
+      })})
       .pipe(
         catchError(this.handleError('getGames', []))
-      ).pipe(
-        //TODO change games to class and use instanceof/typeof?
-        map(game => "games" in game ? game.games : [])
       );
   }
 
