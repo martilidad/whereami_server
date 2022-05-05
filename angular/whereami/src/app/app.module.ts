@@ -2,17 +2,16 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { NotFoundComponent } from './not-found/not-found.component';
-import { IndexComponent } from './index/index.component';
-import { TestComponent } from './test/test.component';
+import { AppComponent } from './views/app/app.component';
+import { NotFoundComponent } from './views/not-found/not-found.component';
+import { IndexComponent } from './views/index/index.component';
 
 import { RouterModule } from "@angular/router";
 import {HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule} from "@angular/common/http";
 import {HttpErrorHandler} from "./http-error-handler.service";
-import {MessageService} from "./message.service";
+import {MessageService} from "./service/message.service";
 import {FormsModule} from "@angular/forms";
-import {ApiInterceptor} from "./api-interceptor";
+import {ApiInterceptor} from "./service/api-interceptor";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {DataTablesModule} from 'angular-datatables';
 
@@ -21,8 +20,7 @@ import {DataTablesModule} from 'angular-datatables';
   declarations: [
     AppComponent,
     NotFoundComponent,
-    IndexComponent,
-    TestComponent
+    IndexComponent
   ],
   imports: [
     BrowserModule,

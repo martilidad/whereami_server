@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {ChallengesService} from "../challenges.service";
-import {GamesService} from "../games.service";
-import {Game} from "../game";
-import {Challenge} from "../challenge";
+import {ChallengesService} from "../../service/challenge/challenges.service";
+import {GamesService} from "../../service/game/games.service";
+import {Game} from "../../service/game/game";
+import {Challenge} from "../../service/challenge/challenge";
 import {Subject} from "rxjs";
 import * as moment from 'moment';
 import {DataTableDirective} from "angular-datatables";
