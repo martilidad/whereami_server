@@ -13,6 +13,7 @@ import {HttpErrorHandler} from "./http-error-handler.service";
 import {MessageService} from "./message.service";
 import {FormsModule} from "@angular/forms";
 import {ApiInterceptor} from "./api-interceptor";
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,7 +27,8 @@ import {ApiInterceptor} from "./api-interceptor";
     HttpClientXsrfModule,
     AppRoutingModule,
     RouterModule,
-    FormsModule
+    FormsModule,
+    NgbModule
   ],
   providers: [
     HttpErrorHandler,
