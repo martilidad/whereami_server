@@ -6,10 +6,10 @@
           <h4 class="card-body">Create a new game: </h4>
           <div class="form-group">
             <span>Creation-Mode</span>
-            <button id="areaButton" type="button" onclick="toggleMode(false)" class="btn btn-primary">Area</button>
-            <button id="handPickedButton" type="button" onclick="toggleMode(true)" class="btn btn-secondary">Handpicked</button>
+            <button id="areaButton" type="button" (click)="handPicked = false" class="btn btn-primary">Area</button>
+            <button id="handPickedButton" type="button" (click)="handPicked = true" class="btn btn-secondary">Handpicked</button>
           </div>
-          <form onsubmit="submit()" id="areaForm">
+          <form onsubmit="submit()" id="areaForm" *ngIf="!handPicked">
             <div class="form-group">
               <label for="quantity">Numer of locations.
                 (please check Streetview availability)</label>
@@ -28,13 +28,13 @@
               <label for="allowPhotoSpheres" class="form-check-label">Allow Photospheres(Not Recommended)</label>
             </div>
             <div class="form-group">
-              <button type="button" onclick="clearDrawings()" class="btn btn-warning">Clear Drawings</button>
+              <button type="button" (click)="clearDrawings()" class="btn btn-warning">Clear Drawings</button>
             </div>
             <div id="loadingText"></div>
             <button type="button" onclick="createGame()" class="btn btn-primary">Create</button>
             <button type="button" onclick="cancelCreation()" class="btn btn-danger">Cancel</button>
           </form>
-          <form onsubmit="submit()" id="handpickedForm" style="display: none">
+          <form onsubmit="submit()" id="handpickedForm" *ngIf="handPicked">
             <div class="form-group">
               <label for="handpickedName">Game name (e.g. Spain)</label>
               <input class="form-control" type="text" id="handpickedName" name="handpickedName" required>
@@ -42,23 +42,17 @@
             <div class="form-group">
               <span>Number of Locations: </span><span id="locationCount">0</span>
             </div>
-            <div id="infoText"></div>
+            <div id="infoText" [innerText]="handPickedStatusText"></div>
             <button type="button" onclick="createHandpickedGame()" class="btn btn-primary">Create</button>
             <button type="button" onclick="cancelCreation()" class="btn btn-danger">Cancel</button>
           </form>
         </div>
       </div>
-<!--      <div *ngIf="apiLoaded | async" id="createGamePano">-->
-<!--&lt;!&ndash;        <div id="pano"></div>&ndash;&gt;-->
-<!--&lt;!&ndash;        <div style="background-color: gray; margin: 0px;" class="row">&ndash;&gt;-->
-<!--&lt;!&ndash;          <button type="button" onclick="focusMarker()" class="btn btn-warning col-6">Focus</button>&ndash;&gt;-->
-<!--&lt;!&ndash;          <button type="button" onclick="deleteMarker()" class="btn btn-danger col-6">Delete</button>&ndash;&gt;-->
-<!--&lt;!&ndash;        </div>&ndash;&gt;-->
-<!--      </div>-->
     </div>
     <div class="col-9">
       <google-map *ngIf="apiLoaded | async" [options]="mapOptions" #map id="createGameMap" width="99%" height="90%">
-        <drawing-manager></drawing-manager>
+        <hand-picked #handPickedManager [class.is-hidden]="!handPicked" [hidden]="!handPicked"></hand-picked>
+        <drawing-manager #drawingManager [hidden]="handPicked"></drawing-manager>
         <coverage-toggle></coverage-toggle>
       </google-map>
     </div>

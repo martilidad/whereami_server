@@ -21,6 +21,7 @@ urlpatterns = [
     path('game', views.game, name='game'),
     path('scores', views.scores, name='scores'),
     path('invite', views.invite, name='invite'),
+    path('invite', views.invite, name='invite'),
     path(r'api-token-auth/', obtain_jwt_token),
     path(r'api-token-refresh/', refresh_jwt_token)
     # url(r'.*', RedirectView.as_view(url='/static/ng/index.html'))

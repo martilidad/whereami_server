@@ -8,7 +8,7 @@ export class AbstractGoogleMapsComponent {
   apiLoaded: Observable<boolean>;
 
   constructor(httpClient: HttpClient, private handleError: HandleError) {
-    this.apiLoaded = httpClient.jsonp('https://maps.googleapis.com/maps/api/js?key=TODO&libraries=geometry,drawing', 'callback')
+    this.apiLoaded = httpClient.jsonp('https://maps.googleapis.com/maps/api/js?key=AIzaSyBoAJs0qM3UgiFEjvy5Ftcq7bZqijKw0YM&libraries=geometry,drawing', 'callback')
       .pipe(
         map(() => true),
         catchError(this.handleError('getApi', false)),
