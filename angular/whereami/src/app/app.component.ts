@@ -12,9 +12,13 @@ export class AppComponent {
   /**
    * An object representing the user for the login form
    */
-  public user: User = new User('', '');
+  public user: User = new User('user', 'changeme');
 
   constructor(public userService: UserService) {
+  }
+
+  ngOnInit() {
+    this.login();
   }
 
   login() {
