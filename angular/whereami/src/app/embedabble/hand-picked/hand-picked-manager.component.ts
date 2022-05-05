@@ -14,14 +14,14 @@ import {GoogleMap} from "@angular/google-maps";
 const INCACTIVE_MARKER_URL = "/static/ng/assets/marker.png";
 
 @Component({
-  selector: 'hand-picked',
-  templateUrl: './hand-picked.component.html',
-  styleUrls: ['./hand-picked.component.css']
+  selector: 'hand-picked-manager',
+  templateUrl: './hand-picked-manager.component.html',
+  styleUrls: ['./hand-picked-manager.component.css']
 })
-export class HandPickedComponent {
+export class HandPickedManagerComponent {
 
-  private markers: any[] = [];
-  private activeMarker: any;
+  private _markers: google.maps.Marker[] = []
+  private activeMarker!: google.maps.Marker | null
   private dragStartPos: any;
   private streetViewService: google.maps.StreetViewService = new google.maps.StreetViewService();
   private pano: google.maps.StreetViewPanorama | undefined;
@@ -74,7 +74,7 @@ export class HandPickedComponent {
         title: location.description,
         draggable: true,
       });
-      this.markers.push(marker);
+      this._markers.push(marker);
       this.activateMarker(marker);
       marker.addListener("click", () => this.activateMarker(marker));
       marker.addListener("dragstart", () => this.onDragStart(marker))
@@ -141,17 +141,17 @@ export class HandPickedComponent {
     this.statusText = "";
     if (status === "OK") {
       const pos = data.location.latLng;
-      this.activeMarker.setPosition(pos);
+      this.activeMarker!.setPosition(pos);
       this.updatePano(pos);
     } else {
-      this.activeMarker.setPosition(this.dragStartPos);
+      this.activeMarker!.setPosition(this.dragStartPos);
       this.statusText = "no street view found for dragged area";
     }
   }
 
   public focusMarker() {
     if (this.activeMarker != null) {
-      this.parent.panTo(this.activeMarker.getPosition());
+      this.parent.panTo(this.activeMarker!.getPosition()!);
       this.parent.zoom = 12;
     }
   }
@@ -159,9 +159,9 @@ export class HandPickedComponent {
   public deleteMarker() {
     if (this.activeMarker != null) {
       this.activeMarker.setMap(null);
-      const index = this.markers.indexOf(this.activeMarker);
+      const index = this._markers.indexOf(this.activeMarker);
       if (index > -1) {
-        this.markers.splice(index, 1);
+        this._markers.splice(index, 1);
       }
       this.activeMarker = null;
       this.hidden = true;
@@ -169,4 +169,7 @@ export class HandPickedComponent {
   }
 
 
+  get markers(): google.maps.Marker[] {
+    return this._markers;
+  }
 }

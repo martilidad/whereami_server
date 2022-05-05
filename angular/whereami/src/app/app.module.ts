@@ -18,7 +18,9 @@ import { CreateGameComponent } from './views/create-game/create-game.component';
 import {GoogleMapsModule} from "@angular/google-maps";
 import { CoverageToggleComponent } from './embedabble/coverage-toggle/coverage-toggle.component';
 import { DrawingManagerComponent } from './embedabble/drawing-manager/drawing-manager.component';
-import { HandPickedComponent } from './embedabble/hand-picked/hand-picked.component';
+import { HandPickedManagerComponent } from './embedabble/hand-picked/hand-picked-manager.component';
+import {DrawnGameFormComponent} from "./views/create-game/drawn-game-form/drawn-game-form.component";
+import { HandpickedGameFormComponent } from './views/create-game/handpicked-game-form/handpicked-game-form.component';
 
 
 @NgModule({
@@ -29,7 +31,9 @@ import { HandPickedComponent } from './embedabble/hand-picked/hand-picked.compon
     CreateGameComponent,
     CoverageToggleComponent,
     DrawingManagerComponent,
-    HandPickedComponent
+    HandPickedManagerComponent,
+    DrawnGameFormComponent,
+    HandpickedGameFormComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,27 @@
+<form (submit)="submit()" id="areaForm">
+  <div class="form-group">
+    <label for="quantity">Numer of locations.
+      (please check Streetview availability)</label>
+    <input class="form-control" type="number" id="quantity" name="quantity" min="1" value="50" [(ngModel)]="model.quantity">
+  </div>
+  <div class="form-group">
+    <label for="minDist">Minimum distance between locations in km.</label>
+    <input class="form-control" type="number" id="minDist" name="minDist" min="1" value="10" [(ngModel)]="model.minDist">
+  </div>
+  <div class="form-group">
+    <label for="name">Game name (e.g. Spain)</label>
+    <input class="form-control" type="text" id="name" name="name" required [(ngModel)]="model.name">
+  </div>
+  <div class="form-check">
+    <input class="form-check-input border-primary" type="checkbox" id="allowPhotoSpheres"
+           name="allowPhotoSpheres" [(ngModel)]="model.allowPhotoSpheres">
+    <label for="allowPhotoSpheres" class="form-check-label">Allow Photospheres(Not Recommended)</label>
+  </div>
+
+  <div class="form-group">
+    <div [innerText]="drawingStatusText"></div>
+    <button type="button" (click)="clearDrawings()" class="btn btn-warning">Clear Drawings</button>
+  </div>
+  <button type="button" (click)="submit()" class="btn btn-primary">Create</button>
+  <button type="button" (click)="cancelAction()" class="btn btn-danger">Cancel</button>
+</form>
