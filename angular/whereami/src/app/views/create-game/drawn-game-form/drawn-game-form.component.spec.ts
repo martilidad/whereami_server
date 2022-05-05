@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HandPickedComponent } from './hand-picked.component';
+import { DrawnGameFormComponent } from './drawn-game-form.component';
 
-describe('HandPickedComponent', () => {
-  let component: HandPickedComponent;
-  let fixture: ComponentFixture<HandPickedComponent>;
+describe('CreateDrawnGameComponent', () => {
+  let component: DrawnGameFormComponent;
+  let fixture: ComponentFixture<DrawnGameFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HandPickedComponent ]
+      declarations: [ DrawnGameFormComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HandPickedComponent);
+    fixture = TestBed.createComponent(DrawnGameFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

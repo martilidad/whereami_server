@@ -1,0 +1,12 @@
+<form onsubmit="submit()" id="handpickedForm">
+  <div class="form-group">
+    <label for="name">Game name (e.g. Spain)</label>
+    <input class="form-control" type="text" id="name" name="name" required [(ngModel)]="model.name">
+  </div>
+  <div class="form-group">
+    <span>Number of Locations: </span><span id="locationCount">0</span>
+  </div>
+  <div [innerText]="statusText"></div>
+  <button type="button" (click)="submit()" class="btn btn-primary">Create</button>
+  <button type="button" (click)="cancelAction()" class="btn btn-danger">Cancel</button>
+</form>
