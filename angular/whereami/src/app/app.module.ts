@@ -21,6 +21,7 @@ import { DrawingManagerComponent } from './embedabble/drawing-manager/drawing-ma
 import { HandPickedManagerComponent } from './embedabble/hand-picked/hand-picked-manager.component';
 import {DrawnGameFormComponent} from "./views/create-game/drawn-game-form/drawn-game-form.component";
 import { HandpickedGameFormComponent } from './views/create-game/handpicked-game-form/handpicked-game-form.component';
+import { StartChallengeComponent } from './views/start-challenge/start-challenge.component';
 
 
 @NgModule({
@@ -33,7 +34,8 @@ import { HandpickedGameFormComponent } from './views/create-game/handpicked-game
     DrawingManagerComponent,
     HandPickedManagerComponent,
     DrawnGameFormComponent,
-    HandpickedGameFormComponent
+    HandpickedGameFormComponent,
+    StartChallengeComponent
   ],
   imports: [
     BrowserModule,
