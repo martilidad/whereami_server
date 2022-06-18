@@ -104,7 +104,46 @@ $(document).ready(function () {
       }
     });
 
+    var importInput = $('#importFileInput');
+    importInput.on('change', handleImportFile);
+
 });
+
+function handleImportFile() {
+    $('#infoText').text("");
+    files = $('#importFileInput').prop('files');
+    if (files.length === 0) {
+        console.log("no files selected");
+    } else {
+        for (file of files) {
+            var reader = new FileReader();
+            reader.readAsText(file, "UTF-8")
+            reader.onload = function (evt) {
+                try {
+                    var fileContent = evt.target.result;
+                    var obj = JSON.parse(fileContent);
+                    var map_name = $('#handpickedName');
+                    if (map_name.val().trim() == "") {
+                        map_name.val(obj.map_name);
+                    }
+                    var locations = obj.locations;
+                    for (loc_id in locations) {
+                        var location = locations[loc_id]
+                        const radius = 50000/Math.pow(1.6, map.getZoom());
+                        webService.getPanorama({ location: location, radius:radius }, processPano);
+                    }
+                } catch (e) {
+                    $('#infoText').text("Error reading file: json syntax invalid");
+                    console.log(e)
+                }
+            }
+            reader.onerror = function (evt) {
+                console.log("error reading file");
+                $('#infoText').text("Error reading file");
+            }
+        }
+    }
+}
 
 function eventContains(event, latLng) {
     switch (event.type) {
@@ -346,9 +385,10 @@ function startDrag() {
 function moveMarker(data, status) {
     $('#infoText').text("");
     if (status === "OK") {
-        const pos = data.location.latLng;
-        activeMarker.setPosition(pos);
-        pano.setPosition(pos);
+        const location = data.location;
+        activeMarker.setPosition(location.latLng);
+        activeMarker.setTitle(location.description)
+        pano.setPosition(location.latLng);
     } else {
         activeMarker.setPosition(dragStartPos);
         $('#infoText').text("no street view found for dragged area");
@@ -430,4 +470,8 @@ function cancelCreation() {
     } else {
         location.href = "/";
     }
+}
+
+function showImportTooltip() {
+    $('#importFileTooltip').modal('show');
 }
