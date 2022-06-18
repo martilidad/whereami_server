@@ -122,13 +122,13 @@ function handleImportFile() {
                 try {
                     var fileContent = evt.target.result;
                     var obj = JSON.parse(fileContent);
-                    var map_name = $('#handpickedName');
-                    if (map_name.val().trim() == "") {
-                        map_name.val(obj.map_name);
+                    var mapName = $('#handpickedName');
+                    if (mapName.val().trim() == "") {
+                        mapName.val(obj.mapName);
                     }
                     var locations = obj.locations;
-                    for (loc_id in locations) {
-                        var location = locations[loc_id]
+                    for (locId in locations) {
+                        var location = locations[locId]
                         const radius = 50000/Math.pow(1.6, map.getZoom());
                         webService.getPanorama({ location: location, radius:radius }, processPano);
                     }
@@ -355,6 +355,13 @@ function processPano(data, status) {
     $('#infoText').text("");
     if (status === "OK") {
         const location = data.location;
+        for (markerId in handpickedMarkers) {
+            var presentMarker = handpickedMarkers[markerId];
+            if (presentMarker.getPosition().equals(location.latLng)) {
+                $('#infoText').text("location already exists!");
+                return;
+            }
+        }
         const marker = new google.maps.Marker({
             position: location.latLng,
             map,
