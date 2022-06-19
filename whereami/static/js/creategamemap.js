@@ -129,8 +129,8 @@ function handleImportFile() {
                     var locations = obj.locations;
                     for (locId in locations) {
                         var location = locations[locId]
-                        const radius = 50000/Math.pow(1.6, map.getZoom());
-                        webService.getPanorama({ location: location, radius:radius }, processPano);
+                        const importRadius = 50; // for imports there should be a street view panorama in close distance
+                        webService.getPanorama({ location: location, radius:importRadius }, processPano);
                     }
                 } catch (e) {
                     $('#infoText').text("Error reading file: json syntax invalid");
@@ -358,7 +358,9 @@ function processPano(data, status) {
         for (markerId in handpickedMarkers) {
             var presentMarker = handpickedMarkers[markerId];
             if (presentMarker.getPosition().equals(location.latLng)) {
-                $('#infoText').text("location already exists!");
+                var message = "location already exists!";
+                console.log(message);
+                $('#infoText').text(message);
                 return;
             }
         }
@@ -378,7 +380,9 @@ function processPano(data, status) {
         });
         $("#locationCount").text(handpickedMarkers.length);
     } else {
-        $('#infoText').text("no Street view for this area");
+        var message = "no Street view for this area";
+        console.log(message);
+        $('#infoText').text(message);
     }
 }
 
