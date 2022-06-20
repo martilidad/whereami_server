@@ -115,32 +115,31 @@ function handleImportFile() {
     if (files.length === 0) {
         console.log("no files selected");
     } else {
-        for (file of files) {
-            var reader = new FileReader();
-            reader.readAsText(file, "UTF-8")
-            reader.onload = function (evt) {
-                try {
-                    var fileContent = evt.target.result;
-                    var obj = JSON.parse(fileContent);
-                    var mapName = $('#handpickedName');
-                    if (mapName.val().trim() == "") {
-                        mapName.val(obj.mapName);
-                    }
-                    var locations = obj.locations;
-                    for (locId in locations) {
-                        var location = locations[locId]
-                        const importRadius = 50; // for imports there should be a street view panorama in close distance
-                        webService.getPanorama({ location: location, radius:importRadius }, processPano);
-                    }
-                } catch (e) {
-                    $('#infoText').text("Error reading file: json syntax invalid");
-                    console.log(e)
+        var file = files[0];
+        var reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+        reader.onload = function (evt) {
+            try {
+                var fileContent = evt.target.result;
+                var obj = JSON.parse(fileContent);
+                var mapName = $('#handpickedName');
+                if (mapName.val().trim() == "") {
+                    mapName.val(obj.mapName);
                 }
+                var locations = obj.locations;
+                for (locId in locations) {
+                    var location = locations[locId]
+                    const importRadius = 50; // for imports there should be a street view panorama in close distance
+                    webService.getPanorama({ location: location, radius:importRadius }, processPano);
+                }
+            } catch (e) {
+                $('#infoText').text("Error reading file: json syntax invalid");
+                console.log(e)
             }
-            reader.onerror = function (evt) {
-                console.log("error reading file");
-                $('#infoText').text("Error reading file");
-            }
+        }
+        reader.onerror = function (evt) {
+            console.log("error reading file");
+            $('#infoText').text("Error reading file");
         }
     }
 }
