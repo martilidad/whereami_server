@@ -128,9 +128,15 @@ function handleImportFile() {
                 }
                 var locations = obj.locations;
                 for (locId in locations) {
-                    var location = locations[locId]
-                    const importRadius = 50; // for imports there should be a street view panorama in close distance
-                    webService.getPanorama({ location: location, radius:importRadius }, processPano);
+                    var location = locations[locId];
+                    if (location.hasOwnProperty('name') && location.name.trim() != "") {
+                        if (!locationExists(new google.maps.LatLng(location.latLng.lat, location.latLng.lng))) {
+                            addMarker(location.latLng, location.name);
+                        }
+                    } else {
+                        const importRadius = 50; // for imports there should be a street view panorama in close distance
+                        webService.getPanorama({ location: location.latLng, radius:importRadius }, processPano);
+                    }
                 }
             } catch (e) {
                 $('#infoText').text("Error reading file: json syntax invalid");
@@ -142,6 +148,41 @@ function handleImportFile() {
             $('#infoText').text("Error reading file");
         }
     }
+}
+
+function locationExists(latLng) {
+    for (markerId in handpickedMarkers) {
+        var presentMarker = handpickedMarkers[markerId];
+        if (activeMarker === presentMarker) {
+            continue;
+        }
+        var distance = google.maps.geometry.spherical.computeDistanceBetween(presentMarker.getPosition(), latLng);
+        if (distance < 1) { // two points should not be closer than 1 meter
+            var message = "location already exists!";
+            console.log(message);
+            $('#infoText').text(message);
+            return true;
+        }
+    }
+    return false;
+}
+
+function addMarker(latLng, name) {
+    const marker = new google.maps.Marker({
+        position: latLng,
+        map,
+        title: name,
+        draggable: true,
+    });
+    handpickedMarkers.push(marker);
+    activateMarker(marker);
+    marker.addListener("click", activateMarkerCallback);
+    marker.addListener("dragstart", startDrag)
+    marker.addListener("dragend", () => {
+        const radius = 50000/Math.pow(1.4, map.getZoom());
+        webService.getPanorama({ location: marker.getPosition(), radius:radius }, moveMarker);
+    });
+    $("#locationCount").text(handpickedMarkers.length);
 }
 
 function eventContains(event, latLng) {
@@ -354,30 +395,9 @@ function processPano(data, status) {
     $('#infoText').text("");
     if (status === "OK") {
         const location = data.location;
-        for (markerId in handpickedMarkers) {
-            var presentMarker = handpickedMarkers[markerId];
-            if (presentMarker.getPosition().equals(location.latLng)) {
-                var message = "location already exists!";
-                console.log(message);
-                $('#infoText').text(message);
-                return;
-            }
+        if (!locationExists(location.latLng)) {
+            addMarker(location.latLng, location.description);
         }
-        const marker = new google.maps.Marker({
-            position: location.latLng,
-            map,
-            title: location.description,
-            draggable: true,
-        });
-        handpickedMarkers.push(marker);
-        activateMarker(marker);
-        marker.addListener("click", activateMarkerCallback);
-        marker.addListener("dragstart", startDrag)
-        marker.addListener("dragend", () => {
-            const radius = 50000/Math.pow(1.4, map.getZoom());
-            webService.getPanorama({ location: marker.getPosition(), radius:radius }, moveMarker);
-        });
-        $("#locationCount").text(handpickedMarkers.length);
     } else {
         var message = "no Street view for this area";
         console.log(message);
@@ -396,9 +416,13 @@ function moveMarker(data, status) {
     $('#infoText').text("");
     if (status === "OK") {
         const location = data.location;
-        activeMarker.setPosition(location.latLng);
-        activeMarker.setTitle(location.description)
-        pano.setPosition(location.latLng);
+        if (!locationExists(location.latLng)) {
+            activeMarker.setPosition(location.latLng);
+            activeMarker.setTitle(location.description)
+            pano.setPosition(location.latLng);
+        } else {
+            activeMarker.setPosition(dragStartPos);
+        }
     } else {
         activeMarker.setPosition(dragStartPos);
         $('#infoText').text("no street view found for dragged area");
@@ -421,7 +445,11 @@ function activateMarker(marker) {
     activeMarker = marker;
     pano.setPosition(marker.getPosition());
     pano.addListener("position_changed", () => {
-        marker.setPosition(pano.getPosition());
+        $('#infoText').text("");
+        if (!locationExists(pano.getPosition())) {
+            marker.setPosition(pano.getPosition());
+            marker.setTitle(pano.getLocation().description);
+        }
     });
     $("#createGamePano").show()
 }
