@@ -104,7 +104,86 @@ $(document).ready(function () {
       }
     });
 
+    var importInput = $('#importFileInput');
+    importInput.on('change', handleImportFile);
+
 });
+
+function handleImportFile() {
+    $('#infoText').text("");
+    files = $('#importFileInput').prop('files');
+    if (files.length === 0) {
+        console.log("no files selected");
+    } else {
+        var file = files[0];
+        var reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+        reader.onload = function (evt) {
+            try {
+                var fileContent = evt.target.result;
+                var obj = JSON.parse(fileContent);
+                var mapName = $('#handpickedName');
+                if (mapName.val().trim() == "") {
+                    mapName.val(obj.mapName);
+                }
+                var locations = obj.locations;
+                for (locId in locations) {
+                    var location = locations[locId];
+                    if (location.hasOwnProperty('name') && location.name.trim() != "") {
+                        if (!locationExists(new google.maps.LatLng(location.latLng.lat, location.latLng.lng))) {
+                            addMarker(location.latLng, location.name);
+                        }
+                    } else {
+                        const importRadius = 50; // for imports there should be a street view panorama in close distance
+                        webService.getPanorama({ location: location.latLng, radius:importRadius }, processPano);
+                    }
+                }
+            } catch (e) {
+                $('#infoText').text("Error reading file: json syntax invalid");
+                console.log(e)
+            }
+        }
+        reader.onerror = function (evt) {
+            console.log("error reading file");
+            $('#infoText').text("Error reading file");
+        }
+    }
+}
+
+function locationExists(latLng) {
+    for (markerId in handpickedMarkers) {
+        var presentMarker = handpickedMarkers[markerId];
+        if (activeMarker === presentMarker) {
+            continue;
+        }
+        var distance = google.maps.geometry.spherical.computeDistanceBetween(presentMarker.getPosition(), latLng);
+        if (distance < 1) { // two points should not be closer than 1 meter
+            var message = "location already exists!";
+            console.log(message);
+            $('#infoText').text(message);
+            return true;
+        }
+    }
+    return false;
+}
+
+function addMarker(latLng, name) {
+    const marker = new google.maps.Marker({
+        position: latLng,
+        map,
+        title: name,
+        draggable: true,
+    });
+    handpickedMarkers.push(marker);
+    activateMarker(marker);
+    marker.addListener("click", activateMarkerCallback);
+    marker.addListener("dragstart", startDrag)
+    marker.addListener("dragend", () => {
+        const radius = 50000/Math.pow(1.4, map.getZoom());
+        webService.getPanorama({ location: marker.getPosition(), radius:radius }, moveMarker);
+    });
+    $("#locationCount").text(handpickedMarkers.length);
+}
 
 function eventContains(event, latLng) {
     switch (event.type) {
@@ -316,23 +395,13 @@ function processPano(data, status) {
     $('#infoText').text("");
     if (status === "OK") {
         const location = data.location;
-        const marker = new google.maps.Marker({
-            position: location.latLng,
-            map,
-            title: location.description,
-            draggable: true,
-        });
-        handpickedMarkers.push(marker);
-        activateMarker(marker);
-        marker.addListener("click", activateMarkerCallback);
-        marker.addListener("dragstart", startDrag)
-        marker.addListener("dragend", () => {
-            const radius = 50000/Math.pow(1.4, map.getZoom());
-            webService.getPanorama({ location: marker.getPosition(), radius:radius }, moveMarker);
-        });
-        $("#locationCount").text(handpickedMarkers.length);
+        if (!locationExists(location.latLng)) {
+            addMarker(location.latLng, location.description);
+        }
     } else {
-        $('#infoText').text("no Street view for this area");
+        var message = "no Street view for this area";
+        console.log(message);
+        $('#infoText').text(message);
     }
 }
 
@@ -346,9 +415,14 @@ function startDrag() {
 function moveMarker(data, status) {
     $('#infoText').text("");
     if (status === "OK") {
-        const pos = data.location.latLng;
-        activeMarker.setPosition(pos);
-        pano.setPosition(pos);
+        const location = data.location;
+        if (!locationExists(location.latLng)) {
+            activeMarker.setPosition(location.latLng);
+            activeMarker.setTitle(location.description)
+            pano.setPosition(location.latLng);
+        } else {
+            activeMarker.setPosition(dragStartPos);
+        }
     } else {
         activeMarker.setPosition(dragStartPos);
         $('#infoText').text("no street view found for dragged area");
@@ -371,7 +445,11 @@ function activateMarker(marker) {
     activeMarker = marker;
     pano.setPosition(marker.getPosition());
     pano.addListener("position_changed", () => {
-        marker.setPosition(pano.getPosition());
+        $('#infoText').text("");
+        if (!locationExists(pano.getPosition())) {
+            marker.setPosition(pano.getPosition());
+            marker.setTitle(pano.getLocation().description);
+        }
     });
     $("#createGamePano").show()
 }
@@ -430,4 +508,8 @@ function cancelCreation() {
     } else {
         location.href = "/";
     }
+}
+
+function showImportTooltip() {
+    $('#importFileTooltip').modal('show');
 }
