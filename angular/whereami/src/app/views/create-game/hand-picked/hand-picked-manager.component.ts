@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import {GoogleMap} from "@angular/google-maps";
 
-const INCACTIVE_MARKER_URL = "/static/ng/assets/marker.png";
+const INACTIVE_MARKER_URL = "/static/ng/assets/marker.png";
 
 @Component({
   selector: 'hand-picked-manager',
@@ -86,7 +86,7 @@ export class HandPickedManagerComponent {
 
   //not static because it needs Maps api import!
   private readonly inactiveMarkerIcon = {
-    url: INCACTIVE_MARKER_URL,
+    url: INACTIVE_MARKER_URL,
     scaledSize: new google.maps.Size(27, 43)
   };
 

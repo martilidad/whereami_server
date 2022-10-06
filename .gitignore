@@ -137,3 +137,5 @@ static-out/
 
 ## angular output file in django app
 whereami/static/ng/
+
+.dev/.env

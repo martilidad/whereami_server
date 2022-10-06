@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {HandPickedManagerComponent} from "../../../embedabble/hand-picked/hand-picked-manager.component";
-import {DrawingManagerComponent} from "../../../embedabble/drawing-manager/drawing-manager.component";
+import {HandPickedManagerComponent} from "../hand-picked/hand-picked-manager.component";
+import {DrawingManagerComponent} from "../drawing-manager/drawing-manager.component";
 import {CreateHandpickedGame} from "./create-handpicked-game";
 import {GamesService} from "../../../service/game/games.service";
 import {StreetViewPlace} from "../../../service/street-view-place/streetViewPlace";
@@ -13,7 +13,7 @@ import {StreetViewPlace} from "../../../service/street-view-place/streetViewPlac
 export class HandpickedGameFormComponent implements OnInit {
 
   @Input()
-  public handPickedManager!: HandPickedManagerComponent
+  public handPickedManager: HandPickedManagerComponent | undefined
 
   @Input()
   public cancelAction: () => void = () => {}
@@ -31,7 +31,7 @@ export class HandpickedGameFormComponent implements OnInit {
 
 
   submit() {
-    let streetViewPlaces = this.handPickedManager.markers.map(marker => new StreetViewPlace(marker.getPosition()!.lat(), marker.getPosition()!.lng(), marker.getTitle()!));
+    let streetViewPlaces = this.handPickedManager!.markers.map(marker => new StreetViewPlace(marker.getPosition()!.lat(), marker.getPosition()!.lng(), marker.getTitle()!));
     this.gamesService.createGame({Name: this.model.name, Locations: streetViewPlaces})
       .subscribe(value => this.statusText = "Success")
   }

@@ -1,10 +1,6 @@
 import {Injectable} from '@angular/core';
 import {StreetViewPlace} from "./streetViewPlace";
-import {readyException} from "jquery";
-import {DrawingManagerComponent} from "../../embedabble/drawing-manager/drawing-manager.component";
-import {AbstractGoogleMapsComponent} from "../../views/abstract-google-maps-component";
-import {HttpErrorHandler} from "../../http-error-handler.service";
-import {HttpClient} from "@angular/common/http";
+import {DrawingManagerComponent} from "../../views/create-game/drawing-manager/drawing-manager.component";
 
 const SEARCH_RADIUS = 10000;
 
@@ -13,32 +9,20 @@ const MAX_IGNORES = 1000;
 @Injectable({
   providedIn: 'root'
 })
-export class StreetViewPlaceService extends AbstractGoogleMapsComponent{
-  private webService: google.maps.StreetViewService | undefined;
+export class StreetViewPlaceService {
 
+  private webService: google.maps.StreetViewService = new google.maps.StreetViewService()
 
-  constructor(httpClient: HttpClient, httpErrorHandler: HttpErrorHandler) {
-    super(httpClient, httpErrorHandler.createHandleError('StreetViewPlaceService'));
-    this.apiLoaded.subscribe(value => {
-      if(value) {
-        this.webService = new google.maps.StreetViewService();
-      }
-    })
-  }
 
   public async getPlaces(pointGenerator: () => google.maps.LatLng, messageConsumer: (message: string) => {},
                          quantity: number, minDist: number, allowPhotoSpheres: boolean): Promise<StreetViewPlace[]> {
-    if(!this.webService) {
-      throw Error("Unexpectedly not initialized.");
-    }
-    let webService = this.webService;
     let ignores = 0;
     let places: StreetViewPlace[] = [];
     while (places.length < quantity && ignores <= MAX_IGNORES) {
       let point = pointGenerator();
       //synchronous request, wait for api return
       let panoData = await new Promise<google.maps.StreetViewPanoramaData | null>((resolve, reject) => {
-        webService.getPanorama({
+        this.webService.getPanorama({
           location: point,
           radius: SEARCH_RADIUS,
           source: allowPhotoSpheres ? google.maps.StreetViewSource.DEFAULT : google.maps.StreetViewSource.OUTDOOR,

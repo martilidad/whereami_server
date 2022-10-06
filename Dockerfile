@@ -13,7 +13,8 @@ RUN apt-get update
 RUN apt-get install netcat --force-yes -y
 CMD python manage.py migrate && \
     python manage.py collectstatic --noinput && \
-    gunicorn --bind 0.0.0.0:8000 wsgi:application \
+    gunicorn --bind 0.0.0.0:8000 whereami_server.asgi:application \
+    -k uvicorn.workers.UvicornWorker \
     --log-file "-" --error-logfile "-" \
     --enable-stdio-inheritance
 COPY . /code/

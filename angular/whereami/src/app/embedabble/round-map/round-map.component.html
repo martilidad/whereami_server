@@ -1,0 +1,6 @@
+<div class="container-fluid h-100" id="roundMap"
+     (click)="enabled = true" [style]="this.classAppend">
+  {{ enabled ? '' : 'Click to load Map.' }}
+  <google-map *ngIf="enabled" #map height="100%" width="100%" [options]="mapOptions">
+  </google-map>
+</div>

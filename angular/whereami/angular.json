@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "deployUrl": "/static/ng/",
+            "deployUrl": "/",
             "outputPath": "../../whereami/static/ng",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -42,8 +42,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "1200kb",
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",

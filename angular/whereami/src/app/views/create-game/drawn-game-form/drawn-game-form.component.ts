@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CreateDrawnGame} from "./create-drawn-game";
-import {DrawingManagerComponent} from "../../../embedabble/drawing-manager/drawing-manager.component";
+import {DrawingManagerComponent} from "../drawing-manager/drawing-manager.component";
 import {StreetViewPlaceService} from "../../../service/street-view-place/street-view-place.service";
 import {GamesService} from "../../../service/game/games.service";
 
@@ -19,7 +19,7 @@ export class DrawnGameFormComponent implements OnInit {
   public cancelAction: () => void = () => {};
 
   @Input()
-  drawingManager!: DrawingManagerComponent
+  drawingManager: DrawingManagerComponent | undefined
 
   constructor(private placeService: StreetViewPlaceService,
               private gamesService: GamesService) { }
