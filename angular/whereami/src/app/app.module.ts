@@ -17,11 +17,19 @@ import {DataTablesModule} from 'angular-datatables';
 import { CreateGameComponent } from './views/create-game/create-game.component';
 import {GoogleMapsModule} from "@angular/google-maps";
 import { CoverageToggleComponent } from './embedabble/coverage-toggle/coverage-toggle.component';
-import { DrawingManagerComponent } from './embedabble/drawing-manager/drawing-manager.component';
-import { HandPickedManagerComponent } from './embedabble/hand-picked/hand-picked-manager.component';
+import { DrawingManagerComponent } from './views/create-game/drawing-manager/drawing-manager.component';
+import { HandPickedManagerComponent } from './views/create-game/hand-picked/hand-picked-manager.component';
 import {DrawnGameFormComponent} from "./views/create-game/drawn-game-form/drawn-game-form.component";
 import { HandpickedGameFormComponent } from './views/create-game/handpicked-game-form/handpicked-game-form.component';
 import { StartChallengeComponent } from './views/start-challenge/start-challenge.component';
+import { StatusTableComponent } from './views/start-challenge/status-table/status-table.component';
+import { MiniMapComponent } from './views/start-challenge/mini-map/mini-map.component';
+import { GamePanoComponent } from './embedabble/game-pano/game-pano.component';
+import { ChallengeFormComponent } from './views/index/challenge-form/challenge-form.component';
+import { ChallengeScoresComponent } from './views/index/challenge-scores/challenge-scores.component';
+import { RoundMapComponent } from './embedabble/round-map/round-map.component';
+import { ChallengeOverviewComponent } from './views/challenge-overview/challenge-overview.component';
+import { ADDITIONAL_PROVIDERS } from 'src/environments/environment';
 
 
 @NgModule({
@@ -35,7 +43,14 @@ import { StartChallengeComponent } from './views/start-challenge/start-challenge
     HandPickedManagerComponent,
     DrawnGameFormComponent,
     HandpickedGameFormComponent,
-    StartChallengeComponent
+    StartChallengeComponent,
+    StatusTableComponent,
+    MiniMapComponent,
+    GamePanoComponent,
+    ChallengeFormComponent,
+    ChallengeScoresComponent,
+    RoundMapComponent,
+    ChallengeOverviewComponent
   ],
   imports: [
     BrowserModule,
@@ -52,11 +67,7 @@ import { StartChallengeComponent } from './views/start-challenge/start-challenge
   providers: [
     HttpErrorHandler,
     MessageService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ApiInterceptor,
-      multi: true
-    }
+    ADDITIONAL_PROVIDERS
   ],
   bootstrap: [AppComponent]
 })

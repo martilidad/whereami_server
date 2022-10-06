@@ -1,0 +1,27 @@
+<div class="card border-dark">
+    <div class="card-body">
+        <h5 class="card-title" id="score-board-title">Challenge scores</h5>
+        <h6 class="card-subtitle text-muted">Click on the stats button next to a challange to show it's stats
+            here.</h6>
+        <table class="table table-striped" id="score-board" datatable #scoreTable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+            <thead>
+            <tr>
+                <th scope="col">Score</th>
+                <th scope="col">Distance</th>
+                <th scope="col">Name</th>
+                <th scope="col">Completed Locations</th>
+                <th scope="col">Last interaction</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let score of scores">
+              <td>{{score.score}}</td>
+              <td>{{score.distance}}</td>
+              <td>{{score.name}}</td>
+              <td>{{score.completed_locations}}</td>
+              <td>{{score.last_interaction}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

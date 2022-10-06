@@ -1,29 +1,23 @@
-import {Component, Inject, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {AbstractGoogleMapsComponent} from "../abstract-google-maps-component";
-import {HttpClient} from "@angular/common/http";
-import {HttpErrorHandler} from "../../http-error-handler.service";
+import {Component, TemplateRef, ViewChild} from '@angular/core';
 import {GoogleMap} from "@angular/google-maps";
-import {DrawingManagerComponent} from "../../embedabble/drawing-manager/drawing-manager.component";
-import {HandPickedManagerComponent} from "../../embedabble/hand-picked/hand-picked-manager.component";
-import {StreetViewPlaceService} from "../../service/street-view-place/street-view-place.service";
-import {CreateDrawnGame} from "./drawn-game-form/create-drawn-game";
+import {DrawingManagerComponent} from "./drawing-manager/drawing-manager.component";
+import {HandPickedManagerComponent} from "./hand-picked/hand-picked-manager.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {GamesService} from "../../service/game/games.service";
 
 @Component({
   selector: 'app-create-game',
   templateUrl: './create-game.component.html',
   styleUrls: ['./create-game.component.css']
 })
-export class CreateGameComponent extends AbstractGoogleMapsComponent {
+export class CreateGameComponent {
 
   @ViewChild('handPickedManager')
-  public handPickedManager!: HandPickedManagerComponent
+  public handPickedManager: HandPickedManagerComponent | undefined
 
   public handPicked: boolean = false;
 
   @ViewChild('drawingManager')
-  public drawingManager!: DrawingManagerComponent;
+  public drawingManager: DrawingManagerComponent | undefined;
   @ViewChild('cancelModal')
   public cancelModal: TemplateRef<any> | undefined;
 
@@ -35,9 +29,7 @@ export class CreateGameComponent extends AbstractGoogleMapsComponent {
     mapTypeId: 'roadmap'
   };
 
-  constructor(httpClient: HttpClient, httpErrorHandler: HttpErrorHandler,
-              public modalService: NgbModal) {
-    super(httpClient, httpErrorHandler.createHandleError('CreateGameComponent'));
+  constructor(public modalService: NgbModal) {
   }
 
   @ViewChild('map')

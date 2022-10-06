@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {catchError, map, Observable} from "rxjs";
-import {Game} from "./game";
+import {Game} from "../../model/game-model/game";
 import {HandleError, HttpErrorHandler} from "../../http-error-handler.service";
 import {UserService} from "../user/user.service";
-import {CreateGame} from "./create-game";
+import {CreateGame} from "../../model/game-model/create-game";
 
 export interface Games {
   games: Game[]
@@ -14,15 +14,15 @@ export interface Games {
   providedIn: 'root'
 })
 export class GamesService {
-  static gamesUrl = "/games/"
-  static postUrl = "/game"
+  static gamesUrl = "/api/games/"
+  static postUrl = "/api/game"
 
   private readonly handleError: HandleError;
 
   constructor(private http: HttpClient,
               private userService: UserService,
               httpErrorHandler: HttpErrorHandler) {
-    this.handleError = httpErrorHandler.createHandleError('HeroesService');
+    this.handleError = httpErrorHandler.createHandleError('GamesService');
   }
 
   getGames(): Observable<Game[]> {

@@ -3,7 +3,8 @@
   <div class="card-body">
     <h5 class="card-title">Challenges.</h5>
     <h6 class="card-subtitle text-muted">Please click on the challenge you would like to start.</h6>
-    <table class="table table-striped table-bordered" id="challenges" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+    <table class="table table-striped table-bordered" id="challenges" datatable
+           [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
       <thead>
       <tr>
         <th scope="col">Created on</th>
@@ -21,15 +22,10 @@
         <td>{{ challenge.location_count }}</td>
         <td>{{ challenge.time }}</td>
         <td>{{ challenge.id }}</td>
-        <td><a href="/startChallenge?Challenge_ID={{ challenge.id }}" class="btn btn-primary">Start</a>
-
-<!--          TODO fix onlicks-->
-          <button class="btn btn-secondary ms-2">Stats</button>
-<!--          <button class="btn btn-secondary" onclick="loadScores({{ challenge.id }})">Stats</button>-->
-          <a href="/challengeOverview?Challenge_ID={{ challenge.id }}"
+        <td><a routerLink="/startChallenge"  [queryParams]="{id: challenge.id}" routerLinkActive="active" class="btn btn-primary">Start</a>
+          <button class="btn btn-secondary ms-2" (click)="challengeScores.showStats(challenge.id)">Stats</button>
+          <a routerLink="/challengeOverview"  [queryParams]="{id: challenge.id}" routerLinkActive="active"
              class="btn btn-success ms-2">Overview</a>
-<!--          <button class="btn btn-warning"-->
-<!--                  onclick="invite(location.origin + '/invite?Challenge_ID=' + {{ challenge.id }})">-->
           <button class="btn btn-warning ms-2" >
             Invite link
           </button>
@@ -41,66 +37,9 @@
 </div>
 <div class="row">
   <div class="col-4">
-    <div class="card border-primary">
-      <div class="card-body">
-        <h5 class="card-title">Create a new challenge: </h5>
-        <form action="/challenge" method="post" class="form">
-<!--          {% csrf_token %}-->
-          <div class="form-group">
-            <label for="game">Select game to use locations from:</label><br/>
-            <select class="selectpicker col-8 pl-0" id="game" name="game" data-live-search="true"
-                    data-show-subtext="true"
-                    data-style="border-primary form-control">
-<!--              <option *ngFor="let game of game" data-subtext="{{ game.location_count }} locations"-->
-<!--                      value="{{ game.id }}">{{ game.name }}</option>-->
-              <option *ngFor="let game of games"
-                      value="{{ game.id }}">{{ game.name }}</option>
-            </select>
-            <a href="/game" class="btn btn-primary ms-2">Create new game</a>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Numer of locations (between 1 and number of locations in
-              game).</label>
-            <input class="form-control col-2 border-primary" type="number" id="quantity" name="quantity"
-                   min="1"
-                   value="5">
-          </div>
-          <div class="form-group">
-            <label for="time">Challenge time in seconds.</label>
-            <input class="form-control col-2 border-primary" type="number" id="time" name="time" min="5"
-                   value="90">
-          </div>
-          <div class="form-check">
-            <input class="form-check-input border-primary" type="checkbox" id="preventReuse"
-                   name="preventReuse"
-                   checked>
-            <label for="preventReuse" class="form-check-label">Prevent reuse of locations.</label>
-          </div>
-          <button type="submit" value="Submit" class="btn btn-primary mt-3">Create</button>
-        </form>
-      </div>
-    </div>
+    <challenge-form (challengeCreated)="updateChallenges()"></challenge-form>
   </div>
   <div class="col-8">
-    <div class="card border-dark">
-      <div class="card-body">
-        <h5 class="card-title" id="score-board-title">Challenge scores</h5>
-        <h6 class="card-subtitle text-muted">Click on the stats button next to a challange to show it's stats
-          here.</h6>
-        <table class="table table-striped" id="score-board">
-          <thead>
-          <tr>
-            <th scope="col">Score</th>
-            <th scope="col">Distance</th>
-            <th scope="col">Name</th>
-            <th scope="col">Completed Locations</th>
-            <th scope="col">Last interaction</th>
-          </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <challenge-scores #challengeScores></challenge-scores>
   </div>
 </div>

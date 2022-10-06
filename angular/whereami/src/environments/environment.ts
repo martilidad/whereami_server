@@ -2,9 +2,20 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+import { HTTP_INTERCEPTORS } from "@angular/common/http";
+import { ApiInterceptor } from "src/app/service/api-interceptor";
+
 export const environment = {
   production: false
 };
+
+export const ADDITIONAL_PROVIDERS = [
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: ApiInterceptor,
+    multi: true
+  }
+];
 
 /*
  * For easier debugging in development mode, you can import the following file

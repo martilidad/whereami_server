@@ -10,59 +10,11 @@
     <meta property="og:image" content="/static/img/whereami.png"/>
     <meta property="og:description"
           content="You have been challenged to find {{ challenge.challengelocation_set.count }} Streetview locations in {{ challenge.game.name }} within {{ challenge.time }} seconds each."/>
-    {% if not is_authenticated %}
-        <meta http-equiv="expires" content="-1"/>
-        <meta http-equiv="refresh" content="1; url=/accounts/login/?next={{ full_path }}"/>
-    {% endif %}
+    <meta http-equiv="expires" content="-1"/>
+    <meta http-equiv="refresh" content="1; url={{ full_path }}"/>
 
 </head>
 <body>
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-6">
-            <div class="card border-dark text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Challenge invite</h5>
-                    <h6 class="card-subtitle text-muted">Find {{ challenge.challengelocation_set.count }} locations in {{ challenge.game.name }} within {{ challenge.time }} seconds each.</h6>
-                    <p></p>
-                    <div class="container">
-                        <div class="row justify-content-center text-muted small">Click on start once you (and your friends) are ready.</div>
-                        <div class="row justify-content-center" id="inviteStatusDiv">
-                        </div>
-                        <div class="row justify-content-center" id="userStatusDiv">
-                        </div>
-                        <p></p>
-                        <div class="row justify-content-center">
-                            <div class="col-3">
-                                <a class="btn btn-danger" href="/">Main Menu</a>
-                            </div>
-                            <div class="col-2">
-                                <a class="btn btn-primary" id="start">Start</a>
-                            </div>
-                            <div class="col-3">
-                                <div class="form-check">
-                                    <input type="checkbox" id="autoStart" class="form-check-input">
-                                    <label for="autostart" class="form-check-label">autostart</label>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <a class="btn btn-warning" id="invite" onclick="invite()">Copy invite link</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="previewMap" style="height: 60%; width: 60%; margin: auto;"></div>
+    Redirecting you briefly. <a href="{{ full_path }}">Click here if nothing happens.</a>
 </body>
-<script>
-    var boundary_array = {{ boundary_array }};
-</script>
-<script type='text/javascript' src='/static/js/jquery.min.js?{{ version }}'></script>
-<script type="text/javascript" src="/static/js/bootstrap.min.js?{{ version }}"></script>
-<script type='text/javascript'
-        src='https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=geometry,drawing'></script>
-<script type="text/javascript" src="/static/js/invite.js?{{ version }}"></script>
 </html>

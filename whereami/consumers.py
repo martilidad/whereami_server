@@ -1,5 +1,6 @@
 import json
 import time
+import logging
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 
@@ -33,17 +34,19 @@ class ChallengeStatusConsumer(AsyncWebsocketConsumer):
     # Receive message from WebSocket
     async def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
-        data = text_data_json['data']
+        data = text_data_json['user_data']
         sync_time = text_data_json['sync_time']
-        await self.channel_layer.group_send(
-            self.challenge_group_name,
-            {
+        msg = {
                 "type": "client_update",
                 "user_data": data,
                 "sync_time": sync_time,
                 "username": self.scope["user"].username,
                 "id": self.channel_name
-            },
+            }
+        logging.error("send msg: {}", msg)
+        await self.channel_layer.group_send(
+            self.challenge_group_name,
+            msg,
         )
 
     # pass messages of type resync directly to client

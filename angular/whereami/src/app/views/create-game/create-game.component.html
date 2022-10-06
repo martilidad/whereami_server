@@ -15,8 +15,8 @@
       </div>
     </div>
     <div class="col-9">
-      <google-map *ngIf="apiLoaded | async" [options]="mapOptions" #map id="createGameMap" width="99%" height="90%">
-        <hand-picked-manager #handPickedManager [hidden]="!handPicked"></hand-picked-manager>
+      <google-map [options]="mapOptions" #map id="createGameMap" width="99%" height="90%">
+        <hand-picked-manager #handPickedManager [attr.hidden]="handPicked ? null : ''" [hidden]="handPicked"></hand-picked-manager>
         <drawing-manager #drawingManager [hidden]="handPicked"></drawing-manager>
         <coverage-toggle></coverage-toggle>
       </google-map>
