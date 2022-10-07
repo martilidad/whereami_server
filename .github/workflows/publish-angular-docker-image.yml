@@ -26,7 +26,7 @@ jobs:
       - name: Build Angular
         run: |
           cd ./angular/whereami
-          npm build
+          npm run build
           cd ../..
 
       - name: Set version Tag
