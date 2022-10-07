@@ -23,11 +23,17 @@ jobs:
         with:
           node-version: 16
 
+      - name: Switch to Angular folder
+        run: cd ./angular/whereami
+      
+      - name: NPM install dependencies
+        run: npm install
+      
       - name: Build Angular
-        run: |
-          cd ./angular/whereami
-          npm run build
-          cd ../..
+        run: npm run build
+
+      - name: Exit Angular folder
+        run: cd ../..
 
       - name: Set version Tag
         id: tag
