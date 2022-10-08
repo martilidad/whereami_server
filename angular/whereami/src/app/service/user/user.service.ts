@@ -1,15 +1,24 @@
 import {EventEmitter, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {User} from "./user";
-import {catchError, Subscription, timer} from "rxjs";
+import {catchError, Observable, ReplaySubject, Subscribable, Subscription, timer} from "rxjs";
 import {HandleError, HttpErrorHandler} from "../../http-error-handler.service";
-
 export class TokenResponse {
   token: string;
 
   constructor(token: string) {
     this.token = token;
   }
+}
+
+interface JwtToken {
+  exp: number,
+  username: string
+}
+
+interface Token {
+  username: string,
+  expires: Date
 }
 
 const TOKEN_REFRESH_MARGIN_MILLIS = 2000;
@@ -21,10 +30,18 @@ export class UserService {
   // http options used for making API calls
   private httpOptions: any;
   private refresh_subscription: Subscription | undefined;
-  readonly logged_in_emitter: EventEmitter<boolean> = new EventEmitter<boolean>();
+  private readonly _logged_in_emitter: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
 
   // the actual JWT token
-  public token: string | null = null;
+  private _token: string | null = null;
+
+  public get token(): string | null {
+    return this._token;
+  }
+  public set token(value: string | null) {
+    value ? localStorage.setItem("token", value) : localStorage.removeItem("token");
+    this._token = value;
+  }
 
   // the token expiration date
   public token_expires: Date | null = null;
@@ -39,13 +56,20 @@ export class UserService {
     this.httpOptions = {
       headers: new HttpHeaders({'Content-Type': 'application/json'})
     };
+    let token = localStorage.getItem("token");
+    if (token) {
+      const decoded_token = this.toToken(token);
+      if(decoded_token.expires > new Date()) {
+        this.updateData(token)
+      }
+    }
   }
 
   // Uses http.post() to get an auth token from djangorestframework-jwt endpoint
   public login(user: User) {
     this.http.post<TokenResponse>('/api/token-auth/', JSON.stringify(user), this.httpOptions)
       .subscribe({
-        next: (value) => "token" in value ? this.updateData(value) : {},
+        next: (value) => "token" in value ? this.updateData(value["token"]) : {},
         error: error => this.handleError(error)
       });
   }
@@ -54,7 +78,7 @@ export class UserService {
   public refreshToken() {
     this.http.post<TokenResponse>('/api/token-refresh/', JSON.stringify({token: this.token}), this.httpOptions)
       .subscribe({
-        next: (value) => "token" in value ? this.updateData(value) : {},
+        next: (value) => "token" in value ? this.updateData(value["token"]) : {},
         error: error => this.handleError(error)
       });
   }
@@ -71,19 +95,38 @@ export class UserService {
   }
 
 
-  private updateData(tokenResponse: TokenResponse) {
+  private updateData(token: string) {
     //type safety my ass?????
-    this.token = tokenResponse.token;
+    this.token = token;
     this.errors = [];
 
-    // decode the token to read the username and expiration timestamp
-    const token_parts = this.token.split(/\./);
-    const token_decoded = JSON.parse(window.atob(token_parts[1]));
-    this.token_expires = new Date(token_decoded.exp * 1000);
-    this.username = token_decoded.username;
+    this.updateToken(this.toToken(this.token))
+  }
+
+  private updateToken(token: Token) {
+    this.token_expires = token.expires;
+    this.username = token.username;
+
+    // handle callbacks and subscriptions
     this.refresh_subscription?.unsubscribe();
     let refresh_time = new Date(this.token_expires.getTime() - TOKEN_REFRESH_MARGIN_MILLIS);
     this.refresh_subscription = timer(refresh_time).subscribe(() => this.refreshToken());
-    this.logged_in_emitter.emit(true);
+    this._logged_in_emitter.next(true);
   }
+
+  private toToken(token: string): Token {
+    const decoded = this.decodeToken(token);
+    return {username: decoded.username, expires: new Date(decoded.exp * 1000)}
+  }
+
+  private decodeToken(token: string): JwtToken {
+    const token_parts = token.split(/\./);
+    return JSON.parse(window.atob(token_parts[1]));    
+  }
+
+  
+  get logged_in_emitter(): Observable<boolean> {
+    return this._logged_in_emitter;
+  }
+
 }
