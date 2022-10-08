@@ -29,7 +29,6 @@
     "datatables.net-dt": "^1.12.1",
     "jquery": "^3.6.1",
     "moment": "^2.29.4",
-    "npm-check-updates": "^16.3.8",
     "rxjs": "~7.5.7",
     "tslib": "^2.4.0",
     "zone.js": "~0.11.8"
