@@ -4,8 +4,7 @@ version: '3'
 
 services:
   whereami:
-#    image: ghcr.io/martilidad/whereami-server
-    build: .
+    image: ghcr.io/martilidad/whereami-server:angular-latest
     links:
       - postgresql:db
       - redis:redis

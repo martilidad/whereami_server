@@ -6,6 +6,7 @@ import {webSocket, WebSocketSubject} from "rxjs/webSocket";
 import {UserService} from "../user/user.service";
 import {ChallengeStatusEvent, StatusEventType} from "../../model/status/challenge-status-event";
 import {User} from "../user/user";
+import { BACKEND_HOST } from 'src/environments/environment';
 
 //typescript do be like that
 export type BoundChallengeStatusService = typeof ChallengeStatusService.BoundChallengeStatusService.prototype
@@ -26,12 +27,16 @@ export class ChallengeStatusService {
 
   private getWebSocket(challengeId: number): WebSocketSubject<ChallengeStatusEvent> {
     //TODO fix ws vs wss
-    return webSocket<ChallengeStatusEvent>(`${this.protocol()}//${window.location.hostname}/ws/challenge/${challengeId}/?token=${
+    return webSocket<ChallengeStatusEvent>(`${this.protocol}//${this.hostName}/ws/challenge/${challengeId}/?token=${
       this.userService.token}`)
   }
 
-  private protocol() {
+  private get protocol(): string {
     return window.location.protocol == "http:" ? "ws:" : "wss:";
+  }
+
+  private get hostName(): string {
+    return BACKEND_HOST ? BACKEND_HOST : window.location.hostname;
   }
 
   static BoundChallengeStatusService = class {
