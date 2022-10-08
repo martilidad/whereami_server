@@ -37,7 +37,7 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
    */
   private readonly LAST_POINT_DISTANCE = 14000;
 
-  private counter: number | undefined
+  private counter: NodeJS.Timer | undefined
 
   @HostListener('window:beforeunload')
   confirmLeave(event: BeforeUnloadEvent) {

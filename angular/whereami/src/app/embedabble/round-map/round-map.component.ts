@@ -73,7 +73,7 @@ export class RoundMapComponent {
     var latLng = new ChallengeLocationImpl(location).toLatLng();
     this.drawMarker(new google.maps.Marker({
       position: latLng,
-      label: "Actual Location",
+      label: "Target",
       icon: ACTUAL_MARKER_URL
     }));
   }

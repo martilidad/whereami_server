@@ -17,6 +17,12 @@ export const ADDITIONAL_PROVIDERS = [
   }
 ];
 
+/**
+ * django runs on 8000 in development mode
+ * use null for window.location.hostname
+ */
+export const BACKEND_HOST: string | null = "localhost:8000";
+
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
