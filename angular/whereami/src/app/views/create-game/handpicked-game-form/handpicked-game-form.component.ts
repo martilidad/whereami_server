@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {HandPickedManagerComponent} from "../hand-picked/hand-picked-manager.component";
 import {DrawingManagerComponent} from "../drawing-manager/drawing-manager.component";
 import {CreateHandpickedGame} from "./create-handpicked-game";
@@ -12,12 +12,11 @@ import {StreetViewPlace} from "../../../service/street-view-place/streetViewPlac
 })
 export class HandpickedGameFormComponent implements OnInit {
 
+  @Output()
+  cancelled = new EventEmitter<any>();
+  
   @Input()
   public handPickedManager: HandPickedManagerComponent | undefined
-
-  @Input()
-  public cancelAction: () => void = () => {}
-
 
   public statusText: string = ""
 
@@ -34,5 +33,9 @@ export class HandpickedGameFormComponent implements OnInit {
     let streetViewPlaces = this.handPickedManager!.markers.map(marker => new StreetViewPlace(marker.getPosition()!.lat(), marker.getPosition()!.lng(), marker.getTitle()!));
     this.gamesService.createGame({Name: this.model.name, Locations: streetViewPlaces})
       .subscribe(value => this.statusText = "Success")
+  }
+
+  public cancel() {
+    this.cancelled.emit();
   }
 }

@@ -9,8 +9,9 @@
             <button id="areaButton" type="button" (click)="handPicked = false" class="btn btn-primary">Area</button>
             <button id="handPickedButton" type="button" (click)="handPicked = true" class="btn btn-secondary">Handpicked</button>
           </div>
-          <drawn-game-form [cancelAction]="openModal" [drawingManager]="drawingManager" [hidden]="handPicked"></drawn-game-form>
-          <handpicked-game-form [cancelAction]="openModal" [handPickedManager]="handPickedManager" [hidden]="!handPicked"></handpicked-game-form>
+          <handpicked-game-form (cancelled)="openModal()" [handPickedManager]="handPickedManager" [hidden]="!handPicked"></handpicked-game-form>
+          <drawn-game-form (cancelled)="openModal()" [drawingManager]="drawingManager" [hidden]="handPicked"></drawn-game-form>
+          
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
 import {CreateDrawnGame} from "./create-drawn-game";
 import {DrawingManagerComponent} from "../drawing-manager/drawing-manager.component";
 import {StreetViewPlaceService} from "../../../service/street-view-place/street-view-place.service";
@@ -15,8 +15,8 @@ export class DrawnGameFormComponent implements OnInit {
 
   drawingStatusText: string = "";
 
-  @Input()
-  public cancelAction: () => void = () => {};
+  @Output()
+  cancelled = new EventEmitter<any>();
 
   @Input()
   drawingManager: DrawingManagerComponent | undefined
@@ -43,5 +43,9 @@ export class DrawnGameFormComponent implements OnInit {
     if(this.drawingManager) {
       this.drawingManager.clear();
     }
+  }
+
+  public cancel() {
+    this.cancelled.emit();
   }
 }
