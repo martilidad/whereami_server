@@ -6,4 +6,4 @@ export const ADDITIONAL_PROVIDERS = [];
 /**
  * use null for window.location.hostname
  */
-export const WS_HOST: string | null = null;
+ export const BACKEND_HOST: string | null = null;
