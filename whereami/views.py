@@ -120,7 +120,7 @@ def get_challenge(request):
                 for challenge_location in challenge_locations]
         boundary_array = game_boundary(obj.game)
         response_dict = {'Challenge_ID': id, 'Time': obj.time, 'Challenge_Locations': list,
-                         'Ignored_Count': len(filtered_ids), 'boundary_array': boundary_array}
+                         'Ignored_Count': len(filtered_ids), 'boundary_array': boundary_array, 'Name': obj.game.name}
         return JsonResponse(response_dict, safe=False)
     except (KeyError, Challenge.DoesNotExist):
         return HttpResponseBadRequest()
