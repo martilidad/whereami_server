@@ -8,6 +8,7 @@ import {Subject} from "rxjs";
 import * as moment from 'moment';
 import {DataTableDirective} from "angular-datatables";
 import {ADTSettings} from "angular-datatables/src/models/settings";
+import { Router, UrlTree } from '@angular/router';
 
 @Component({
   selector: 'app-index',
@@ -30,7 +31,8 @@ export class IndexComponent implements OnInit, OnDestroy {
   dtTrigger: Subject<any> = new Subject<any>();
   challenges: Challenge[] = [];
 
-  constructor(private challengesService: ChallengesService) { }
+  constructor(private challengesService: ChallengesService,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.updateChallenges();
@@ -73,5 +75,12 @@ export class IndexComponent implements OnInit, OnDestroy {
     }
   }
 
+  invite(id: number) {
+    const urlTree: UrlTree = this.router.createUrlTree(['/invite'], {
+      queryParams: { id: id },
+    });
+    navigator.clipboard.writeText(window.location.origin + urlTree.toString());
+    this.router.navigateByUrl(urlTree);
+  }
 
 }
