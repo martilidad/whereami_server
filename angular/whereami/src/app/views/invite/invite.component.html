@@ -1,0 +1,68 @@
+<div class="container" *ngIf="challenge?.Challenge_Locations?.length != 0">
+  <div class="row justify-content-center">
+    <div class="col-6">
+      <div class="card border-dark text-center">
+        <div class="card-body">
+          <h5 class="card-title">Challenge invite</h5>
+          <h6 class="card-subtitle text-muted">
+            Find {{ challenge?.Challenge_Locations?.length }} locations in
+            {{ challenge?.Name }} within {{ challenge?.Time }} seconds
+            each.
+          </h6>
+          <p></p>
+          <div class="container">
+            <div class="row justify-content-center" >
+              <google-map #map height="60vh" width="100%" [options]="mapOptions">
+              </google-map>
+            </div>
+            <div class="row justify-content-center text-muted small">
+              Click on start once you (and your friends) are ready.
+            </div>
+            <div class="row justify-content-center" *ngIf="usersHere.length > 1">There are {{usersHere.length}} users here: {{usersHere.toString()}}</div>
+            <div class="row justify-content-center" *ngIf="usersHere.length <= 1">There are no other users here.</div>
+            <div class="row justify-content-center" *ngIf="otherUsers.length > 0">There are {{otherUsers.length}} users playing or finished: {{otherUsers.toString()}}</div>
+            <div class="row justify-content-center" *ngIf="otherUsers.length == 0">There are no users playing or finished.</div>
+          </div>
+        </div>
+        <p></p>
+        <div class="row justify-content-center">
+          <div class="col-2">
+            <div class="form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                [checked]="autoStart"
+                (change)="autoStartCheckEvent($event)"
+              />
+              <label for="autostart" class="form-check-label">autostart</label>
+            </div>
+          </div>
+        </div>
+        <div class="row justify-content-center mb-4">
+          <div class="col-6">
+            <div class="btn-group" role="group" aria-label="Basic example">
+              <a class="btn btn-danger" href="/">Main Menu</a>
+              <a routerLink="/startChallenge" [queryParams]="{ id: id }" routerLinkActive="active" class="btn btn-primary">Start</a>
+              <a class="btn btn-warning" id="invite" (click)="copyInviteLink()">Copy invite link</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div #endGame *ngIf="challenge?.Challenge_Locations?.length == 0" id="endGame" class="container">
+  <div class="row justify-content-center">
+    <h1 class="text-center">You already beat this Map!</h1>
+  </div>
+  <div class="row justify-content-center">
+  <div class="btn-group col-4" role="group" aria-label="Basic example">
+    <a class="btn btn-large btn-primary" routerLink="/" routerLinkActive="active">Main Menu</a>
+    <a class="btn btn-large btn-secondary" routerLink="/startChallenge"  [queryParams]="{id: id, ignorePreviousGuesses: true}" routerLinkActive="active">
+      Replay(unranked)
+    </a>
+    <a class="btn btn-large btn-success" routerLink="/challengeOverview"
+       [queryParams]="{id: this.id}" routerLinkActive="active" >Overview</a>
+    </div>
+    <div class="row justify-content-center">
+</div>

@@ -30,6 +30,7 @@ import { ChallengeScoresComponent } from './views/index/challenge-scores/challen
 import { RoundMapComponent } from './embedabble/round-map/round-map.component';
 import { ChallengeOverviewComponent } from './views/challenge-overview/challenge-overview.component';
 import { ADDITIONAL_PROVIDERS } from 'src/environments/environment';
+import { InviteComponent } from './views/invite/invite.component';
 
 
 @NgModule({
@@ -50,13 +51,14 @@ import { ADDITIONAL_PROVIDERS } from 'src/environments/environment';
     ChallengeFormComponent,
     ChallengeScoresComponent,
     RoundMapComponent,
-    ChallengeOverviewComponent
+    ChallengeOverviewComponent,
+    InviteComponent
   ],
   imports: [
+    AppRoutingModule,
     BrowserModule,
     HttpClientModule,
     HttpClientXsrfModule,
-    AppRoutingModule,
     RouterModule,
     FormsModule,
     NgbModule,

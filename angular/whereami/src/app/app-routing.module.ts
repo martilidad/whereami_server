@@ -7,11 +7,16 @@ import {NotFoundComponent} from "./views/not-found/not-found.component";
 import {CreateGameComponent} from "./views/create-game/create-game.component";
 import {StartChallengeComponent} from "./views/start-challenge/start-challenge.component";
 import {ChallengeOverviewComponent} from "./views/challenge-overview/challenge-overview.component";
+import { InviteComponent } from './views/invite/invite.component';
 
 const routes: Routes = [
   {
     path:"",
     component: IndexComponent,
+  },
+  {
+    path:"invite",
+    component: InviteComponent
   },
   {
     path:"createGame",
