@@ -1,8 +1,7 @@
-import { AfterContentInit, Component, OnInit, ViewChild } from '@angular/core';
-import { GoogleMap } from '@angular/google-maps';
+import { AfterContentInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
+import type { GoogleMap } from '@angular/google-maps';
 import { ActivatedRoute, Router, UrlTree } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { ChallengeLocationImpl } from 'src/app/model/game-model/challenge-location';
+import { GOOGLE } from 'src/app/app.module';
 import {
   boundsFromChallenge,
   RuntimeChallenge,
@@ -35,20 +34,24 @@ export class InviteComponent implements AfterContentInit {
     this.onInputChanged();
   }
 
-  mapOptions: google.maps.MapOptions = {
-    center: new google.maps.LatLng(0, 0, true),
-    zoom: 1,
-    mapTypeControl: false,
-    streetViewControl: false,
-    mapTypeId: google.maps.MapTypeId.ROADMAP,
-  };
+  mapOptions: google.maps.MapOptions;
 
   constructor(
     private challengesService: ChallengesService,
     private route: ActivatedRoute,
     private challengeStatusService: ChallengeStatusService,
-    private router: Router
-  ) {}
+    private router: Router,
+    @Inject(GOOGLE) private google_ns: typeof google
+  ) {
+
+    this.mapOptions = {
+      center: new google_ns.maps.LatLng(0, 0, true),
+      zoom: 1,
+      mapTypeControl: false,
+      streetViewControl: false,
+      mapTypeId: google_ns.maps.MapTypeId.ROADMAP,
+    };
+  }
 
   ngAfterContentInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -100,7 +103,7 @@ export class InviteComponent implements AfterContentInit {
   onInputChanged() {
     if (this._map && this.challenge) {
       let bounds: google.maps.LatLngBounds = boundsFromChallenge(
-        this.challenge
+        this.challenge, this.google_ns
       );
       this._map.fitBounds(bounds);
       let map = this._map.googleMap!;

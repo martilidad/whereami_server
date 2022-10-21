@@ -38,6 +38,7 @@
       "name": "ng test",
       "type": "chrome",
       "request": "launch",
+      "sourceMaps": true,
       "preLaunchTask": "npm: test",
       "url": "http://localhost:9876/debug.html",
       "webRoot": "${workspaceFolder}/angular/whereami",
@@ -46,6 +47,25 @@
         "webpack:/src/*": "${webRoot}/src/*",
         "webpack:/*": "*",
         "webpack:/./~/*": "${webRoot}/node_modules/*"
+      }
+    },
+    {
+      "name": "run karma with debugger",
+      "type": "chrome",
+      "request": "attach",
+      "sourceMaps": true,
+      "preLaunchTask": "npm: test-debug",
+      "address": "localhost",
+      "port": 9333,
+      "webRoot": "${workspaceFolder}/angular/whereami",
+      "sourceMapPathOverrides": {
+        "webpack:/./*": "${webRoot}/*",
+        "webpack:/src/*": "${webRoot}/src/*",
+        "webpack:/*": "*",
+        "webpack:/./~/*": "${webRoot}/node_modules/*"
+      },
+      "pathMapping": {
+        "/_karma_webpack_": "${webRoot}"
       }
     }
   ],

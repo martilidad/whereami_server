@@ -1,8 +1,9 @@
-import {Component, TemplateRef, ViewChild} from '@angular/core';
-import {GoogleMap} from "@angular/google-maps";
+import {Component, Inject, TemplateRef, ViewChild} from '@angular/core';
+import type {GoogleMap} from "@angular/google-maps";
 import {DrawingManagerComponent} from "./drawing-manager/drawing-manager.component";
 import {HandPickedManagerComponent} from "./hand-picked/hand-picked-manager.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import { GOOGLE } from 'src/app/app.module';
 
 @Component({
   selector: 'app-create-game',
@@ -29,15 +30,15 @@ export class CreateGameComponent {
     mapTypeId: 'roadmap'
   };
 
-  constructor(public modalService: NgbModal) {
+  constructor(public modalService: NgbModal, @Inject(GOOGLE) private google_ns: typeof google) {
   }
 
   @ViewChild('map')
   set map(map: GoogleMap) {
     if(map) {
-      map.fitBounds(new google.maps.LatLngBounds(
-        new google.maps.LatLng(70.4043, -143.5291),	//Top-left
-        new google.maps.LatLng(-46.11251, 163.4288)	 //Bottom-rigt
+      map.fitBounds(new this.google_ns.maps.LatLngBounds(
+        new this.google_ns.maps.LatLng(70.4043, -143.5291),	//Top-left
+        new this.google_ns.maps.LatLng(-46.11251, 163.4288)	 //Bottom-rigt
       ));
     }
   }

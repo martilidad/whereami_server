@@ -11,7 +11,7 @@ export interface RuntimeChallenge {
 
 }
 
-export function boundsFromChallenge(challenge: RuntimeChallenge) {
+export function boundsFromChallenge(challenge: RuntimeChallenge, google_ns: typeof google) {
   const boundary_array = challenge.boundary_array;
   const challenge_Locations = challenge.Challenge_Locations;
   let bounds: google.maps.LatLngBounds;
@@ -36,7 +36,7 @@ export function boundsFromChallenge(challenge: RuntimeChallenge) {
         lng: boundary_array[0].Long,
       }
     );
-    bounds = boundsCandidate.contains(new ChallengeLocationImpl(challenge_Locations[0]).toLatLng()) ? boundsCandidate : boundsCandidate2;
+    bounds = boundsCandidate.contains(new ChallengeLocationImpl(challenge_Locations[0]).toLatLng(google_ns)) ? boundsCandidate : boundsCandidate2;
   } else {
     bounds = new google.maps.LatLngBounds();
     boundary_array.forEach((latLng) => bounds.extend({ lat: latLng.Lat, lng: latLng.Long })

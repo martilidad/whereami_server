@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { GoogleMapStubComponent, GOOGLE_MAP_STUB, GOOGLE_TESTING_PROVIDER } from 'src/app/Test/web-socket-service-spy.spec';
 
 import { CoverageToggleComponent } from './coverage-toggle.component';
 
@@ -8,7 +9,8 @@ describe('CoverageToggleComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CoverageToggleComponent ]
+      declarations: [ CoverageToggleComponent],
+      providers: [GOOGLE_TESTING_PROVIDER, GOOGLE_MAP_STUB]
     })
     .compileComponents();
   });

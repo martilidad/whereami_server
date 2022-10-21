@@ -1,55 +1,65 @@
-import {Component, Inject, Input, OnDestroy, OnInit} from '@angular/core';
-import {GoogleMap} from "@angular/google-maps";
-import {NonNullAssert} from "@angular/compiler";
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { GoogleMap } from '@angular/google-maps';
+import { NonNullAssert } from '@angular/compiler';
+import { GOOGLE } from 'src/app/app.module';
 
-export interface DrawingEvents extends google.maps.drawing.OverlayCompleteEvent {
+export interface DrawingEvents
+  extends google.maps.drawing.OverlayCompleteEvent {
   area: number;
 }
 
-
 @Component({
   selector: 'drawing-manager',
-  template: ''
+  template: '',
 })
 export class DrawingManagerComponent implements OnInit, OnDestroy {
-
   public events: any[] = [];
 
   //TODO; why this variable?
   public changed: boolean = false as boolean;
 
-  private drawingManager: any = new google.maps.drawing.DrawingManager({
-    drawingControl: true,
-    drawingControlOptions: {
-      position: google.maps.ControlPosition.TOP_CENTER,
-      drawingModes: [google.maps.drawing.OverlayType.CIRCLE, google.maps.drawing.OverlayType.POLYLINE, google.maps.drawing.OverlayType.RECTANGLE]
-    },
-    circleOptions: {
-      clickable: false,
-      editable: true
-    },
-    rectangleOptions: {
-      clickable: false,
-      editable: true
-    },
-    polygonOptions: {
-      clickable: false,
-      editable: true
-    }
-  })
+  private drawingManager: google.maps.drawing.DrawingManager;
 
-  constructor(@Inject(GoogleMap) private parent: GoogleMap) {
+  constructor(
+    @Inject(GoogleMap) private parent: GoogleMap,
+    @Inject(GOOGLE) private google_ns: typeof google
+  ) {
+    this.drawingManager = new google_ns.maps.drawing.DrawingManager({
+      drawingControl: true,
+      drawingControlOptions: {
+        position: google_ns.maps.ControlPosition.TOP_CENTER,
+        drawingModes: [
+          google_ns.maps.drawing.OverlayType.CIRCLE,
+          google_ns.maps.drawing.OverlayType.POLYLINE,
+          google_ns.maps.drawing.OverlayType.RECTANGLE,
+        ],
+      },
+      circleOptions: {
+        clickable: false,
+        editable: true,
+      },
+      rectangleOptions: {
+        clickable: false,
+        editable: true,
+      },
+      polygonOptions: {
+        clickable: false,
+        editable: true,
+      },
+    });
   }
 
   @Input()
   set hidden(hidden: boolean) {
     if (hidden) {
       this.drawingManager.setMap(null);
-      this.events.forEach(e => e.overlay.setMap(null));
+      this.events.forEach((e) => e.overlay.setMap(null));
     } else {
       if (this.parent.googleMap instanceof google.maps.Map) {
         this.drawingManager.setMap(this.parent.googleMap);
-        this.events.forEach(e => e.overlay.setMap(<google.maps.Map>this.parent.googleMap));
+        this.events.forEach((e) =>
+          e.overlay.setMap(<google.maps.Map>this.parent.googleMap)
+        );
       }
     }
   }
@@ -59,75 +69,89 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.drawingManager.setMap(this.parent.googleMap);
-    google.maps.event.addListener(this.drawingManager, 'overlaycomplete', this.overlayCompleteHandler)
-    // @ts-ignore
-    if (!google.maps.Polygon.prototype.getBounds) {
-      // @ts-ignore
-      google.maps.Polygon.prototype.getBounds = function () {
-        var bounds = new google.maps.LatLngBounds();
-        this.getPath().forEach(function (element, index) {
-          bounds.extend(element);
-        });
-        return bounds;
-      }
-    }
+    this.drawingManager.setMap(this.parent.googleMap!);
+    this.google_ns.maps.event.addListener(
+      this.drawingManager,
+      'overlaycomplete',
+      this.overlayCompleteHandler
+    );
   }
 
   public clear() {
-    this.events.forEach(e => e.overlay.setMap(null));
+    this.events.forEach((e) => e.overlay.setMap(null));
     this.events = [];
     this.changed = false;
   }
 
   //TODO fix event typing
   //if you declare it regularly it is not an instance function! -_-
-  private overlayCompleteHandler: Function = (event: google.maps.drawing.OverlayCompleteEvent) => {
-    if (event.type === 'circle' || event.type === 'rectangle' || event.type === 'polygon') { // rectangle polygon circle
+  private overlayCompleteHandler: Function = (
+    event: google.maps.drawing.OverlayCompleteEvent
+  ) => {
+    if (
+      event.type === 'circle' ||
+      event.type === 'rectangle' ||
+      event.type === 'polygon'
+    ) {
+      // rectangle polygon circle
       let drawEvent = <DrawingEvents>event;
       this.changed = true;
-      drawEvent.area = DrawingManagerComponent.calculateEventArea(drawEvent)
+      drawEvent.area = DrawingManagerComponent.calculateEventArea(drawEvent);
       this.events.push(drawEvent);
     }
-  }
+  };
 
   private static calculateEventArea(event: DrawingEvents): number {
     switch (event.overlay!.constructor) {
       case google.maps.Circle:
-        return ((<google.maps.Circle>event.overlay).getRadius() ** 2) * Math.PI;
+        return (<google.maps.Circle>event.overlay).getRadius() ** 2 * Math.PI;
       case google.maps.Polygon:
-        return google.maps.geometry.spherical.computeArea(((<google.maps.Polygon>event.overlay).getPath()));
+        return google.maps.geometry.spherical.computeArea(
+          (<google.maps.Polygon>event.overlay).getPath()
+        );
       case google.maps.Rectangle:
         let bounds = (<google.maps.Rectangle>event.overlay).getBounds()!;
         let southWest = bounds.getSouthWest();
         let northEast = bounds.getNorthEast();
-        let lngDist = DrawingManagerComponent.calcCrow(southWest, new google.maps.LatLng(southWest.lat(), northEast.lng()));
-        let latDist = DrawingManagerComponent.calcCrow(new google.maps.LatLng(southWest.lat(), northEast.lng()), northEast);
+        let lngDist = DrawingManagerComponent.calcCrow(
+          southWest,
+          new google.maps.LatLng(southWest.lat(), northEast.lng())
+        );
+        let latDist = DrawingManagerComponent.calcCrow(
+          new google.maps.LatLng(southWest.lat(), northEast.lng()),
+          northEast
+        );
         return lngDist * latDist;
       default:
-        throw new Error("unknown event, aborting map creation");
+        throw new Error('unknown event, aborting map creation');
     }
   }
 
-
   public randomPoint = () => {
     if (this.events.length == 0) {
-      throw new Error("no events");
+      throw new Error('no events');
     }
-    let areaSum = this.events.map(event => event.area).reduce((a, b) => a + b);
+    let areaSum = this.events
+      .map((event) => event.area)
+      .reduce((a, b) => a + b);
     if (areaSum == Number.MAX_VALUE || areaSum == Infinity) {
-      throw new Error("areaSum overflow");
+      throw new Error('areaSum overflow');
     }
     let r = Math.random() * areaSum;
     let sum = 0;
     for (let i = 0; i < this.events.length; i++) {
       sum += this.events[i].area;
-      if (r <= sum) return DrawingManagerComponent.pointFromEvent(this.events[i]);
+      if (r <= sum)
+        return DrawingManagerComponent.pointFromEvent(this.events[i]);
     }
     //should not happen
-    console.log("Choosing random overlay failed, using last overlay for one point.");
-    return DrawingManagerComponent.pointFromEvent(this.events[this.events.length - 1]);
-  }
+    console.log(
+      'Choosing random overlay failed, using last overlay for one point.'
+    );
+    return DrawingManagerComponent.pointFromEvent(
+      this.events[this.events.length - 1]
+    );
+  };
 
   private static pointFromEvent(event: DrawingEvents) {
     switch (event.overlay!.constructor) {
@@ -136,21 +160,31 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
         let overlay = <google.maps.Polygon | google.maps.Circle>event.overlay;
         //this will only trigger client side stuff, let's just find a point
         for (let i = 0; i < 100; i++) {
-          let point = DrawingManagerComponent.randomPointFromBounds(this.getBounds(overlay));
+          let point = DrawingManagerComponent.randomPointFromBounds(
+            this.getBounds(overlay)
+          );
           if (DrawingManagerComponent.eventContains(event, point)) {
             return point;
           }
         }
-        console.log("could not find a point for crazy shape, using random point within bounds.");
-        return DrawingManagerComponent.randomPointFromBounds(this.getBounds(overlay));
+        console.log(
+          'could not find a point for crazy shape, using random point within bounds.'
+        );
+        return DrawingManagerComponent.randomPointFromBounds(
+          this.getBounds(overlay)
+        );
       case google.maps.Rectangle:
-        return DrawingManagerComponent.randomPointFromBounds((<google.maps.Rectangle>event.overlay).getBounds()!);
+        return DrawingManagerComponent.randomPointFromBounds(
+          (<google.maps.Rectangle>event.overlay).getBounds()!
+        );
       default:
-        throw new Error("unknown event, aborting map creation");
+        throw new Error('unknown event, aborting map creation');
     }
   }
 
-  private static getBounds(element: google.maps.Circle | google.maps.Polygon): google.maps.LatLngBounds {
+  private static getBounds(
+    element: google.maps.Circle | google.maps.Polygon
+  ): google.maps.LatLngBounds {
     if (element instanceof google.maps.Polygon) {
       let bounds = new google.maps.LatLngBounds();
       element.getPath().forEach((element) => bounds.extend(element));
@@ -160,21 +194,17 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
     }
   }
 
-
-  private static
-
-  randomPointFromBounds(bounds
-                          :
-                          google.maps.LatLngBounds
-  ):
-    google.maps.LatLng {
+  private static randomPointFromBounds(
+    bounds: google.maps.LatLngBounds
+  ): google.maps.LatLng {
     let southWest = bounds.getSouthWest();
     let northEast = bounds.getNorthEast();
     let lngSpan = northEast.lng() - southWest.lng();
     let latSpan = northEast.lat() - southWest.lat();
     return new google.maps.LatLng(
       southWest.lat() + latSpan * Math.random(),
-      southWest.lng() + lngSpan * Math.random());
+      southWest.lng() + lngSpan * Math.random()
+    );
   }
 
   /**
@@ -183,23 +213,22 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
    * @param latLng
    * @private
    */
-  private static
-
-  eventContains(event
-                  :
-                  any, latLng
-                  :
-                  google.maps.LatLng
-  ) {
+  private static eventContains(event: any, latLng: google.maps.LatLng) {
     switch (event.type) {
       case 'polygon':
-        return google.maps.geometry.poly.containsLocation(latLng, event.overlay);
+        return google.maps.geometry.poly.containsLocation(
+          latLng,
+          event.overlay
+        );
       case 'circle':
-        return DrawingManagerComponent.calcCrow(latLng, event.overlay.getCenter()) <= event.overlay.getRadius();
+        return (
+          DrawingManagerComponent.calcCrow(latLng, event.overlay.getCenter()) <=
+          event.overlay.getRadius()
+        );
       case 'rectangle':
         return event.overlay.getBounds().contains(latLng);
       default:
-        throw new Error("unkown event, aborting map creation");
+        throw new Error('unkown event, aborting map creation');
     }
   }
 
@@ -216,7 +245,8 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
     let rad1 = DrawingManagerComponent.toRad(p1.lat());
     let rad2 = DrawingManagerComponent.toRad(p2.lat());
 
-    let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    let a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(rad1) * Math.cos(rad2);
     let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
@@ -224,7 +254,6 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
 
   // Converts numeric degrees to radians
   private static toRad(Value: number): number {
-    return Value * Math.PI / 180;
+    return (Value * Math.PI) / 180;
   }
-
 }

@@ -10,6 +10,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {GoogleMap} from "@angular/google-maps";
+import { GOOGLE } from 'src/app/app.module';
 
 const INACTIVE_MARKER_URL = "/static/ng/assets/marker.png";
 
@@ -23,7 +24,7 @@ export class HandPickedManagerComponent {
   private _markers: google.maps.Marker[] = []
   private activeMarker!: google.maps.Marker | null
   private dragStartPos: any;
-  private streetViewService: google.maps.StreetViewService = new google.maps.StreetViewService();
+  private streetViewService: google.maps.StreetViewService;
   private pano: google.maps.StreetViewPanorama | undefined;
   @Output()
   public statusTextEmitter = new EventEmitter<string>();
@@ -34,12 +35,26 @@ export class HandPickedManagerComponent {
 
   public changed: boolean = false as boolean;
 
-  constructor(@Inject(GoogleMap) private parent: GoogleMap) {
+  constructor(@Inject(GoogleMap) private parent: GoogleMap, @Inject(GOOGLE) private google_ns: typeof google) {
+    this.streetViewService = new this.google_ns.maps.StreetViewService();
+    this.inactiveMarkerIcon = {
+      url: INACTIVE_MARKER_URL,
+      scaledSize: new this.google_ns.maps.Size(27, 43)
+    };
+    this.activeMarkerIcon = {
+      path: "M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
+      fillColor: "blue",
+      fillOpacity: 0.6,
+      strokeWeight: 0,
+      rotation: 0,
+      scale: 2,
+      anchor: new this.google_ns.maps.Point(15, 30),
+    };
   }
 
   @ViewChild("panoDiv", {static: true})
   set panoDiv(value: ElementRef) {
-    this.pano = new google.maps.StreetViewPanorama(value.nativeElement);
+    this.pano = new this.google_ns.maps.StreetViewPanorama(value.nativeElement);
   }
 
 
@@ -47,7 +62,7 @@ export class HandPickedManagerComponent {
   set hidden(hidden: boolean) {
     if (this.parent.googleMap instanceof google.maps.Map) {
       if (hidden) {
-        google.maps.event.clearListeners(this.parent.googleMap, 'click');
+        this.google_ns.maps.event.clearListeners(this.parent.googleMap, 'click');
       } else {
         this.parent.googleMap.addListener("click", (event: google.maps.MapMouseEvent | google.maps.IconMouseEvent) => {
           this.changed = true;
@@ -68,7 +83,7 @@ export class HandPickedManagerComponent {
     this.statusText = "";
     if (status === "OK") {
       const location = data.location;
-      const marker = new google.maps.Marker({
+      const marker = new this.google_ns.maps.Marker({
         position: location.latLng,
         map: this.parent.googleMap,
         title: location.description,
@@ -85,20 +100,9 @@ export class HandPickedManagerComponent {
   }
 
   //not static because it needs Maps api import!
-  private readonly inactiveMarkerIcon = {
-    url: INACTIVE_MARKER_URL,
-    scaledSize: new google.maps.Size(27, 43)
-  };
+  private readonly inactiveMarkerIcon;
 
-  private readonly activeMarkerIcon = {
-    path: "M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
-    fillColor: "blue",
-    fillOpacity: 0.6,
-    strokeWeight: 0,
-    rotation: 0,
-    scale: 2,
-    anchor: new google.maps.Point(15, 30),
-  };
+  private readonly activeMarkerIcon;
 
 
   activateMarker(marker: google.maps.Marker) {
@@ -110,8 +114,8 @@ export class HandPickedManagerComponent {
     }
     this.activeMarker = marker;
     if (this.pano) {
-      google.maps.event.clearListeners(this.pano, "position_changed");
-      this.pano = new google.maps.StreetViewPanorama(document.getElementById("pano") as HTMLElement);
+      this.google_ns.maps.event.clearListeners(this.pano, "position_changed");
+      this.pano = new this.google_ns.maps.StreetViewPanorama(document.getElementById("pano") as HTMLElement);
       let position;
       if(marker.getPosition && (position = marker.getPosition())) {
         this.pano.setPosition(position);
