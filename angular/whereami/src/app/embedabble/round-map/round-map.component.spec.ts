@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GOOGLE_TESTING_PROVIDER } from 'src/app/Test/web-socket-service-spy.spec';
+import { GOOGLE_TESTING_PROVIDER } from 'src/app/Test/testutils.spec';
 
 import { RoundMapComponent } from './round-map.component';
 

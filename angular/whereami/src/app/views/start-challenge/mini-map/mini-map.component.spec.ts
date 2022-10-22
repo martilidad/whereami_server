@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GoogleMapStubComponent, GOOGLE_MAP_STUB, GOOGLE_TESTING_PROVIDER } from 'src/app/Test/web-socket-service-spy.spec';
+import { GoogleMapStubComponent, GOOGLE_MAP_STUB, GOOGLE_TESTING_PROVIDER } from 'src/app/Test/testutils.spec';
 
 import { MiniMapComponent } from './mini-map.component';
 

@@ -1,7 +1,7 @@
 
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
-import { WebSocketServiceSpy } from 'src/app/Test/web-socket-service-spy.spec';
+import { WebSocketServiceSpy } from 'src/app/Test/testutils.spec';
 import { UserService } from '../user/user.service';
 
 import { ChallengeStatusService } from './challenge-status.service';

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorHandler } from 'src/app/http-error-handler.service';
-import { GOOGLE_TESTING_PROVIDER } from 'src/app/Test/web-socket-service-spy.spec';
+import { GOOGLE_TESTING_PROVIDER } from 'src/app/Test/testutils.spec';
 
 import { DrawnGameFormComponent } from './drawn-game-form.component';
 

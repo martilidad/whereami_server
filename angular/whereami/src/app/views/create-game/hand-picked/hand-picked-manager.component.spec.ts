@@ -4,7 +4,7 @@ import { HttpErrorHandler } from 'src/app/http-error-handler.service';
 import {
   GOOGLE_MAP_STUB,
   GOOGLE_TESTING_PROVIDER,
-} from 'src/app/Test/web-socket-service-spy.spec';
+} from 'src/app/Test/testutils.spec';
 
 import { HandPickedManagerComponent } from './hand-picked-manager.component';
 

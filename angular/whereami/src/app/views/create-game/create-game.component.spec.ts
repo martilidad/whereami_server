@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GoogleMap } from '@angular/google-maps';
 import { HttpErrorHandler } from 'src/app/http-error-handler.service';
-import { GoogleMapStubComponent, GOOGLE_TESTING_PROVIDER } from 'src/app/Test/web-socket-service-spy.spec';
+import { GoogleMapStubComponent, GOOGLE_TESTING_PROVIDER } from 'src/app/Test/testutils.spec';
 
 import { CreateGameComponent } from './create-game.component';
 

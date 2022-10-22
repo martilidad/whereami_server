@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { GOOGLE_TESTING_PROVIDER } from 'src/app/Test/web-socket-service-spy.spec';
+import { GOOGLE_TESTING_PROVIDER } from 'src/app/Test/testutils.spec';
 
 import { StreetViewPlaceService } from './street-view-place.service';
 
