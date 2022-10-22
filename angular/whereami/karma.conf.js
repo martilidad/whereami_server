@@ -8,6 +8,7 @@ module.exports = function (config) {
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
+      require('karma-firefox-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
       require('@angular-devkit/build-angular/plugins/karma')
@@ -26,6 +27,29 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
+      check: {
+        emitWarning: false,
+        global: {
+          statements: 33,
+          // branches: 50, not enabled for now
+          functions: 33,
+          lines: 33,
+          excludes: [
+            'src\app\app.module.ts',
+            'src\app\app-routing.module.ts'
+          ]
+        },
+        // each: { not enabled for now
+        //   statements: 1,
+        //   branches: 50,
+        //   functions: 33,
+        //   lines: 33,
+        //   excludes: [
+        //     'src\app\app.module.ts',
+        //     'src\app\app-routing.module.ts'
+        //   ]
+        // }
+      },
       dir: require('path').join(__dirname, './coverage/whereami'),
       subdir: '.',
       reporters: [

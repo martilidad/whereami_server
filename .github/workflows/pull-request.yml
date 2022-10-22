@@ -1,0 +1,28 @@
+name: Create and publish a Docker image
+
+on:
+  pull_request:
+    branches:
+      - angular
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: NPM install dependencies
+        run: npm install
+        working-directory: ./angular/whereami
+      
+      - name: Test Angular
+        run: npm run test:ci
+        working-directory: ./angular/whereami
