@@ -1,14 +1,13 @@
 import {Inject, Injectable} from '@angular/core';
 import {ChallengeStatus} from "../../model/status/challenge-status";
-import {BehaviorSubject, delayWhen, map, Observable, of, timer} from "rxjs";
+import {BehaviorSubject, map, Observable} from "rxjs";
 import {UserChallengeStatus} from "../../model/status/user-challenge-status";
-import {webSocket, WebSocketSubject} from "rxjs/webSocket";
 import {UserService} from "../user/user.service";
 import {ChallengeStatusEvent, StatusEventType} from "../../model/status/challenge-status-event";
-import {User} from "../user/user";
 import { BACKEND_HOST } from 'src/environments/environment';
 import { computeIfAbsent } from '../utils';
 import { WebSocketFactoryService } from './web-socket-factory.service';
+import { WebSocketSubject } from 'rxjs/webSocket';
 
 //typescript do be like that
 export type BoundChallengeStatusService = typeof ChallengeStatusService.BoundChallengeStatusService.prototype
@@ -21,16 +20,13 @@ export class ChallengeStatusService {
 
   private bindingsMap: Map<number, BoundChallengeStatusService> = new Map();
 
-  constructor(private userService: UserService, private wsFactory: WebSocketFactoryService) {
-    //TODO auth via jwt
-  }
+  constructor(private userService: UserService, private wsFactory: WebSocketFactoryService) {}
 
   public bind(id: number) : BoundChallengeStatusService {
     return computeIfAbsent(this.bindingsMap, id, (id) => new ChallengeStatusService.BoundChallengeStatusService(this, id));
   }
 
   private getWebSocket(challengeId: number): WebSocketSubject<ChallengeStatusEvent> {
-    //TODO fix ws vs wss
     return this.wsFactory.webSocket<ChallengeStatusEvent>(`${this.protocol}//${this.hostName}/ws/challenge/${challengeId}/?token=${
       this.userService.token}`)
   }
@@ -106,6 +102,7 @@ export class ChallengeStatusService {
       return new Map([...map.entries()].filter( it => it[1].sync_time >= this.last_resync - this.calculateDelay()));
     }
 
+    // TODO is this really needed?
     private calculateDelay(): number {
       let now = new Date()  
       let utcMilllisecondsSinceEpoch = now.getTime() + (now.getTimezoneOffset() * 60 * 1000)  

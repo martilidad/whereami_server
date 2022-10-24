@@ -30,10 +30,10 @@ module.exports = function (config) {
       check: {
         emitWarning: false,
         global: {
-          statements: 33,
+          statements: 40,
           // branches: 50, not enabled for now
           functions: 33,
-          lines: 33,
+          lines: 40,
           excludes: [
             'src\app\app.module.ts',
             'src\app\app-routing.module.ts'
@@ -54,7 +54,8 @@ module.exports = function (config) {
       subdir: '.',
       reporters: [
         { type: 'html' },
-        { type: 'text-summary' }
+        { type: 'text-summary' },
+        { type: 'lcov'} //see "coverage gutters" vsc plugin
       ]
     },
     reporters: ['progress', 'kjhtml'],

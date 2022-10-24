@@ -1,6 +1,6 @@
 import { Component, InjectionToken } from '@angular/core';
 import { GoogleMap } from '@angular/google-maps';
-import { Observable, Subject } from 'rxjs';
+import { Observable, scan, Subject } from 'rxjs';
 import { GOOGLE } from '../app.module';
 
 const mockData = {
@@ -133,3 +133,26 @@ export const GOOGLE_MAP_STUB = {
   provide: GoogleMap,
   useValue: new GoogleMapStubComponent(),
 };
+
+
+/**
+ * Assert that an observable will emit all required objects. 
+ * Asserts in order and correct number of emissions. (as long as nothing else calls done)
+ * @param observable the observable to test
+ * @param expectedResults the expected emitions
+ * @param done the jasmine test finalizer callback
+ */
+export function assertEmitions<T>(observable: Observable<T>, expectedResults: T[], done: DoneFn) {
+  observable.pipe(scan<T, T[]>((acc, val) => [...acc, val], []))
+  .subscribe(emitions => {
+    emitions.forEach((emission, i) => {
+      expect(emission).toEqual(expectedResults[i]);
+    });
+    if(emitions.length == expectedResults.length) {
+      done();
+    }
+    if(emitions.length > expectedResults.length) {
+      fail("more emitions than expected");
+    }
+  })
+}
