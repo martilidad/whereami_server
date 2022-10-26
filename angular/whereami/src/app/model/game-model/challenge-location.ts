@@ -19,8 +19,8 @@ export class ChallengeLocationImpl implements ChallengeLocation{
     this.Name = other.Name
   }
 
-  public toLatLng(): google.maps.LatLng {
-    return new google.maps.LatLng(this.Lat, this.Long)
+  public toLatLng(google_ns: typeof google): google.maps.LatLng {
+    return new google_ns.maps.LatLng(this.Lat, this.Long)
   }
 
 }

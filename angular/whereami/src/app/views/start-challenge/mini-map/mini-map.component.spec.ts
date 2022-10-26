@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { GoogleMapStubComponent, GOOGLE_MAP_STUB, GOOGLE_TESTING_PROVIDER } from 'src/app/Test/testutils.spec';
 
 import { MiniMapComponent } from './mini-map.component';
 
@@ -8,7 +9,8 @@ describe('MiniMapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MiniMapComponent ]
+      declarations: [ MiniMapComponent, GoogleMapStubComponent ],
+      providers: [GOOGLE_TESTING_PROVIDER]
     })
     .compileComponents();
   });

@@ -1,33 +1,33 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {ChallengeStatus} from "../../model/status/challenge-status";
-import {BehaviorSubject, delayWhen, Observable, of, timer} from "rxjs";
+import {BehaviorSubject, map, Observable} from "rxjs";
 import {UserChallengeStatus} from "../../model/status/user-challenge-status";
-import {webSocket, WebSocketSubject} from "rxjs/webSocket";
 import {UserService} from "../user/user.service";
 import {ChallengeStatusEvent, StatusEventType} from "../../model/status/challenge-status-event";
-import {User} from "../user/user";
 import { BACKEND_HOST } from 'src/environments/environment';
+import { computeIfAbsent } from '../utils';
+import { WebSocketFactoryService } from './web-socket-factory.service';
+import { WebSocketSubject } from 'rxjs/webSocket';
 
 //typescript do be like that
 export type BoundChallengeStatusService = typeof ChallengeStatusService.BoundChallengeStatusService.prototype
 
-const PUBLISH_DELAY_SECONDS: number = 0.5;
+const PUBLISH_DELAY_SECONDS: number = 2;
 @Injectable({
   providedIn: 'root'
 })
 export class ChallengeStatusService {
 
-  constructor(private userService: UserService) {
-    //TODO auth via jwt
-  }
+  private bindingsMap: Map<number, BoundChallengeStatusService> = new Map();
+
+  constructor(private userService: UserService, private wsFactory: WebSocketFactoryService) {}
 
   public bind(id: number) : BoundChallengeStatusService {
-    return new ChallengeStatusService.BoundChallengeStatusService(this, id)
+    return computeIfAbsent(this.bindingsMap, id, (id) => new ChallengeStatusService.BoundChallengeStatusService(this, id));
   }
 
   private getWebSocket(challengeId: number): WebSocketSubject<ChallengeStatusEvent> {
-    //TODO fix ws vs wss
-    return webSocket<ChallengeStatusEvent>(`${this.protocol}//${this.hostName}/ws/challenge/${challengeId}/?token=${
+    return this.wsFactory.webSocket<ChallengeStatusEvent>(`${this.protocol}//${this.hostName}/ws/challenge/${challengeId}/?token=${
       this.userService.token}`)
   }
 
@@ -49,7 +49,7 @@ export class ChallengeStatusService {
     private own_status: ChallengeStatus | undefined;
     private _statusBehaviourSubject: BehaviorSubject<Map<string, UserChallengeStatus>> = new BehaviorSubject(this._statuses);
 
-    constructor(private readonly parent: ChallengeStatusService, private readonly id: number) {
+    constructor(parent: ChallengeStatusService, id: number) {
       this.socket = parent.getWebSocket(id)
       this.socket.subscribe(value => this.processUpdate(value))
     }
@@ -75,8 +75,6 @@ export class ChallengeStatusService {
     private processResync(event: ChallengeStatusEvent) {
       if(event.sync_time > this.last_resync) {
         this.last_resync = event.sync_time
-        this._statuses.clear()
-        this.updateStatusObservable()
         if (this.own_status) {
           //TODO find a more suitable type-"safe" "implementation for this
           // @ts-ignore
@@ -86,7 +84,7 @@ export class ChallengeStatusService {
     }
 
     private processClientUpdate(event: ChallengeStatusEvent) {
-      this._statuses.set(event.username, {username: event.username, status: event.user_data.status, round: event.user_data.round})
+      this._statuses.set(event.username, {username: event.username, status: event.user_data.status, round: event.user_data.round, sync_time: event.sync_time})
       this.updateStatusObservable()
     }
 
@@ -95,9 +93,16 @@ export class ChallengeStatusService {
     }
 
     get statusObservable(): Observable<Map<string, UserChallengeStatus>> {
-      return this._statusBehaviourSubject.pipe(delayWhen(() => timer(this.calculateDelay())));
+      return this._statusBehaviourSubject
+      .pipe(map(map => this.filterOldUsers(map)));
+      // .pipe(delayWhen(() => timer(this.calculateDelay())));
     }
 
+    private filterOldUsers(map: Map<string, UserChallengeStatus>): Map<string, UserChallengeStatus> {
+      return new Map([...map.entries()].filter( it => it[1].sync_time >= this.last_resync - this.calculateDelay()));
+    }
+
+    // TODO is this really needed?
     private calculateDelay(): number {
       let now = new Date()  
       let utcMilllisecondsSinceEpoch = now.getTime() + (now.getTimezoneOffset() * 60 * 1000)  

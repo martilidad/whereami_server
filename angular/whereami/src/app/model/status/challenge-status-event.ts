@@ -15,5 +15,5 @@ export interface ChallengeStatusEvent {
   type: StatusEventType
   username: string
   //channel name; used in BE only
-  id: string | undefined
+  id: number | undefined
 }

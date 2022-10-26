@@ -1,0 +1,8 @@
+{
+  "karmaTestExplorer.projectWorkspaces": [
+    {
+      "rootPath": "angular/whereami"
+    }
+  ],
+  "coverage-gutters.coverageBaseDir": "angular/whereami/**"
+}

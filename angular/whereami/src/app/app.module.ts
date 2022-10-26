@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { InjectionToken, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -31,7 +31,7 @@ import { RoundMapComponent } from './embedabble/round-map/round-map.component';
 import { ChallengeOverviewComponent } from './views/challenge-overview/challenge-overview.component';
 import { ADDITIONAL_PROVIDERS } from 'src/environments/environment';
 import { InviteComponent } from './views/invite/invite.component';
-
+export const GOOGLE = new InjectionToken('google');
 
 @NgModule({
   declarations: [
@@ -69,6 +69,7 @@ import { InviteComponent } from './views/invite/invite.component';
   providers: [
     HttpErrorHandler,
     MessageService,
+    {provide: GOOGLE, useFactory: () => google},
     ADDITIONAL_PROVIDERS
   ],
   bootstrap: [AppComponent]
