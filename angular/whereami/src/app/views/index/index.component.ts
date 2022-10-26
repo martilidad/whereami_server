@@ -13,8 +13,7 @@ import { Router, UrlTree } from '@angular/router';
 @Component({
   selector: 'app-index',
   templateUrl: './index.component.html',
-  styleUrls: ['./index.component.css'],
-  providers: [GamesService, ChallengesService]
+  styleUrls: ['./index.component.css']
 })
 export class IndexComponent implements OnInit, OnDestroy {
   @ViewChild(DataTableDirective, {static: false})

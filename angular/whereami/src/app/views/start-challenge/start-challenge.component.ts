@@ -1,4 +1,4 @@
-import {AfterContentInit, Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, HostListener, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {
   BoundChallengeStatusService,
@@ -17,6 +17,7 @@ import {RoundMapComponent} from "../../embedabble/round-map/round-map.component"
 import {Subscription} from "rxjs";
 import { UserChallengeStatus } from 'src/app/model/status/user-challenge-status';
 import { CheckboxControlValueAccessor } from '@angular/forms';
+import { GOOGLE } from 'src/app/app.module';
 
 
 @Component({
@@ -66,7 +67,8 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
 
   constructor(private route: ActivatedRoute,
               private challengeStatusService: ChallengeStatusService, private challengesService: ChallengesService,
-              private guessService: GuessService) {
+              private guessService: GuessService,
+              @Inject(GOOGLE) private google_ns: typeof google) {
   }
 
   ngAfterContentInit(): void {
@@ -143,7 +145,7 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
     //Challenge_Locations only contains the locations *THIS PLAYER* didn't play
     this.statusService!.postStatus({status: PlayStatus.PLAYING, round: this.serverRound()})
     let challengeLocation = new ChallengeLocationImpl(challenge.Challenge_Locations[0])
-    this.gamePano!.setLocation(challengeLocation.toLatLng())
+    this.gamePano!.setLocation(challengeLocation.toLatLng(this.google_ns))
 
     // Scoreboard & Guess button event
     // Init Timer
@@ -167,7 +169,7 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
     this.resetTimer()
     this.challenge ? this.miniMap?.reset(this.challenge) : {};
     let challengeLocation = new ChallengeLocationImpl(this.challenge!.Challenge_Locations[round])
-    this.gamePano!.setLocation(challengeLocation.toLatLng())
+    this.gamePano!.setLocation(challengeLocation.toLatLng(this.google_ns))
   }
 
   resetTimer() {
@@ -194,7 +196,7 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
   private calcPoints(): void {
     // Calculate distance between points, and convert to kilometers
     let location = new ChallengeLocationImpl(this.challenge!.Challenge_Locations[this.gameState.round.index])
-    let distance = Math.floor(StartChallengeComponent.calcDistance(this.gameState.round.guess!.toLatLng(), location.toLatLng()!) / 10) / 100;
+    let distance = Math.floor(StartChallengeComponent.calcDistance(this.gameState.round.guess!.toLatLng(this.google_ns), location.toLatLng(this.google_ns)!) / 10) / 100;
 
     // use exponential function for points calculation.
     let score = Math.floor(this.MAX_POINT_DISTANCE ** (1 - distance / this.LAST_POINT_DISTANCE));

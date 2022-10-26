@@ -1,4 +1,5 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
+import { GOOGLE } from 'src/app/app.module';
 
 @Component({
   selector: 'game-pano',
@@ -9,12 +10,14 @@ export class GamePanoComponent {
   private pano: google.maps.StreetViewPanorama | undefined;
   private startLocation: google.maps.LatLng | undefined
 
+  constructor(@Inject(GOOGLE) private google_ns: typeof google) {}
+
 
 
 
   @ViewChild("panoDiv")
   set panoDiv(panoDiv: ElementRef) {
-    this.pano = new google.maps.StreetViewPanorama(panoDiv.nativeElement, {
+    this.pano = new this.google_ns.maps.StreetViewPanorama(panoDiv.nativeElement, {
       addressControl: false,
       linksControl: false,
       showRoadLabels: false,

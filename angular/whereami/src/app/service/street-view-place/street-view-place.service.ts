@@ -1,6 +1,7 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {StreetViewPlace} from "./streetViewPlace";
 import {DrawingManagerComponent} from "../../views/create-game/drawing-manager/drawing-manager.component";
+import { GOOGLE } from 'src/app/app.module';
 
 const SEARCH_RADIUS = 10000;
 
@@ -11,7 +12,11 @@ const MAX_IGNORES = 1000;
 })
 export class StreetViewPlaceService {
 
-  private webService: google.maps.StreetViewService = new google.maps.StreetViewService()
+  private webService: google.maps.StreetViewService;
+
+  constructor(@Inject(GOOGLE) private google_ns: typeof google){
+    this.webService = new this.google_ns.maps.StreetViewService()
+  }
 
 
   public async getPlaces(pointGenerator: () => google.maps.LatLng, messageConsumer: (message: string) => {},
@@ -25,8 +30,8 @@ export class StreetViewPlaceService {
         this.webService.getPanorama({
           location: point,
           radius: SEARCH_RADIUS,
-          source: allowPhotoSpheres ? google.maps.StreetViewSource.DEFAULT : google.maps.StreetViewSource.OUTDOOR,
-          preference: google.maps.StreetViewPreference.BEST
+          source: allowPhotoSpheres ? this.google_ns.maps.StreetViewSource.DEFAULT : this.google_ns.maps.StreetViewSource.OUTDOOR,
+          preference: this.google_ns.maps.StreetViewPreference.BEST
         }, (a: google.maps.StreetViewPanoramaData | null, b) => resolve(a))
       });
       if (panoData && panoData.location && panoData.location.latLng) {
@@ -34,7 +39,7 @@ export class StreetViewPlaceService {
         //confirm this is a new place
         let newLocation = true;
         for (const i in places) {
-          const dist = DrawingManagerComponent.calcCrow(places[i].toLatLng(), latLng);
+          const dist = DrawingManagerComponent.calcCrow(places[i].toLatLng(this.google_ns), latLng);
           if (dist < minDist) {
             newLocation = false;
             ignores++;

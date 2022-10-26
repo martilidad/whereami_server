@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { GOOGLE_TESTING_PROVIDER } from 'src/app/Test/testutils.spec';
 
 import { GamePanoComponent } from './game-pano.component';
 
@@ -8,7 +9,8 @@ describe('GamePanoComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GamePanoComponent ]
+      declarations: [ GamePanoComponent ],
+      providers: [GOOGLE_TESTING_PROVIDER]
     })
     .compileComponents();
   });
