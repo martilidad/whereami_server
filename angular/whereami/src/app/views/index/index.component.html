@@ -17,7 +17,7 @@
       </thead>
       <tbody>
       <tr *ngFor="let challenge of challenges">
-        <td>{{ challenge.pub_date }}</td>
+        <td [attr.data-order]="challenge.pub_date">{{ challenge.pub_date | formatTime }}</td>
         <td>{{ challenge.game.name }}</td>
         <td>{{ challenge.location_count }}</td>
         <td>{{ challenge.time }}</td>

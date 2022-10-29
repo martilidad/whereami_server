@@ -119,7 +119,7 @@ export const GOOGLE_TESTING_PROVIDER = {
 
 @Component({
   selector: 'google-map',
-  template: '',
+  template: '<ng-content></ng-content>',
 })
 export class GoogleMapStubComponent {
   fitBounds() {}

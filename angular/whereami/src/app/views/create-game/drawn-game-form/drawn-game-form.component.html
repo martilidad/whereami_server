@@ -1,4 +1,4 @@
-<form (submit)="submit()" id="areaForm">
+<form (submit)="submit()" id="areaForm" ngNativeValidate>
   <div class="form-group">
     <label for="quantity">Numer of locations.
       (please check Streetview availability)</label>
@@ -22,6 +22,6 @@
     <div [innerText]="drawingStatusText"></div>
     <button type="button" (click)="clearDrawings()" class="btn btn-warning">Clear Drawings</button>
   </div>
-  <button type="button" (click)="submit()" class="btn btn-primary">Create</button>
+  <button type="submit" class="btn btn-primary">Create</button>
   <button type="button" (click)="cancel()" class="btn btn-danger">Cancel</button>
 </form>

@@ -31,6 +31,7 @@ import { RoundMapComponent } from './embedabble/round-map/round-map.component';
 import { ChallengeOverviewComponent } from './views/challenge-overview/challenge-overview.component';
 import { ADDITIONAL_PROVIDERS } from 'src/environments/environment';
 import { InviteComponent } from './views/invite/invite.component';
+import { FormatTimePipe } from './embedabble/format-time.pipe';
 export const GOOGLE = new InjectionToken('google');
 
 @NgModule({
@@ -52,7 +53,8 @@ export const GOOGLE = new InjectionToken('google');
     ChallengeScoresComponent,
     RoundMapComponent,
     ChallengeOverviewComponent,
-    InviteComponent
+    InviteComponent,
+    FormatTimePipe
   ],
   imports: [
     AppRoutingModule,
