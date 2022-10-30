@@ -8,7 +8,7 @@ import {
   GoogleMapStubComponent,
   GOOGLE_MAP_STUB,
   GOOGLE_TESTING_PROVIDER,
-} from 'src/app/Test/testutils.spec';
+} from 'src/app/test/testutils.spec';
 
 import { CreateGameComponent } from './create-game.component';
 import { DrawingManagerComponent } from './drawing-manager/drawing-manager.component';
