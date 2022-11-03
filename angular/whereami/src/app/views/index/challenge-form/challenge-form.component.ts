@@ -24,6 +24,11 @@ export class ChallengeFormComponent implements OnInit {
     this.maxLocations = this.calcMaxLocations()
   }
 
+  // getter is needed so the select can bind to it
+  get game() {
+    return this._game
+  }
+
   constructor(private gamesService: GamesService, private challengesService: ChallengesService) {
   }
 

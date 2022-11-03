@@ -5,12 +5,20 @@ import * as moment from 'moment';
   name: 'formatTime'
 })
 export class FormatTimePipe implements PipeTransform {
+  transform(value: string | undefined): unknown {
+    return FormatTimePipe.transform(value);
+  }
 
-  transform(value: string, ...args: unknown[]): unknown {
-    if (moment(value).isAfter(moment().subtract(1, 'days'))) {
-      return moment(value).fromNow();
+  static transform(value: string | undefined): string {
+    const momentVal = moment(value);
+    if(!momentVal.isValid()) {
+      return momentVal.format();
+    } else if (momentVal.isAfter(moment().subtract(1, 'days'))) {
+      return momentVal.fromNow();
+    } else if (momentVal.get('year') == moment().get('year')) {
+      return momentVal.local().format('DD MMM');
     } else {
-      return moment(value).format('LLLL');
+      return momentVal.local().format('YYYY-MM-DD');
     }
   }
 

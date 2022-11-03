@@ -10,7 +10,7 @@ class Location(models.Model):
     name = models.CharField(max_length=32)
     lat = models.FloatField()
     long = models.FloatField()
-    pub_date = models.DateTimeField(default=datetime.now, blank=True)
+    pub_date = models.DateTimeField(default=datetime.utcnow, blank=True)
 
 
 class Game(models.Model):
@@ -21,7 +21,7 @@ class Game(models.Model):
 class Challenge(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     time = models.IntegerField()
-    pub_date = models.DateTimeField(default=datetime.now, blank=True)
+    pub_date = models.DateTimeField(default=datetime.utcnow, blank=True)
 
 
 class ChallengeLocation(models.Model):
@@ -36,7 +36,7 @@ class Guess(models.Model):
     long = models.FloatField()
     score = models.IntegerField()
     distance = models.FloatField()
-    pub_date = models.DateTimeField(default=datetime.now, blank=True)
+    pub_date = models.DateTimeField(default=datetime.utcnow, blank=True)
 
     class Meta:
         unique_together = ('user', 'challenge_location')
