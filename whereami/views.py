@@ -14,6 +14,7 @@ from django.utils.safestring import mark_safe
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from psycopg2.errors import UniqueViolation
 
 from whereami.models import ChallengeLocation, Guess, Challenge, Game, Location
 from whereami.serializers import ChallengeSerializer, GameSerializer
@@ -161,7 +162,13 @@ def post_game(request):
         locations = data['Locations']
         with transaction.atomic():
             game = Game(name=name[:32])
-            game.save()
+            try:
+                game.save()
+            except IntegrityError as e:
+                if isinstance(e.__cause__, UniqueViolation) and e.__cause__.diag.constraint_name == 'whereami_game_name_key':
+                    return HttpResponseBadRequest("Duplicate Game Name")
+                else:
+                    return HttpResponseBadRequest()
             db_locations = Location.objects.bulk_create(
                 [Location(name=location['Name'][:32], lat=location['Lat'], long=location['Long'], game=game)
                  for location in locations])

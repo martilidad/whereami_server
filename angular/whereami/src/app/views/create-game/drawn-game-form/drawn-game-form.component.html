@@ -22,6 +22,6 @@
     <div [innerText]="drawingStatusText"></div>
     <button type="button" (click)="clearDrawings()" class="btn btn-warning">Clear Drawings</button>
   </div>
-  <button type="submit" class="btn btn-primary">Create</button>
+  <button type="submit" [disabled]="inProgress ? 'disabled': null" class="btn btn-primary">Create</button>
   <button type="button" (click)="cancel()" class="btn btn-danger">Cancel</button>
 </form>
