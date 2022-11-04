@@ -15,7 +15,6 @@ export interface DrawingEvents
 export class DrawingManagerComponent implements OnInit, OnDestroy {
   public events: any[] = [];
 
-  //TODO; why this variable?
   public changed: boolean = false as boolean;
 
   private drawingManager: google.maps.drawing.DrawingManager;
