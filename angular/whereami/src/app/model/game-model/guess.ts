@@ -8,6 +8,6 @@ export interface Guess {
   Score: number
   Distance: number
   Username: string | undefined
-  Pub_Date: Moment | undefined
+  Pub_Date: string | undefined
 
 }

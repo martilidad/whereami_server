@@ -5,6 +5,6 @@ export interface Score {
   score: number,
   distance: number,
   completed_locations: number,
-  last_interaction: Moment
+  last_interaction: string
 
 }

@@ -6,7 +6,7 @@ import {
 import { PlayStatus } from 'src/app/model/status/play-status';
 import {
   assertEmitions
-} from 'src/app/Test/testutils.spec';
+} from 'src/app/test/testutils.spec';
 import { UserService } from '../user/user.service';
 
 import { ChallengeStatusService } from './challenge-status.service';

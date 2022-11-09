@@ -28,7 +28,7 @@
             <td>{{score.distance}}</td>
             <td>{{score.name}}</td>
             <td>{{score.completed_locations}}</td>
-            <td>{{score.last_interaction}}</td>
+            <td [appDateElement]="score.last_interaction"></td>
           </tr>
         </tbody>
       </table>
@@ -54,7 +54,7 @@
               <td>{{ guess.Score }}</td>
               <td>{{ guess.Distance }}</td>
               <td>{{ guess.Username }}</td>
-              <td>{{ guess.Pub_Date }}</td>
+              <td [appDateElement]="guess.Pub_Date"></td>
             </tr>
             </tbody>
           </table>

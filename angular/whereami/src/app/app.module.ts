@@ -11,7 +11,6 @@ import {HTTP_INTERCEPTORS, HttpClientJsonpModule, HttpClientModule, HttpClientXs
 import {HttpErrorHandler} from "./http-error-handler.service";
 import {MessageService} from "./service/message.service";
 import {FormsModule} from "@angular/forms";
-import {ApiInterceptor} from "./service/api-interceptor";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {DataTablesModule} from 'angular-datatables';
 import { CreateGameComponent } from './views/create-game/create-game.component';
@@ -31,6 +30,9 @@ import { RoundMapComponent } from './embedabble/round-map/round-map.component';
 import { ChallengeOverviewComponent } from './views/challenge-overview/challenge-overview.component';
 import { ADDITIONAL_PROVIDERS } from 'src/environments/environment';
 import { InviteComponent } from './views/invite/invite.component';
+import { FormatTimePipe } from './embedabble/format-time.pipe';
+import { UnauthorizedInterceptor } from "./service/unauthorized-interceptor";
+import { DateElementDirective } from './embedabble/date-element.directive';
 export const GOOGLE = new InjectionToken('google');
 
 @NgModule({
@@ -52,7 +54,9 @@ export const GOOGLE = new InjectionToken('google');
     ChallengeScoresComponent,
     RoundMapComponent,
     ChallengeOverviewComponent,
-    InviteComponent
+    InviteComponent,
+    FormatTimePipe,
+    DateElementDirective
   ],
   imports: [
     AppRoutingModule,
@@ -70,6 +74,11 @@ export const GOOGLE = new InjectionToken('google');
     HttpErrorHandler,
     MessageService,
     {provide: GOOGLE, useFactory: () => google},
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: UnauthorizedInterceptor,
+      multi: true
+    },
     ADDITIONAL_PROVIDERS
   ],
   bootstrap: [AppComponent]

@@ -12,7 +12,7 @@ import {
 import {GoogleMap} from "@angular/google-maps";
 import { GOOGLE } from 'src/app/app.module';
 
-const INACTIVE_MARKER_URL = "/static/ng/assets/marker.png";
+const INACTIVE_MARKER_URL = "/assets/marker.png";
 
 @Component({
   selector: 'hand-picked-manager',
@@ -26,6 +26,7 @@ export class HandPickedManagerComponent {
   private dragStartPos: any;
   private streetViewService: google.maps.StreetViewService;
   private pano: google.maps.StreetViewPanorama | undefined;
+  private _hidden: boolean = true;
   @Output()
   public statusTextEmitter = new EventEmitter<string>();
 
@@ -60,7 +61,8 @@ export class HandPickedManagerComponent {
 
   @Input()
   set hidden(hidden: boolean) {
-    if (this.parent.googleMap instanceof google.maps.Map) {
+    this._hidden = hidden;
+    if (this.parent.googleMap instanceof this.google_ns.maps.Map) {
       if (hidden) {
         this.google_ns.maps.event.clearListeners(this.parent.googleMap, 'click');
       } else {
@@ -71,6 +73,10 @@ export class HandPickedManagerComponent {
         });
       }
     }
+  }
+
+  get hidden() {
+    return this._hidden;
   }
 
   private updatePano(pos: google.maps.LatLng) {

@@ -15,10 +15,10 @@ export interface DrawingEvents
 export class DrawingManagerComponent implements OnInit, OnDestroy {
   public events: any[] = [];
 
-  //TODO; why this variable?
   public changed: boolean = false as boolean;
 
   private drawingManager: google.maps.drawing.DrawingManager;
+  private _hidden: boolean = false;
 
   constructor(
     @Inject(GoogleMap) private parent: GoogleMap,
@@ -51,17 +51,22 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
 
   @Input()
   set hidden(hidden: boolean) {
+    this._hidden = hidden;
     if (hidden) {
       this.drawingManager.setMap(null);
       this.events.forEach((e) => e.overlay.setMap(null));
     } else {
-      if (this.parent.googleMap instanceof google.maps.Map) {
+      if (this.parent.googleMap instanceof this.google_ns.maps.Map) {
         this.drawingManager.setMap(this.parent.googleMap);
         this.events.forEach((e) =>
           e.overlay.setMap(<google.maps.Map>this.parent.googleMap)
         );
       }
     }
+  }
+
+  get hidden() {
+    return this._hidden;
   }
 
   ngOnDestroy(): void {

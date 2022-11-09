@@ -3,7 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
-import { ApiInterceptor } from "src/app/service/api-interceptor";
+import { ApiInterceptor } from "src/app/test/api-interceptor";
 
 export const environment = {
   production: false
