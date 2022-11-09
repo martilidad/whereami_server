@@ -25,3 +25,14 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Additional Licenses
+
+[start.wav](angular\whereami\src\assets\sound\CCLicensed\start.wav) is Licensed under the [CC BY 3.0 License](https://creativecommons.org/licenses/by/3.0/)
+Credit to [JustInvoke](https://freesound.org/people/JustInvoke/sounds/446142/).
+
+[complete.wav](angular\whereami\src\assets\sound\CCLicensed\complete.wav) is Licensed under the [CC BY 4.0 License](https://creativecommons.org/licenses/by/4.0/)
+Credit to [Headphaze](https://freesound.org/people/Headphaze/sounds/277033/).
+
+[good.mp3](angular\whereami\src\assets\sound\CCLicensed\good.mp3 ) is Licensed under the [CC BY 4.0 License](https://creativecommons.org/licenses/by/4.0/)
+Credit to [Iceofdoom](https://freesound.org/people/Iceofdoom/sounds/367190/).

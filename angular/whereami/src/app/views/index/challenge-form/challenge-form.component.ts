@@ -36,7 +36,7 @@ export class ChallengeFormComponent implements OnInit {
     this.gamesService.getGames()
       .subscribe(games => {
         this.games = games;
-        this._game = games[0] ? games[0] : undefined
+        this.game = games[0] ? games[0] : undefined
       });
   }
 
