@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Params } from '@angular/router';
 import { of } from 'rxjs';
 import { HttpErrorHandler } from 'src/app/http-error-handler.service';
-import { GOOGLE_TESTING_PROVIDER } from 'src/app/Test/testutils.spec';
+import { GOOGLE_TESTING_PROVIDER } from 'src/app/test/testutils.spec';
 
 import { StartChallengeComponent } from './start-challenge.component';
 

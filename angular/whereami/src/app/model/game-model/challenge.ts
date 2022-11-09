@@ -4,7 +4,7 @@ import {Moment} from 'moment';
 export interface Challenge {
   id: number,
   // todo proper date object
-  pub_date: Moment,
+  pub_date: string,
   location_count: number,
   time: number,
   name: string,
