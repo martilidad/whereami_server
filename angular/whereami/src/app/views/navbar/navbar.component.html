@@ -1,0 +1,19 @@
+<div ngbDropdown dropdownClass="navbar">
+  <img ngbDropdownToggle src="/assets/whereami.png" alt="Logo" style="height: 30px;">
+  <div ngbDropdownMenu>
+    <a ngbDropdownItem href="/">Main Menu</a>
+    <a ngbDropdownItem routerLink="/createGame" routerLinkActive="true">Create new game</a>
+    <div class="dropdown-divider"></div>
+      <label ngbDropdownItem for="volume">Sound volume
+        <input ngbDropdownItem id="volume" type="range" class="form-range" [(ngModel)]="volume" (change)="volumeHandler()" min="0" max="1" step="0.01">
+      </label>
+    <label ngbDropdownItem>
+      autostart
+      <input type="checkbox" [(ngModel)]="autoStart" (change)="autoStartHandler()">
+    </label>
+    <div *ngIf="this.userService.username">
+      <div class="dropdown-divider"></div>
+      <button ngbDropdownItem (click)="this.userService.logout()">Logout</button>
+    </div>
+  </div>
+</div>

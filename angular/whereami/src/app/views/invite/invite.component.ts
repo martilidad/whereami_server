@@ -1,6 +1,7 @@
 import { AfterContentInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import type { GoogleMap } from '@angular/google-maps';
 import { ActivatedRoute, Router, UrlTree } from '@angular/router';
+import { distinct, filter, from, map, mergeMap, timer } from 'rxjs';
 import { GOOGLE } from 'src/app/app.module';
 import {
   boundsFromChallenge,
@@ -13,6 +14,10 @@ import {
   ChallengeStatusService,
 } from 'src/app/service/challenge-status/challenge-status.service';
 import { ChallengesService } from 'src/app/service/challenge/challenges.service';
+import { AUTOSTART, SettingsService } from 'src/app/service/settings/settings.service';
+import { SoundService } from 'src/app/service/sound/sound.service';
+import { UserService } from 'src/app/service/user/user.service';
+import { distinctTimes } from 'src/app/service/utils';
 
 @Component({
   selector: 'app-invite',
@@ -41,7 +46,10 @@ export class InviteComponent implements AfterContentInit {
     private route: ActivatedRoute,
     private challengeStatusService: ChallengeStatusService,
     private router: Router,
-    @Inject(GOOGLE) private google_ns: typeof google
+    @Inject(GOOGLE) private google_ns: typeof google,
+    private soundService: SoundService,
+    private userService: UserService,
+    private settingsService: SettingsService
   ) {
 
     this.mapOptions = {
@@ -61,6 +69,14 @@ export class InviteComponent implements AfterContentInit {
         status: PlayStatus.INVITE_SCREEN,
         round: -1,
       });
+      this.statusService.statusObservable.pipe(mergeMap(val => from(val.values())))
+      .pipe(filter(val => val.status === PlayStatus.INVITE_SCREEN && val.username != this.userService.username))
+      //only allow one sound within 500ms
+      .pipe(distinct(()=> ({}), timer(0, 500)))
+      //one user can only create three sounds and at least five seconds apart to prevent spam
+      .pipe(distinct(val => val.username, timer(0, 5000)))
+      .pipe(distinctTimes(val => val.username, 3))
+      .subscribe(() => this.soundService.arrive());
       this.statusService.statusObservable.subscribe((value) =>
         this.autoStartIfApplicable(value)
       );
@@ -120,11 +136,11 @@ export class InviteComponent implements AfterContentInit {
   }
 
   set autoStart(value: boolean) {
-    localStorage.setItem('autostart', value.toString());
+    this.settingsService.save(value, AUTOSTART);
   }
 
   get autoStart(): boolean {
-    return localStorage.getItem('autostart') == true.toString();
+    return this.settingsService.load(AUTOSTART);
   }
 
   autoStartCheckEvent(event: Event) {
