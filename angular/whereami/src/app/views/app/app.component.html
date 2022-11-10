@@ -1,10 +1,4 @@
-<!-- <nav>
-  <ul>
-    <li><a routerLink="/" routerLinkActive="active">Index</a></li>
-    <li><a routerLink="/createGame" routerLinkActive="active">Create Game</a></li>
-    <li><a routerLink="/startChallenge"  [queryParams]="{id: '1'}" routerLinkActive="active">Start Game #1</a></li>
-  </ul>
-</nav> -->
+<app-navbar></app-navbar>
 <div class="container">
   <div class="row">
     <form *ngIf="userService.token == null" class="col-md-4 offset-md-4" (submit)="userService.login(user)" >

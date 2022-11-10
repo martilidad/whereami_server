@@ -1,14 +1,18 @@
 import { TestBed } from '@angular/core/testing';
+import { assert } from 'console';
 import { ngMocks } from 'ng-mocks';
 import { Observable } from 'rxjs';
+import { SettingsService, VOLUME } from '../settings/settings.service';
 
 import { SoundService } from './sound.service';
 
 describe('SoundService', () => {
   let service: SoundService;
+  let settingsService: SettingsService;
 
   beforeEach(() => {
-    service = new SoundService();
+    settingsService = new SettingsService();
+    service = new SoundService(settingsService);
   });
 
   it('should be created', () => {
@@ -21,7 +25,11 @@ describe('SoundService', () => {
       service.errorHandler = (v) => {
         done.fail(v.message);
       };
-      service.start().promise.then(() => done());
+      const volume = 0.33;
+      settingsService.save(volume, VOLUME);
+      const result = service.start();
+      expect(result.audio.volume).toEqual(volume);
+      result.promise.then(() => done());
     });
     it('should play arrive', (done) => {
       service.errorHandler = (v) => {

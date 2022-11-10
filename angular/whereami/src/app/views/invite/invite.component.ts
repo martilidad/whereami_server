@@ -14,6 +14,7 @@ import {
   ChallengeStatusService,
 } from 'src/app/service/challenge-status/challenge-status.service';
 import { ChallengesService } from 'src/app/service/challenge/challenges.service';
+import { AUTOSTART, SettingsService } from 'src/app/service/settings/settings.service';
 import { SoundService } from 'src/app/service/sound/sound.service';
 import { UserService } from 'src/app/service/user/user.service';
 import { distinctTimes } from 'src/app/service/utils';
@@ -47,7 +48,8 @@ export class InviteComponent implements AfterContentInit {
     private router: Router,
     @Inject(GOOGLE) private google_ns: typeof google,
     private soundService: SoundService,
-    private userService: UserService
+    private userService: UserService,
+    private settingsService: SettingsService
   ) {
 
     this.mapOptions = {
@@ -134,11 +136,11 @@ export class InviteComponent implements AfterContentInit {
   }
 
   set autoStart(value: boolean) {
-    localStorage.setItem('autostart', value.toString());
+    this.settingsService.save(value, AUTOSTART);
   }
 
   get autoStart(): boolean {
-    return localStorage.getItem('autostart') == true.toString();
+    return this.settingsService.load(AUTOSTART);
   }
 
   autoStartCheckEvent(event: Event) {

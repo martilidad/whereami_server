@@ -21,6 +21,7 @@ import { GOOGLE } from 'src/app/app.module';
 import { SoundService } from 'src/app/service/sound/sound.service';
 import { merge } from 'jquery';
 import { UserService } from 'src/app/service/user/user.service';
+import { AUTOSTART, SettingsService } from 'src/app/service/settings/settings.service';
 
 
 @Component({
@@ -73,7 +74,8 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
               private guessService: GuessService,
               @Inject(GOOGLE) private google_ns: typeof google,
               private soundService: SoundService,
-              private userService: UserService) {
+              private userService: UserService,
+              private settingsService: SettingsService) {
   }
 
   ngAfterContentInit(): void {
@@ -221,11 +223,11 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
   }
 
   set autoStart(value: boolean) {
-    localStorage.setItem("autostart", value.toString());
+    this.settingsService.save(value, AUTOSTART);
   }
 
   get autoStart(): boolean {
-    return localStorage.getItem("autostart") == true.toString();
+    return this.settingsService.load(AUTOSTART);
   }
 
   autoStartCheckEvent(event: Event) {

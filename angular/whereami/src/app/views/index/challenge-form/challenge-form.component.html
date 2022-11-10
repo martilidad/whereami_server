@@ -10,7 +10,6 @@
                     <option *ngFor="let g of games"
                             [ngValue]="g" [innerText]="g.name"></option>
                 </select>
-                <a routerLink="/createGame" routerLinkActive="true" class="btn btn-primary ms-2">Create new game</a>
             </div>
             <div class="form-group">
                 <label for="quantity">Numer of locations (max {{this.maxLocations}} locations in

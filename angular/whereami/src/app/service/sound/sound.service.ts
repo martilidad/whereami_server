@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { SettingsService, VOLUME } from '../settings/settings.service';
 
 export interface SoundResult {
   audio: HTMLAudioElement,
@@ -13,7 +14,7 @@ export class SoundService {
 
   errorHandler = (v:any) =>{};
 
-  constructor() { }
+  constructor(private settingsService: SettingsService) { }
 
   pin(): SoundResult {
     return this.play('/assets/sound/pin.mp3');
@@ -21,6 +22,7 @@ export class SoundService {
 
   private play(fileName: string): SoundResult {
     const audio = new Audio(fileName);
+    audio.volume = this.settingsService.load(VOLUME);
     return {audio: audio, promise: audio.play().catch(this.errorHandler)};
   }
 
