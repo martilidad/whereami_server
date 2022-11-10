@@ -63,12 +63,16 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
+    browsers: ['ChromeNoAudioInteract'],
     singleRun: false,
     customLaunchers: {
       ChromeDebug: {
         base: 'Chrome',
-        flags: [ '--remote-debugging-port=9333' ]
+        flags: [ '--remote-debugging-port=9333', '--autoplay-policy=no-user-gesture-required']
+      },
+      ChromeNoAudioInteract: {
+        base: 'ChromeHeadless',
+        flags: ['--autoplay-policy=no-user-gesture-required']
       }
     },
     restartOnFileChange: true

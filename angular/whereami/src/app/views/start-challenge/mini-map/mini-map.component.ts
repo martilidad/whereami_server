@@ -12,6 +12,7 @@ import { RuntimeChallenge } from '../../../model/game-model/runtime-challenge';
 import { DOCUMENT } from '@angular/common';
 import { timer } from 'rxjs';
 import { GOOGLE } from 'src/app/app.module';
+import { SoundService } from 'src/app/service/sound/sound.service';
 
 @Component({
   selector: 'mini-map',
@@ -45,7 +46,8 @@ export class MiniMapComponent implements AfterViewInit {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    @Inject(GOOGLE) private google_ns: typeof google
+    @Inject(GOOGLE) private google_ns: typeof google,
+    private soundService: SoundService
   ) {
     this.position = google_ns.maps.ControlPosition.TOP_CENTER;
     this.DEFAULT_OPTIONS = {
@@ -76,6 +78,7 @@ export class MiniMapComponent implements AfterViewInit {
   readonly DEFAULT_OPTIONS: google.maps.MapOptions;
   mapClick(event: google.maps.MapMouseEvent) {
     this.guessMarker().setPosition(event.latLng);
+    this.soundService.pin();
   }
 
   private guessMarker(): google.maps.Marker {

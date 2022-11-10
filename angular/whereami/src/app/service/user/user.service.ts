@@ -3,6 +3,8 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {User} from "./user";
 import {catchError, Observable, ReplaySubject, Subscribable, Subscription, timer} from "rxjs";
 import {HandleError, HttpErrorHandler} from "../../http-error-handler.service";
+import { SettingsService, TOKEN } from '../settings/settings.service';
+import { Optional } from 'typescript-optional';
 export class TokenResponse {
   token: string;
 
@@ -39,8 +41,8 @@ export class UserService {
     return this._token;
   }
   public set token(value: string | null) {
-    value ? localStorage.setItem("token", value) : localStorage.removeItem("token");
     this._token = value;
+    this.settingsService.saveOpt(Optional.ofNullable(value), TOKEN);
   }
 
   // the token expiration date
@@ -52,17 +54,16 @@ export class UserService {
   // error messages received from the login attempt
   public errors: any = [];
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private settingsService: SettingsService) {
     this.httpOptions = {
       headers: new HttpHeaders({'Content-Type': 'application/json'})
     };
-    let token = localStorage.getItem("token");
-    if (token) {
+    settingsService.loadOpt(TOKEN).ifPresent(token => {
       const decoded_token = this.toToken(token);
       if(decoded_token.expires > new Date()) {
         this.updateData(token)
       }
-    }
+    });
   }
 
   // Uses http.post() to get an auth token from djangorestframework-jwt endpoint
@@ -100,7 +101,7 @@ export class UserService {
     this.token = token;
     this.errors = [];
 
-    this.updateToken(this.toToken(this.token))
+    this.updateToken(this.toToken(this.token));
   }
 
   private updateToken(token: Token) {

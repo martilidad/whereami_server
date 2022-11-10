@@ -4,5 +4,6 @@
       "rootPath": "angular/whereami"
     }
   ],
-  "coverage-gutters.coverageBaseDir": "angular/whereami/**"
+  "coverage-gutters.coverageBaseDir": "angular/whereami/**",
+  "karmaTestExplorer.browser": "ChromeNoAudioInteract"
 }

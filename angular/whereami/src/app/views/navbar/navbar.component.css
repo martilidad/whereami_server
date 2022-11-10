@@ -1,0 +1,5 @@
+.navbar {
+  position: absolute;
+  right: 0px;
+  z-index: 99999;
+}
