@@ -60,8 +60,13 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
   @ViewChild("roundMap")
   roundMap: RoundMapComponent | undefined
 
+  private _gamePano: GamePanoComponent | undefined;
+
   @ViewChild("gamePano")
-  gamePano: GamePanoComponent | undefined
+  public set gamePano(value: GamePanoComponent) {
+    this._gamePano = value;
+    value.ghost().subscribe(val => this.statusService?.postGhost(val));
+  }
 
   time: number = 0;
 
@@ -89,6 +94,7 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
       .subscribe(() => this.soundService.complete());
       this.subscriptions.push(this.challengesService.getChallenge(this.id!, this.ignorePreviousGuesses!)
         .subscribe(value => this.start(value)))
+      this.statusService.ghost.subscribe(val => this._gamePano?.drawGhost(val.name, val.location));
     }))
   }
 
@@ -158,7 +164,7 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
     //Challenge_Locations only contains the locations *THIS PLAYER* didn't play
     this.statusService!.postStatus({status: PlayStatus.PLAYING, round: this.serverRound()})
     let challengeLocation = new ChallengeLocationImpl(challenge.Challenge_Locations[0])
-    this.gamePano!.setLocation(challengeLocation.toLatLng(this.google_ns))
+    this._gamePano!.setLocation(challengeLocation.toLatLng(this.google_ns))
 
     // Scoreboard & Guess button event
     // Init Timer
@@ -183,7 +189,7 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
     this.resetTimer()
     this.challenge ? this.miniMap?.reset(this.challenge) : {};
     let challengeLocation = new ChallengeLocationImpl(this.challenge!.Challenge_Locations[round])
-    this.gamePano!.setLocation(challengeLocation.toLatLng(this.google_ns))
+    this._gamePano!.setLocation(challengeLocation.toLatLng(this.google_ns))
   }
 
   resetTimer() {

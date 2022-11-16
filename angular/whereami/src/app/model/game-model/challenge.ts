@@ -1,5 +1,6 @@
 import {Game} from "./game";
 import {Moment} from 'moment';
+import { ChallengeLocation } from "./challenge-location";
 
 export interface Challenge {
   id: number,
@@ -9,5 +10,6 @@ export interface Challenge {
   time: number,
   name: string,
   //only name at the moment
-  game: Game
+  game: Game,
+  challengelocation_set: [ChallengeLocation]
 }

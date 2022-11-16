@@ -3,6 +3,7 @@ export interface ChallengeLocation {
   Lat: number
   Long: number
   Name: string
+  guessed: boolean
 }
 
 export class ChallengeLocationImpl implements ChallengeLocation{
@@ -11,12 +12,14 @@ export class ChallengeLocationImpl implements ChallengeLocation{
   Lat: number;
   Long: number;
   Name: string;
+  guessed: boolean;
 
   constructor(other: ChallengeLocation) {
     this.Challenge_Location_ID = other.Challenge_Location_ID;
     this.Lat = other.Lat
     this.Long = other.Long
     this.Name = other.Name
+    this.guessed = other.guessed
   }
 
   public toLatLng(google_ns: typeof google): google.maps.LatLng {

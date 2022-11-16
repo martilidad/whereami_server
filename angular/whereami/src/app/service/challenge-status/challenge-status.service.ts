@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {ChallengeStatus} from "../../model/status/challenge-status";
-import {BehaviorSubject, map, Observable} from "rxjs";
+import {BehaviorSubject, map, Observable, Subject} from "rxjs";
 import {UserChallengeStatus} from "../../model/status/user-challenge-status";
 import {UserService} from "../user/user.service";
 import {ChallengeStatusEvent, StatusEventType} from "../../model/status/challenge-status-event";
@@ -13,6 +13,10 @@ import { WebSocketSubject } from 'rxjs/webSocket';
 export type BoundChallengeStatusService = typeof ChallengeStatusService.BoundChallengeStatusService.prototype
 
 const PUBLISH_DELAY_SECONDS: number = 2;
+export interface Ghost{
+  name: string,
+  location: google.maps.LatLng
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -48,8 +52,11 @@ export class ChallengeStatusService {
     private _statuses: Map<string, UserChallengeStatus> = new Map<string, UserChallengeStatus>()
     private own_status: ChallengeStatus | undefined;
     private _statusBehaviourSubject: BehaviorSubject<Map<string, UserChallengeStatus>> = new BehaviorSubject(this._statuses);
+    private _ghostSubject = new Subject<Ghost>();
+    private parent: ChallengeStatusService;
 
     constructor(parent: ChallengeStatusService, id: number) {
+      this.parent = parent;
       this.socket = parent.getWebSocket(id)
       this.socket.subscribe(value => this.processUpdate(value))
     }
@@ -62,7 +69,21 @@ export class ChallengeStatusService {
         case StatusEventType.CLIENT_UPDATE:
           this.processClientUpdate(event)
           break
+        case StatusEventType.GHOST_UPDATE:
+          this.processGhostUpdate(event)
       }
+    }
+
+    private processGhostUpdate(event: ChallengeStatusEvent) {
+      if(event.location && event.username != this.parent.userService.username) {
+        this._ghostSubject.next({name: event.username, location: event.location});
+      }
+    }
+
+    public postGhost(location: google.maps.LatLng): void {
+      //TODO find a more suitable type-"safe" "implementation for this
+      // @ts-ignore
+      this.socket.next({location: location})
     }
 
     public postStatus(status: ChallengeStatus): void {
@@ -108,6 +129,10 @@ export class ChallengeStatusService {
       let utcMilllisecondsSinceEpoch = now.getTime() + (now.getTimezoneOffset() * 60 * 1000)  
       let utcSecondsSinceEpoch = Math.round(utcMilllisecondsSinceEpoch / 1000)  
       return Math.max(0, (this.last_resync + PUBLISH_DELAY_SECONDS) - utcSecondsSinceEpoch);
+    }
+
+    get ghost(): Observable<Ghost> {
+      return this._ghostSubject;
     }
   }
 
