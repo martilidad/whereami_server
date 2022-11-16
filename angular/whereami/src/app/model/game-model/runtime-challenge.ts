@@ -1,19 +1,23 @@
 import {ChallengeLocation, ChallengeLocationImpl} from "./challenge-location";
 import {LatLng} from "../lat-lng";
+import { Game } from "./game";
 
 export interface RuntimeChallenge {
+  id: number,
   Time: number,
-  Challenge_Locations: ChallengeLocation[]
+  challengelocation_set: ChallengeLocation[]
   Ignored_Count: number,
   Challenge_ID: number,
   all_locations: LatLng[],
+  location_count: number,
+  game: Game,
   Name: string
 
 }
 
 export function boundsFromChallenge(challenge: RuntimeChallenge, google_ns: typeof google) {
-  const all_locations = challenge.all_locations;
-  const challenge_Locations = challenge.Challenge_Locations;
+  const all_locations = challenge.game.locations;
+  const challenge_Locations = challenge.challengelocation_set;
   let bounds: google.maps.LatLngBounds;
   if (all_locations.length == 2 && challenge_Locations.length > 0) {
     let boundsCandidate = new google.maps.LatLngBounds(

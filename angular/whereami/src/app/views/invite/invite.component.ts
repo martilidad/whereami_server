@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import { randomInt } from 'crypto';
 import { distinct, filter, from, map, mergeMap, timer } from 'rxjs';
 import { GOOGLE } from 'src/app/app.module';
+import { PreviewMapComponent } from 'src/app/embedabble/preview-map/preview-map.component';
 import {
   boundsFromChallenge,
   RuntimeChallenge,
@@ -31,14 +32,6 @@ export class InviteComponent implements AfterContentInit {
   challenge: RuntimeChallenge | undefined;
   usersHere: string[] = [];
   otherUsers: string[] = [];
-
-  private _map: GoogleMap | undefined;
-
-  @ViewChild('map')
-  set map(value: GoogleMap) {
-    this._map = value;
-    this.onInputChanged();
-  }
 
   mapOptions: google.maps.MapOptions;
 
@@ -91,10 +84,9 @@ export class InviteComponent implements AfterContentInit {
         this.filterUsers(value)
       );
       this.challengesService
-        .getChallenge(this.id!, false)
+        .getChallengeById(this.id!)
         .subscribe((value) => {
           this.challenge = value;
-          this.onInputChanged();
         });
     });
   }
@@ -123,91 +115,6 @@ export class InviteComponent implements AfterContentInit {
         }
       });
     }
-  }
-
-  private outline: {setMap: (aMap: google.maps.Map | null) => void} | undefined;
-
-  onInputChanged() {
-    if (this._map && this.challenge) {
-      let bounds: google.maps.LatLngBounds = boundsFromChallenge(
-        this.challenge,
-        this.google_ns
-      );
-      this._map.fitBounds(bounds);
-      let map = this._map.googleMap!;
-      this.outline?.setMap(null);
-      if (this.challenge.all_locations.length < 10) {
-        this.outline = new this.google_ns.maps.Rectangle({
-          strokeColor: '#FF0000',
-          strokeOpacity: 0.8,
-          strokeWeight: 2,
-          fillColor: '#FF0000',
-          fillOpacity: 0.1,
-          map,
-          bounds: bounds,
-        });
-      } else {
-        const diagonal = this.google_ns.maps.geometry.spherical.computeDistanceBetween(
-          bounds.getNorthEast(),
-          bounds.getSouthWest()
-        );
-        const maxLat = Math.abs(
-          bounds.getNorthEast().lat() - bounds.getSouthWest().lat()
-        );
-        const maxLng = Math.abs(
-          bounds.getNorthEast().lng() - bounds.getSouthWest().lng()
-        );
-        let circles = this.challenge.all_locations.map((location) => {
-          let circle = this.drawCircle(
-            {
-              lat: location.Lat + this.randomOffset(maxLat),
-              lng: location.Long + this.randomOffset(maxLng),
-            },
-            diagonal / 6000
-          ); // + this.randomOffset(maxLng)
-          return circle;
-        });
-        this.outline = new this.google_ns.maps.Polygon({
-          paths: circles,
-          map: map,
-          strokeOpacity: 0,
-        });
-      }
-    }
-  }
-
-  /**
-   * shamelessly copied from https://stackoverflow.com/questions/23154254/google-map-multiple-overlay-no-cumulative-opacity
-   * @radius in km
-   */
-  private drawCircle(point: google.maps.LatLngLiteral, radius: number) {
-    var d2r = Math.PI / 180; // degrees to radians
-    var r2d = 180 / Math.PI; // radians to degrees
-    var earthsradius = 6378; // 6378 is the radius of the earth in km
-    var points = 32;
-
-    // find the raidus in lat/lon
-    var rlat = (radius / earthsradius) * r2d;
-    var rlng = rlat / Math.cos(point.lat * d2r);
-
-    var extp = new Array();
-    for (var i = 0; i <= points; i = i + 1) {
-      var theta = Math.PI * (i / (points / 2));
-      let ey = point.lng + rlng * Math.cos(theta); // center a + radius x * cos(theta)
-      let ex = point.lat + rlat * Math.sin(theta); // center b + radius y * sin(theta)
-      extp.push(new this.google_ns.maps.LatLng(ex, ey));
-    }
-    return extp;
-  }
-
-  /**
-   * 
-   * @param diagonal aprox max distance of map, diagonally
-   * @returns 
-   */
-  private randomOffset(diagonal: number): number {
-    var plusOrMinus = Math.random() < 0.5 ? -1 : 1;
-    return Math.random() * (diagonal / 5) * plusOrMinus;
   }
 
   set autoStart(value: boolean) {

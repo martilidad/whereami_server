@@ -12,6 +12,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.safestring import mark_safe
 from rest_framework import viewsets, permissions
+from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from psycopg2.errors import UniqueViolation
@@ -24,14 +25,22 @@ class ChallengeViewSet(viewsets.ModelViewSet):
     queryset = Challenge.objects.all()
     serializer_class = ChallengeSerializer
 
+    # def retrieve(self, request, pk=None):
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance)
+    #     return Response(serializer.data)
+
     def get_permissions(self):
         if self.request.method == "GET":
             return [permissions.IsAuthenticated()]
         return [permissions.IsAdminUser()]
 
     def get_queryset(self):
-        return Challenge.objects.annotate(location_count=Count('challengelocation')) \
-            .prefetch_related(Prefetch('game', Game.objects.annotate(location_count=Count('locations')))) \
+        return Challenge.objects \
+            .order_by('-id') \
+            .annotate(location_count=Count('challengelocation')) \
+            .prefetch_related(Prefetch('game', Game.objects.annotate(location_count=Count('locations'))
+                .prefetch_related(Prefetch('locations', Location.objects.all())))) \
             .prefetch_related(Prefetch('challengelocation_set', 
                 queryset=ChallengeLocation.objects.annotate(
                     guessed=Exists(Guess.objects.filter(user=self.request.user, challenge_location=OuterRef('pk'))))))

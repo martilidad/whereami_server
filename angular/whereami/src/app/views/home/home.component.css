@@ -1,0 +1,8 @@
+.card {
+  width: 24rem; 
+  height: 24rem;
+}
+
+app-preview-map {
+  height: 12rem;
+}

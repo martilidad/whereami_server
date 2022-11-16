@@ -1,7 +1,18 @@
 #python file for all DTOs
 from rest_framework import serializers
 
-from whereami.models import Challenge, Game, ChallengeLocation, Guess
+from whereami.models import Challenge, Game, ChallengeLocation, Guess, Location
+
+class LocationSerializer(serializers.HyperlinkedModelSerializer):
+    Lat = serializers.FloatField(source='lat')
+    Long = serializers.FloatField(source='long')
+    class Meta:
+        model = Location
+        fields = [
+            'id',
+            'Lat',
+            'Long'
+        ]
 
 class ChallengeLocationSerializer(serializers.HyperlinkedModelSerializer):
     guessed = serializers.BooleanField()
@@ -14,6 +25,7 @@ class ChallengeLocationSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class GameSerializer(serializers.HyperlinkedModelSerializer):
+    locations = LocationSerializer(many=True)
     location_count = serializers.IntegerField()
 
     class Meta:
@@ -21,7 +33,9 @@ class GameSerializer(serializers.HyperlinkedModelSerializer):
         fields = [
             'id',
             'name',
-            'location_count'
+            # kept only for compatability; remove ASAP
+            'location_count',
+            'locations'
         ]
 
 
@@ -29,6 +43,7 @@ class ChallengeSerializer(serializers.HyperlinkedModelSerializer):
     location_count = serializers.IntegerField()
     game = GameSerializer()
     challengelocation_set = ChallengeLocationSerializer(many=True)
+    Time = serializers.IntegerField(source='time')
 
     class Meta:
         model = Challenge
@@ -36,7 +51,7 @@ class ChallengeSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'pub_date',
             'location_count',
-            'time',
+            'Time',
             'game',
             'challengelocation_set'
         ]
