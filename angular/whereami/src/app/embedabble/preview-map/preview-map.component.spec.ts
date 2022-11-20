@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { GOOGLE_TESTING_PROVIDER } from 'src/app/test/testutils.spec';
 
 import { PreviewMapComponent } from './preview-map.component';
 
@@ -8,7 +9,8 @@ describe('PreviewMapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PreviewMapComponent ]
+      declarations: [ PreviewMapComponent ],
+      providers: [GOOGLE_TESTING_PROVIDER]
     })
     .compileComponents();
 

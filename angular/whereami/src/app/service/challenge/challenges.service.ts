@@ -79,8 +79,8 @@ export class ChallengesService {
       })
   }
 
-  public createChallenge(challenge: CreateChallenge): Observable<void> {
-    return this.http.post<void>(this.challengeUrl, challenge, {headers: this.getHeaders()})
+  public createChallenge(challenge: CreateChallenge): Observable<{id: number}> {
+    return this.http.post<{id: number}>(this.challengeUrl, challenge, {headers: this.getHeaders()})
   }
 
 }

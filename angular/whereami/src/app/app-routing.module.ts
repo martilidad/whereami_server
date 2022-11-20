@@ -12,11 +12,11 @@ import { HomeComponent } from './views/home/home.component';
 
 const routes: Routes = [
   {
-    path:"",
+    path:"oldhome",
     component: IndexComponent,
   },
   {
-    path:"home",
+    path:"",
     component: HomeComponent,
   },
   {

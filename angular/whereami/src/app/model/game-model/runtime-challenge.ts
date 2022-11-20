@@ -12,7 +12,7 @@ export interface RuntimeChallenge {
   location_count: number,
   game: Game,
   Name: string
-
+  pub_date: string
 }
 
 export function boundsFromChallenge(challenge: RuntimeChallenge, google_ns: typeof google) {

@@ -1,43 +1,11 @@
 <div class="container p-4">
   <div class="row row-cols-3 g-5">
     <div class="col" *ngFor="let c of challenges" >
-      <div class="card" >
-        <app-preview-map [game]="c.game"></app-preview-map>
-        <div class="card-body">
-          <h5 class="card-title">{{ c.game.name }}</h5>
-          <p class="card-text">Find {{ c.location_count }} locations in
-            {{ c.game.name }} within {{ c.Time }} seconds.</p>
-          <div class="btn-group">
-            <a *ngIf="!started(c)" routerLink="/startChallenge"  [queryParams]="{id: c.id}" routerLinkActive="active" class="btn btn-primary">Start</a>
-            <div ngbDropdown *ngIf="started(c) && !finished(c)" display="static" class="btn-group">
-              <a routerLink="/startChallenge" [queryParams]="{id: c.id}" routerLinkActive="active" class="btn btn-primary">Continue</a>
-              <button ngbDropdownToggle class="btn btn-primary dropdown-toggle-split">
-                <span></span>
-              </button>
-              <div ngbDropdownMenu>
-                <a ngbDropdownItem routerLink="/startChallenge"  [queryParams]="{id: c.id, ignorePreviousGuesses: true}" routerLinkActive="active" class="btn btn-danger">Start from Beginning</a>
-              </div>
-            </div>
-            <a *ngIf="finished(c)" routerLink="/startChallenge"  [queryParams]="{id: c.id, ignorePreviousGuesses: true}" routerLinkActive="active" class="btn btn-danger">Replay</a>
-            <a *ngIf="finished(c)" routerLink="/challengeOverview"  [queryParams]="{id: c.id}" routerLinkActive="active"
-                class="btn btn-success">Overview</a>
-            <button class="btn btn-warning"  (click)="invite(c.id)">
-              Invite link
-            </button>
-          </div>
-        </div>
-      </div>
+      <app-game-card [challenge]="c"></app-game-card>
     </div>
     <div class="col">
-      <div class="card" >
-        <google-map #createMap width="100%" height="12rem" [options]="mapOptions">
-        </google-map>
-        <div class="card-body">
-          <h5 class="card-title">New Challenge</h5>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
-        </div>
-      </div>
+        <home-challenge-form #createForm (challengeCreated)="invite($event)" 
+        (createFormNextEvent)="createFormNext = $event"></home-challenge-form>
     </div>
   </div>
 </div>

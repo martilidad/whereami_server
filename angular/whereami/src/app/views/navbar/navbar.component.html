@@ -6,7 +6,7 @@
     <div class="dropdown-divider"></div>
       <label ngbDropdownItem ngbTooltip="Volume for sounds. (scoring and actions)">
         Sound volume
-        <input ngbDropdownItem type="range" class="form-range" [(ngModel)]="volume" (change)="volumeHandler()" min="0" max="1" step="0.01">
+        <input ngbDropdownItem id="volume" type="range" class="form-range" [(ngModel)]="volume" (change)="volumeHandler()" min="0" max="1" step="0.01">
       </label>
     <label ngbDropdownItem ngbTooltip="Will start the round for you when another player starts the round. (pre-round-screen only)">
       autostart

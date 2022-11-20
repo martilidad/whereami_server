@@ -15,8 +15,10 @@ export class ChallengeScoresComponent implements OnInit {
   scoreTable: any = DataTableDirective;
 
   dtOptions: DataTables.Settings = {
-    order: [[4, "desc"]],
-    lengthMenu: [[3, 5, 10, 25, 50, -1], [3, 5, 10, 25, 50, "All"]]
+    order: [[0, "desc"]],
+    searching: false,
+    paging: false
+    
   };
   dtTrigger: Subject<any> = new Subject<any>();
 

@@ -14,6 +14,7 @@ import { ChallengesService } from 'src/app/service/challenge/challenges.service'
 export class HomeComponent implements OnInit {
 
   mapOptions: google.maps.MapOptions;
+  createFormNext: boolean = false;
   
   @ViewChildren('playMap') 
   playMaps: QueryList<GoogleMap> | undefined;
@@ -30,7 +31,7 @@ export class HomeComponent implements OnInit {
       streetViewControl: false,
       mapTypeId: google_ns.maps.MapTypeId.ROADMAP,
     };
-    this.challengesService.getRuntimeChallenges(5).subscribe(values => this.challenges = values);
+    this.updateChallenges();
    }
 
   ngOnInit(): void {
@@ -40,7 +41,8 @@ export class HomeComponent implements OnInit {
     const urlTree: UrlTree = this.router.createUrlTree(['/invite'], {
       queryParams: { id: id },
     });
-    navigator.clipboard.writeText(window.location.origin + urlTree.toString());
+    // would be nice, but sadly does not work without extra permission when not directly triggered by a button press
+    // navigator.clipboard.writeText(window.location.origin + urlTree.toString());
     this.router.navigateByUrl(urlTree);
   }
 
@@ -50,6 +52,10 @@ export class HomeComponent implements OnInit {
 
   finished(challenge: RuntimeChallenge): boolean {
     return challenge.challengelocation_set.every(cl => cl.guessed);
+  }
+
+  updateChallenges() {
+    this.challengesService.getRuntimeChallenges(5).subscribe(values => this.challenges = values);
   }
 
 }

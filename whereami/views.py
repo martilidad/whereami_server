@@ -132,7 +132,7 @@ def get_challenge(request):
                  'Name': challenge_location.location.name}
                 for challenge_location in challenge_locations]
         all_locations_array = all_locations(obj.game)
-        response_dict = {'Challenge_ID': id, 'Time': obj.time, 'Challenge_Locations': list,
+        response_dict = {'Challenge_ID': id, 'Time': obj.time, 'challengelocation_set': list,
                          'Ignored_Count': len(filtered_ids), 'all_locations': all_locations_array, 'Name': obj.game.name}
         return JsonResponse(response_dict, safe=False)
     except (KeyError, Challenge.DoesNotExist):
@@ -162,7 +162,8 @@ def post_challenge(request):
             challenge.save()
             ChallengeLocation.objects.bulk_create(
                 [ChallengeLocation(challenge=challenge, location=location) for location in sampled_locations])
-        return HttpResponse()
+        id = challenge.pk
+        return JsonResponse({'id': id}, safe=False)
     except (KeyError, Game.DoesNotExist) as ke:
         return HttpResponseBadRequest()
 

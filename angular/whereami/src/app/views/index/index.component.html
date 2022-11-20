@@ -50,9 +50,21 @@
 </div>
 <div class="row">
   <div class="col-4">
-    <challenge-form (challengeCreated)="updateChallenges()"></challenge-form>
+    <div class="card border-primary">
+      <div class="card-body">
+          <h5 class="card-title">Create a new challenge: </h5>
+          <challenge-form (challengeCreated)="updateChallenges()"></challenge-form>
+      </div>
+    </div>
   </div>
   <div class="col-8">
-    <challenge-scores #challengeScores></challenge-scores>
+    <div class="card border-dark">
+      <div class="card-body">
+          <h5 class="card-title" id="score-board-title">Challenge scores</h5>
+          <h6 class="card-subtitle text-muted">Click on the stats button next to a challange to show it's stats
+              here.</h6>
+        <challenge-scores #challengeScores></challenge-scores>
+      </div>
+    </div>
   </div>
 </div>
