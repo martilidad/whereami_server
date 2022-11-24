@@ -22,6 +22,7 @@ class Challenge(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     time = models.IntegerField()
     pub_date = models.DateTimeField(default=datetime.utcnow, blank=True)
+    # creator = models.ForeignKey(User, on_delete=models.SET_NULL) TODO add this sometime in the future
 
 
 class ChallengeLocation(models.Model):

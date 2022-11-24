@@ -1,0 +1,27 @@
+.card {
+  width: 24rem; 
+  height: 24rem;
+}
+
+app-preview-map {
+  height: 14rem;
+}
+
+.card-body {
+  height: 8rem;
+}
+
+.scroller {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+}
+
+.scroller::-webkit-scrollbar {
+  width: 3px;
+  height: 10px;
+  background: rgb(255, 255, 255);
+}
+
+.scroller::-webkit-scrollbar-thumb {
+  background: #000;
+}

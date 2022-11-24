@@ -4,11 +4,11 @@ import {GamesService} from "../../../service/game/games.service";
 import {ChallengesService} from "../../../service/challenge/challenges.service";
 
 @Component({
-  selector: 'challenge-form',
-  templateUrl: './challenge-form.component.html',
-  styleUrls: ['./challenge-form.component.css']
+  selector: 'home-challenge-form',
+  templateUrl: './home-challenge-form.component.html',
+  styleUrls: ['./home-challenge-form.component.css']
 })
-export class ChallengeFormComponent implements OnInit {
+export class HomeChallengeFormComponent implements OnInit {
 
   games: Game[] = [];
   locationCount: number = 5;
@@ -16,8 +16,18 @@ export class ChallengeFormComponent implements OnInit {
   preventReuse: boolean = true;
   private _game: Game | undefined;
   @Output()
-  challengeCreated: EventEmitter<void> = new EventEmitter<void>();
+  challengeCreated: EventEmitter<number> = new EventEmitter<number>();
   maxLocations: string = '?'
+  @Output()
+  createFormNextEvent: EventEmitter<boolean> = new EventEmitter<boolean>();
+  private _createFormNext = false;
+  set createFormNext(value: boolean) {
+    this._createFormNext = value;
+    this.createFormNextEvent.emit(value);
+  }
+  get createFormNext(): boolean {
+    return this._createFormNext;
+  }
 
   set game(value: Game | undefined) {
     this._game = value;
@@ -46,7 +56,8 @@ export class ChallengeFormComponent implements OnInit {
       time: this.time,
       game: this._game!.id,
       quantity: this.locationCount
-    }).subscribe(value => this.challengeCreated.emit())
+    }).subscribe(value => 
+      this.challengeCreated.emit(value.id))
   }
 
   private calcMaxLocations(): string {

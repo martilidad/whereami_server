@@ -22,13 +22,26 @@
         <td>{{ challenge.location_count }}</td>
         <td>{{ challenge.time }}</td>
         <td>{{ challenge.id }}</td>
-        <td><a routerLink="/startChallenge"  [queryParams]="{id: challenge.id}" routerLinkActive="active" class="btn btn-primary">Start</a>
-          <button class="btn btn-secondary ms-2" (click)="challengeScores.showStats(challenge.id)">Stats</button>
-          <a routerLink="/challengeOverview"  [queryParams]="{id: challenge.id}" routerLinkActive="active"
-             class="btn btn-success ms-2">Overview</a>
-          <button class="btn btn-warning ms-2"  (click)="invite(challenge.id)">
-            Invite link
-          </button>
+        <td>
+          <div class="btn-group w-50">
+            <a *ngIf="!started(challenge)" routerLink="/startChallenge"  [queryParams]="{id: challenge.id}" routerLinkActive="active" class="btn btn-primary">Start</a>
+            <div ngbDropdown *ngIf="started(challenge) && !finished(challenge)" display="static" class="btn-group">
+              <a routerLink="/startChallenge" [queryParams]="{id: challenge.id}" routerLinkActive="active" class="btn btn-primary">Continue</a>
+              <button ngbDropdownToggle class="btn btn-primary dropdown-toggle-split">
+                <span></span>
+              </button>
+              <div ngbDropdownMenu>
+                <a ngbDropdownItem routerLink="/startChallenge"  [queryParams]="{id: challenge.id, ignorePreviousGuesses: true}" routerLinkActive="active" class="btn btn-danger">Start from Beginning</a>
+              </div>
+            </div>
+            <a *ngIf="finished(challenge)" routerLink="/startChallenge"  [queryParams]="{id: challenge.id, ignorePreviousGuesses: true}" routerLinkActive="active" class="btn btn-danger">Replay</a>
+            <button class="btn btn-secondary" (click)="challengeScores.showStats(challenge.id)">Stats</button>
+            <a routerLink="/challengeOverview"  [queryParams]="{id: challenge.id}" routerLinkActive="active"
+               class="btn btn-success">Overview</a>
+            <button class="btn btn-warning"  (click)="invite(challenge.id)">
+              Invite link
+            </button>
+          </div>
         </td>
       </tr>
       </tbody>
@@ -37,9 +50,21 @@
 </div>
 <div class="row">
   <div class="col-4">
-    <challenge-form (challengeCreated)="updateChallenges()"></challenge-form>
+    <div class="card border-primary">
+      <div class="card-body">
+          <h5 class="card-title">Create a new challenge: </h5>
+          <challenge-form (challengeCreated)="updateChallenges()"></challenge-form>
+      </div>
+    </div>
   </div>
   <div class="col-8">
-    <challenge-scores #challengeScores></challenge-scores>
+    <div class="card border-dark">
+      <div class="card-body">
+          <h5 class="card-title" id="score-board-title">Challenge scores</h5>
+          <h6 class="card-subtitle text-muted">Click on the stats button next to a challange to show it's stats
+              here.</h6>
+        <challenge-scores #challengeScores></challenge-scores>
+      </div>
+    </div>
   </div>
 </div>

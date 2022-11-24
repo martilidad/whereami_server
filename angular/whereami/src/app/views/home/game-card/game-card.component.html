@@ -1,0 +1,44 @@
+<div class="card" *ngIf="challenge">
+  <app-preview-map [game]="challenge.game" [hidden]="statsMode"></app-preview-map>
+  <div class="card-body" [hidden]="statsMode">
+    <h5 class="card-title">{{ challenge.game.name }}</h5>
+    <p class="card-text">Find {{ challenge.location_count }} locations in
+      {{ challenge.game.name }} within {{ challenge.Time }} seconds.</p>
+  </div>
+  <challenge-scores #challengeScores [hidden]="!statsMode"></challenge-scores>
+  <div class="card-footer">
+    <div class="row">
+      <div class="col">
+        <div class="btn-group sticky-bottom">
+          <a *ngIf="!started()" routerLink="/startChallenge"  [queryParams]="{id: challenge.id}" routerLinkActive="active" class="btn btn-primary">Start</a>
+          <div ngbDropdown *ngIf="started() && !finished()" display="static" class="btn-group">
+            <a routerLink="/startChallenge" [queryParams]="{id: challenge.id}" routerLinkActive="active" class="btn btn-primary">Continue</a>
+            <button ngbDropdownToggle class="btn btn-primary dropdown-toggle-split">
+              <span></span>
+            </button>
+            <div ngbDropdownMenu>
+              <a ngbDropdownItem routerLink="/startChallenge"  [queryParams]="{id: challenge.id, ignorePreviousGuesses: true}" routerLinkActive="active" class="btn btn-danger">Start from Beginning</a>
+            </div>
+          </div>
+          <a *ngIf="finished()" routerLink="/startChallenge"  [queryParams]="{id: challenge.id, ignorePreviousGuesses: true}" routerLinkActive="active" class="btn btn-danger">Replay</a>
+          <button class="btn btn-warning"  (click)="invite()">
+            Invite
+          </button>
+          <div ngbDropdown display="static" class="btn-group">
+            <button class="btn btn-secondary" (click)="challengeScores.showStats(challenge.id); statsMode = !statsMode">Stats</button>
+            <button ngbDropdownToggle class="btn btn-secondary dropdown-toggle-split" *ngIf="finished()">
+              <span></span>
+            </button>
+            <div ngbDropdownMenu *ngIf="finished()">
+              <a ngbDropdownItem routerLink="/challengeOverview"  [queryParams]="{id: challenge.id}" routerLinkActive="active"
+              class="btn btn-success">Overview</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <small class="text-muted">Created {{ challenge.pub_date | formatTime}}</small>
+      </div>
+    </div>
+  </div>
+</div>

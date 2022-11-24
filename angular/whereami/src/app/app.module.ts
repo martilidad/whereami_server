@@ -34,6 +34,10 @@ import { FormatTimePipe } from './embedabble/format-time.pipe';
 import { UnauthorizedInterceptor } from "./service/unauthorized-interceptor";
 import { DateElementDirective } from './embedabble/date-element.directive';
 import { NavbarComponent } from './views/navbar/navbar.component';
+import { HomeComponent } from './views/home/home.component';
+import { PreviewMapComponent } from './embedabble/preview-map/preview-map.component';
+import { HomeChallengeFormComponent } from './views/home/home-challenge-form/home-challenge-form.component';
+import { GameCardComponent } from './views/home/game-card/game-card.component';
 export const GOOGLE = new InjectionToken('google');
 
 @NgModule({
@@ -58,7 +62,11 @@ export const GOOGLE = new InjectionToken('google');
     InviteComponent,
     FormatTimePipe,
     DateElementDirective,
-    NavbarComponent
+    NavbarComponent,
+    HomeComponent,
+    PreviewMapComponent,
+    HomeChallengeFormComponent,
+    GameCardComponent
   ],
   imports: [
     AppRoutingModule,

@@ -97,7 +97,9 @@ export const GOOGLE_TESTING_PROVIDER = {
       StreetViewPanorama: function (
         container: HTMLElement,
         opts?: google.maps.StreetViewPanoramaOptions | null
-      ) {},
+      ) {
+        return { addListener: () => {}};
+      },
       StreetViewCoverageLayer: function () {},
       ControlPosition: { RIGHT_CENTER: 'RIGHT_CENTER', TOP_CENTER: 'TOP_CENTER' },
       drawing: {

@@ -1,8 +1,10 @@
 import { AfterContentInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import type { GoogleMap } from '@angular/google-maps';
 import { ActivatedRoute, Router, UrlTree } from '@angular/router';
+import { randomInt } from 'crypto';
 import { distinct, filter, from, map, mergeMap, timer } from 'rxjs';
 import { GOOGLE } from 'src/app/app.module';
+import { PreviewMapComponent } from 'src/app/embedabble/preview-map/preview-map.component';
 import {
   boundsFromChallenge,
   RuntimeChallenge,
@@ -31,14 +33,6 @@ export class InviteComponent implements AfterContentInit {
   usersHere: string[] = [];
   otherUsers: string[] = [];
 
-  private _map: GoogleMap | undefined;
-
-  @ViewChild('map')
-  set map(value: GoogleMap) {
-    this._map = value;
-    this.onInputChanged();
-  }
-
   mapOptions: google.maps.MapOptions;
 
   constructor(
@@ -51,7 +45,6 @@ export class InviteComponent implements AfterContentInit {
     private userService: UserService,
     private settingsService: SettingsService
   ) {
-
     this.mapOptions = {
       center: new google_ns.maps.LatLng(0, 0, true),
       zoom: 1,
@@ -69,24 +62,32 @@ export class InviteComponent implements AfterContentInit {
         status: PlayStatus.INVITE_SCREEN,
         round: -1,
       });
-      this.statusService.statusObservable.pipe(mergeMap(val => from(val.values())))
-      .pipe(filter(val => val.status === PlayStatus.INVITE_SCREEN && val.username != this.userService.username))
-      //only allow one sound within 500ms
-      .pipe(distinct(()=> ({}), timer(0, 500)))
-      //one user can only create three sounds and at least five seconds apart to prevent spam
-      .pipe(distinct(val => val.username, timer(0, 5000)))
-      .pipe(distinctTimes(val => val.username, 3))
-      .subscribe(() => this.soundService.arrive());
+      this.statusService.statusObservable
+        .pipe(mergeMap((val) => from(val.values())))
+        .pipe(
+          filter(
+            (val) =>
+              val.status === PlayStatus.INVITE_SCREEN &&
+              val.username != this.userService.username
+          )
+        )
+        //only allow one sound within 500ms
+        .pipe(distinct(() => ({}), timer(0, 500)))
+        //one user can only create three sounds and at least five seconds apart to prevent spam
+        .pipe(distinct((val) => val.username, timer(0, 5000)))
+        .pipe(distinctTimes((val) => val.username, 3))
+        .subscribe(() => this.soundService.arrive());
       this.statusService.statusObservable.subscribe((value) =>
         this.autoStartIfApplicable(value)
       );
       this.statusService.statusObservable.subscribe((value) =>
         this.filterUsers(value)
       );
-      this.challengesService.getChallenge(this.id!, false).subscribe((value) => {
-        this.challenge = value;
-        this.onInputChanged();
-      });
+      this.challengesService
+        .getChallengeById(this.id!)
+        .subscribe((value) => {
+          this.challenge = value;
+        });
     });
   }
 
@@ -95,7 +96,7 @@ export class InviteComponent implements AfterContentInit {
     this.otherUsers = [];
     statuses.forEach((value: UserChallengeStatus, key: string) => {
       if (value.status == PlayStatus.INVITE_SCREEN) {
-        this.usersHere.push(value.username)
+        this.usersHere.push(value.username);
       } else {
         this.otherUsers.push(value.username);
       }
@@ -112,25 +113,6 @@ export class InviteComponent implements AfterContentInit {
             queryParams: { id: this.id },
           });
         }
-      });
-    }
-  }
-
-  onInputChanged() {
-    if (this._map && this.challenge) {
-      let bounds: google.maps.LatLngBounds = boundsFromChallenge(
-        this.challenge, this.google_ns
-      );
-      this._map.fitBounds(bounds);
-      let map = this._map.googleMap!;
-      new google.maps.Rectangle({
-        strokeColor: '#FF0000',
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: '#FF0000',
-        fillOpacity: 0.1,
-        map,
-        bounds: bounds,
       });
     }
   }

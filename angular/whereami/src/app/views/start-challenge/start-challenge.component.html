@@ -19,7 +19,7 @@
     </div>
     <div id='scoreBoard'>
       <span class='round' *ngIf="challenge">Current Round: <b>{{this.humanReadableRound()}}
-        /{{challenge!.Challenge_Locations.length + challenge!.Ignored_Count}}</b></span><br/>
+        /{{challenge!.challengelocation_set.length + challenge!.Ignored_Count}}</b></span><br/>
       <span class='roundScore'>Last Round Score: <b [innerText]="gameState.round.score"></b></span><br/>
       <span class='totalScore'>Total Score: <b [innerText]="gameState.score"></b></span>
     </div>

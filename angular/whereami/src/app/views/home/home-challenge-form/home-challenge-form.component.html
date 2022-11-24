@@ -1,0 +1,46 @@
+
+
+<div class="card">
+    <app-preview-map [game]="game" [hidden]="createFormNext"></app-preview-map>
+    <div class="card-body">
+        <h5 class="card-title">New Challenge</h5>
+        <form (submit)="submit()" class="form" [noValidate]="false" id="form" style="height: 18rem;">
+            <div class="form-group">
+                <label for="game">Select game to use locations from:</label><br/>
+                <select class="selectpicker col-8 pl-0" id="game" name="game" data-live-search="true"
+                        data-show-subtext="true"
+                        data-style="border-primary form-control" [(ngModel)]="game">
+                    <option *ngFor="let g of games"
+                            [ngValue]="g" [innerText]="g.name"></option>
+                </select>
+            </div>
+            <div *ngIf="createFormNext" style="height: 15rem;">
+                <div class="form-group">
+                    <label for="quantity">Numer of locations (max {{this.maxLocations}} locations in
+                        the game).</label>
+                    <input class="form-control col-2 border-primary" type="number" id="quantity" name="quantity"
+                            min="1" [max]="this.maxLocations" [(ngModel)]="locationCount">
+                </div>
+                <div class="form-group">
+                    <label for="time">Challenge time in seconds.</label>
+                    <input class="form-control col-2 border-primary" type="number" id="time" name="time" min="5"
+                            value="90" [(ngModel)]="time">
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input border-primary" type="checkbox" id="preventReuse"
+                            name="preventReuse"
+                            checked [(ngModel)]="preventReuse">
+                    <label for="preventReuse" class="form-check-label">Prevent reuse of locations.</label>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer">
+                <div class="btn-group">
+                    <button *ngIf="!createFormNext" type="button" class="btn btn-primary" (click)="createFormNext = true">Next</button>
+                    <button *ngIf="createFormNext" type="submit" class="btn btn-primary" form="form">Create</button>
+                    <button *ngIf="createFormNext" type="button" class="btn btn-warning" (click)="createFormNext = false">Cancel</button>
+                </div>
+
+    </div>
+</div>

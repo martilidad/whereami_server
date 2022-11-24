@@ -2,10 +2,11 @@ import {Injectable} from '@angular/core';
 import {HandleError, HttpErrorHandler} from "../../http-error-handler.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Challenge} from "../../model/game-model/challenge";
-import {catchError, Observable} from "rxjs";
+import {catchError, map, Observable} from "rxjs";
 import {UserService} from "../user/user.service";
 import {RuntimeChallenge} from "../../model/game-model/runtime-challenge";
 import {CreateChallenge} from "../../model/game-model/create-challenge";
+import { deprecate } from 'util';
 
 
 export interface Challenges {
@@ -37,6 +38,17 @@ export class ChallengesService {
       );
   }
 
+  getRuntimeChallenges(max: number): Observable<RuntimeChallenge[]> {
+    return this.http.get<{results: RuntimeChallenge[]}>(this.challengesUrl, {
+      headers: this.getHeaders(),
+      params: {limit: max, offset: 0}
+    })
+      .pipe(map(result => result.results))
+      .pipe(
+        catchError(this.handleError('getGames', []))
+      )
+  }
+
   private getHeaders() {
     return new HttpHeaders({
       'Content-Type': 'application/json',
@@ -44,6 +56,9 @@ export class ChallengesService {
     });
   }
 
+  /**
+   * @deprecated
+   */
   public getChallenge(id: number, ignorePreviousGuesses: boolean): Observable<RuntimeChallenge> {
     return this.http.get<RuntimeChallenge>(this.challengeUrl,
       {
@@ -55,8 +70,17 @@ export class ChallengesService {
       })
   }
 
-  public createChallenge(challenge: CreateChallenge): Observable<void> {
-    return this.http.post<void>(this.challengeUrl, challenge, {headers: this.getHeaders()})
+  
+
+  public getChallengeById(id: number): Observable<RuntimeChallenge> {
+    return this.http.get<RuntimeChallenge>("/api/challenges/"+id,
+      {
+        headers: this.getHeaders()
+      })
+  }
+
+  public createChallenge(challenge: CreateChallenge): Observable<{id: number}> {
+    return this.http.post<{id: number}>(this.challengeUrl, challenge, {headers: this.getHeaders()})
   }
 
 }

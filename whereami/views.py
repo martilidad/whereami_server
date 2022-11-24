@@ -6,12 +6,13 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction, IntegrityError
-from django.db.models import Count, Sum, Q, Max, Prefetch, Min
+from django.db.models import Count, Sum, Q, Max, Prefetch, Min, Exists, OuterRef
 from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.safestring import mark_safe
 from rest_framework import viewsets, permissions
+from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from psycopg2.errors import UniqueViolation
@@ -24,14 +25,25 @@ class ChallengeViewSet(viewsets.ModelViewSet):
     queryset = Challenge.objects.all()
     serializer_class = ChallengeSerializer
 
+    # def retrieve(self, request, pk=None):
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance)
+    #     return Response(serializer.data)
+
     def get_permissions(self):
         if self.request.method == "GET":
             return [permissions.IsAuthenticated()]
         return [permissions.IsAdminUser()]
 
     def get_queryset(self):
-        return Challenge.objects.annotate(location_count=Count('challengelocation')) \
-            .prefetch_related(Prefetch('game', Game.objects.annotate(location_count=Count('locations'))))
+        return Challenge.objects \
+            .order_by('-id') \
+            .annotate(location_count=Count('challengelocation')) \
+            .prefetch_related(Prefetch('game', Game.objects.annotate(location_count=Count('locations'))
+                .prefetch_related(Prefetch('locations', Location.objects.all())))) \
+            .prefetch_related(Prefetch('challengelocation_set', 
+                queryset=ChallengeLocation.objects.annotate(
+                    guessed=Exists(Guess.objects.filter(user=self.request.user, challenge_location=OuterRef('pk'))))))
 
 
 class GameViewSet(viewsets.ModelViewSet):
@@ -119,9 +131,9 @@ def get_challenge(request):
                  'Lat': challenge_location.location.lat, 'Long': challenge_location.location.long,
                  'Name': challenge_location.location.name}
                 for challenge_location in challenge_locations]
-        boundary_array = game_boundary(obj.game)
-        response_dict = {'Challenge_ID': id, 'Time': obj.time, 'Challenge_Locations': list,
-                         'Ignored_Count': len(filtered_ids), 'boundary_array': boundary_array, 'Name': obj.game.name}
+        all_locations_array = all_locations(obj.game)
+        response_dict = {'Challenge_ID': id, 'Time': obj.time, 'challengelocation_set': list,
+                         'Ignored_Count': len(filtered_ids), 'all_locations': all_locations_array, 'Name': obj.game.name}
         return JsonResponse(response_dict, safe=False)
     except (KeyError, Challenge.DoesNotExist):
         return HttpResponseBadRequest()
@@ -150,7 +162,8 @@ def post_challenge(request):
             challenge.save()
             ChallengeLocation.objects.bulk_create(
                 [ChallengeLocation(challenge=challenge, location=location) for location in sampled_locations])
-        return HttpResponse()
+        id = challenge.pk
+        return JsonResponse({'id': id}, safe=False)
     except (KeyError, Game.DoesNotExist) as ke:
         return HttpResponseBadRequest()
 
@@ -254,16 +267,8 @@ def invite(request):
                                            'challenge': challenge})
 
 
-def game_boundary(game):
-    boundary_array = []
-    aggregates = game.locations.aggregate(Min('lat'), Max('lat'), Min('long'), Max('long'))
-    # create one coord for each lat/long combination
-    for coord in list(itertools.product([aggregates['lat__min'], aggregates['lat__max']],
-                                        [aggregates['long__min'], aggregates['long__max']])):
-        boundary_array.append({'Lat': coord[0], 'Long': coord[1]})
-    any_location = game.locations.first()
-    boundary_array.append({'Lat': any_location.lat, 'Long': any_location.long})
-    return boundary_array
+def all_locations(game):
+    return [{'Lat': location.lat, 'Long': location.long} for location in game.locations.all()]
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
