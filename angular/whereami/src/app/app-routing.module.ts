@@ -8,11 +8,16 @@ import {CreateGameComponent} from "./views/create-game/create-game.component";
 import {StartChallengeComponent} from "./views/start-challenge/start-challenge.component";
 import {ChallengeOverviewComponent} from "./views/challenge-overview/challenge-overview.component";
 import { InviteComponent } from './views/invite/invite.component';
+import { HomeComponent } from './views/home/home.component';
 
 const routes: Routes = [
   {
-    path:"",
+    path:"oldhome",
     component: IndexComponent,
+  },
+  {
+    path:"",
+    component: HomeComponent,
   },
   {
     path:"invite",

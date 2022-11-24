@@ -60,8 +60,13 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
   @ViewChild("roundMap")
   roundMap: RoundMapComponent | undefined
 
+  private _gamePano: GamePanoComponent | undefined;
+
   @ViewChild("gamePano")
-  gamePano: GamePanoComponent | undefined
+  public set gamePano(value: GamePanoComponent) {
+    this._gamePano = value;
+    value.ghost().subscribe(val => this.statusService?.postGhost(val));
+  }
 
   time: number = 0;
 
@@ -89,6 +94,7 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
       .subscribe(() => this.soundService.complete());
       this.subscriptions.push(this.challengesService.getChallenge(this.id!, this.ignorePreviousGuesses!)
         .subscribe(value => this.start(value)))
+      this.statusService.ghost.subscribe(val => this._gamePano?.drawGhost(val.name, val.location));
     }))
   }
 
@@ -104,14 +110,14 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
     clearInterval(this.counter);
     this.timerEndObservable.next({});
     this.gameState.round.remainingTime = 0
-    this.gameState.finished = this.gameState.round.index + 1 == this.challenge!.Challenge_Locations.length
+    this.gameState.finished = this.gameState.round.index + 1 == this.challenge!.challengelocation_set.length
     let pos = this.miniMap!.marker?.getPosition()
     //only assign if there is a position
     this.gameState.round.guess = pos ? LatLngImpl.of(pos) : new LatLngImpl(0, 0)
 
     this.calcPoints()
 
-    let challengeLocation = this.challenge!.Challenge_Locations[this.gameState.round.index];
+    let challengeLocation = this.challenge!.challengelocation_set[this.gameState.round.index];
     let round = this.gameState.round;
     let guess = {
       Lat: this.gameState.round.guess.Lat, 
@@ -131,7 +137,7 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
   }
 
   refreshMap() {
-    this.guessService.getGuesses(this.challenge!.Challenge_Locations[this.gameState.round.index].Challenge_Location_ID)
+    this.guessService.getGuesses(this.challenge!.challengelocation_set[this.gameState.round.index].Challenge_Location_ID)
       .subscribe(result => this.roundMap!.guesses = result)
   }
 
@@ -148,7 +154,7 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
   private start(challenge: RuntimeChallenge) {
     this.challenge = challenge
 
-    if (this.challenge.Challenge_Locations.length === 0) {
+    if (this.challenge.challengelocation_set.length === 0) {
       this.gameState.playedBefore = true
       return;
     }
@@ -157,8 +163,8 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
 
     //Challenge_Locations only contains the locations *THIS PLAYER* didn't play
     this.statusService!.postStatus({status: PlayStatus.PLAYING, round: this.serverRound()})
-    let challengeLocation = new ChallengeLocationImpl(challenge.Challenge_Locations[0])
-    this.gamePano!.setLocation(challengeLocation.toLatLng(this.google_ns))
+    let challengeLocation = new ChallengeLocationImpl(challenge.challengelocation_set[0])
+    this._gamePano!.setLocation(challengeLocation.toLatLng(this.google_ns))
 
     // Scoreboard & Guess button event
     // Init Timer
@@ -182,8 +188,8 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
     this.statusService!.postStatus({status: PlayStatus.PLAYING, round: round})
     this.resetTimer()
     this.challenge ? this.miniMap?.reset(this.challenge) : {};
-    let challengeLocation = new ChallengeLocationImpl(this.challenge!.Challenge_Locations[round])
-    this.gamePano!.setLocation(challengeLocation.toLatLng(this.google_ns))
+    let challengeLocation = new ChallengeLocationImpl(this.challenge!.challengelocation_set[round])
+    this._gamePano!.setLocation(challengeLocation.toLatLng(this.google_ns))
   }
 
   resetTimer() {
@@ -213,7 +219,7 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
 
   private calcPoints(): void {
     // Calculate distance between points, and convert to kilometers
-    let location = new ChallengeLocationImpl(this.challenge!.Challenge_Locations[this.gameState.round.index])
+    let location = new ChallengeLocationImpl(this.challenge!.challengelocation_set[this.gameState.round.index])
     let distance = Math.floor(StartChallengeComponent.calcDistance(this.gameState.round.guess!.toLatLng(this.google_ns), location.toLatLng(this.google_ns)!) / 10) / 100;
 
     // use exponential function for points calculation.

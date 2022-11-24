@@ -61,7 +61,7 @@ export class MiniMapComponent implements AfterViewInit {
 
   reset(challenge: RuntimeChallenge, initial: boolean = false) {
     let bounds = new google.maps.LatLngBounds();
-    challenge.boundary_array
+    challenge.all_locations
       .map((place) => new google.maps.LatLng(place.Lat, place.Long))
       .forEach((latLong) => bounds.extend(latLong));
     this.map!.fitBounds(bounds);

@@ -4,12 +4,17 @@
     <a ngbDropdownItem href="/">Main Menu</a>
     <a ngbDropdownItem routerLink="/createGame" routerLinkActive="true">Create new game</a>
     <div class="dropdown-divider"></div>
-      <label ngbDropdownItem for="volume">Sound volume
+      <label ngbDropdownItem ngbTooltip="Volume for sounds. (scoring and actions)">
+        Sound volume
         <input ngbDropdownItem id="volume" type="range" class="form-range" [(ngModel)]="volume" (change)="volumeHandler()" min="0" max="1" step="0.01">
       </label>
-    <label ngbDropdownItem>
+    <label ngbDropdownItem ngbTooltip="Will start the round for you when another player starts the round. (pre-round-screen only)">
       autostart
       <input type="checkbox" [(ngModel)]="autoStart" (change)="autoStartHandler()">
+    </label>
+    <label ngbDropdownItem ngbTooltip="Show player positions during the game. If one of two players has this deactivated, neither will see each other.">
+      Ghost
+      <input type="checkbox" [(ngModel)]="ghost" (change)="ghostHandler()">
     </label>
     <div *ngIf="this.userService.username">
       <div class="dropdown-divider"></div>

@@ -61,4 +61,12 @@ export class IndexComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(urlTree);
   }
 
+  started(challenge: Challenge): boolean {
+    return challenge.challengelocation_set.some(cl => cl.guessed);
+  }
+
+  finished(challenge: Challenge): boolean {
+    return challenge.challengelocation_set.every(cl => cl.guessed);
+  }
+
 }

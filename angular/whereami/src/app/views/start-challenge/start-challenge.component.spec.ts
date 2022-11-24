@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Params } from '@angular/router';
 import { of } from 'rxjs';
+import { GamePanoComponent } from 'src/app/embedabble/game-pano/game-pano.component';
 import { HttpErrorHandler } from 'src/app/http-error-handler.service';
 import { GOOGLE_TESTING_PROVIDER } from 'src/app/test/testutils.spec';
 
@@ -23,7 +24,7 @@ describe('StartChallangeComponent', () => {
       queryParams: of<Params>({id: id})
     }
     await TestBed.configureTestingModule({
-      declarations: [ StartChallengeComponent ],
+      declarations: [ StartChallengeComponent, GamePanoComponent],
       providers: [
         { provide: HttpClient, useValue: httpClientSpy },
         { provide: HttpErrorHandler, useValue: httpErrorHandlerSpy },
