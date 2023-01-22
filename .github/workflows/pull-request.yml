@@ -3,7 +3,7 @@ name: Run Angular Tests on PR
 on:
   pull_request:
     branches:
-      - angular
+      - master
 
 jobs:
   build-and-push-image:
