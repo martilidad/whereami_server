@@ -1,0 +1,45 @@
+<div>
+  <game-pano #gamePano>
+  </game-pano>
+  <div id='content' [hidden]="gameState.playedBefore">
+    <div id="roundEnd" [hidden]="gameState.round.remainingTime != 0">
+      Your guess was <br/>
+      <h1><strong [textContent]="gameState.round.distance"></strong>km</h1> away from the actual location.<br/>
+      <round-map #roundMap id="roundMap" [enabled]="true" classAppend="height: 50vh !important"></round-map>
+      <br/> You have scored <br/>
+      <h1 [textContent]="gameState.round.score"></h1> points this round!<br/><br/>
+      <button class="btn btn-primary" type="button" *ngIf="!gameState.finished" (click)="nextRound()">Continue</button>
+      <a class="btn btn-success" *ngIf="gameState.finished"
+         routerLink="/challengeOverview"  [queryParams]="{id: challenge!.Challenge_ID}" routerLinkActive="active" >Overview</a>
+      <div class="form-check">
+        <input type="checkbox" id="autoStart" class="form-check-input" [checked]="this.autoStart" (change)="autoStartCheckEvent($event)">
+        <label for="autostart" class="form-check-label">autostart</label>
+      </div>
+      <button class="btn btn-secondary refreshBtn mx-2" type="button" (click)="this.refreshMap()">Refresh Map</button>
+    </div>
+    <div id='scoreBoard'>
+      <span class='round' *ngIf="challenge">Current Round: <b>{{this.humanReadableRound()}}
+        /{{challenge!.challengelocation_set.length + challenge!.Ignored_Count}}</b></span><br/>
+      <span class='roundScore'>Last Round Score: <b [innerText]="gameState.round.score"></b></span><br/>
+      <span class='totalScore'>Total Score: <b [innerText]="gameState.score"></b></span>
+    </div>
+    <status-table [challengeId]="id"></status-table>
+    <mini-map #miniMap [time]="gameState.round.remainingTime" id="miniMap"></mini-map>
+    <div id='timer'></div>
+    <div id='guessButton' class="btn btn-large" [ngClass]="gameState.round.remainingTime == 0 ? 'btn-outline-danger' : 'btn-danger'" (click)="gameState.round.remainingTime == 0 ? {} : endRound()" >Make Your Guess</div>
+    <div id='toStartButton' class="btn btn-large bg-warning" (click)="gamePano.reset()">To Start</div>
+  </div>
+  <div #endGame *ngIf="gameState.playedBefore" id="endGame">
+    <h1>You already beat this Map!</h1>
+    <a class="btn btn-large btn-primary" routerLink="/" routerLinkActive="active">Main Menu</a>
+    <p>
+      <a class="btn btn-large btn-secondary mx-2" routerLink="/startChallenge"  [queryParams]="{id: this.id, ignorePreviousGuesses: true}" routerLinkActive="active">
+        Replay(unranked)
+      </a>
+      <a class="btn btn-large btn-success mx-2" routerLink="/challengeOverview"
+         [queryParams]="{id: this.id}" routerLinkActive="active" >Overview</a>
+    </p>
+  </div>
+</div>
+
+

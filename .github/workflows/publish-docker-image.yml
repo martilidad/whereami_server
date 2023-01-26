@@ -18,6 +18,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: NPM install dependencies
+        run: npm install
+        working-directory: ./angular/whereami
+      
+      - name: Build Angular
+        run: npm run build
+        working-directory: ./angular/whereami
+
       - name: Set version Tag
         id: tag
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}

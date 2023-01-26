@@ -1,0 +1,66 @@
+<div>
+  <div class="card border-dark col-12">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-10">
+          <h5 class="card-title" id="score-board-title">Challenge scores</h5>
+        </div>
+        <div class="col-2">
+          <a class="btn btn-primary" routerLink="/" routerLinkActive="active">Main Menu</a>
+        </div>
+      </div>
+      <h6 class="card-subtitle text-muted" *ngIf="challengeOverview?.winner">Easiest game of {{ challengeOverview?.winner }}'s life.</h6>
+      <h6 class="card-subtitle text-muted" *ngIf="!challengeOverview?.winner">No one played yet.</h6>
+      <a routerLink="/startChallenge"  [queryParams]="{id: challengeOverview?.id}" routerLinkActive="active"  class="btn btn-primary">Start Challenge</a>
+      <table class="table table-striped" id="score-board">
+        <thead>
+        <tr>
+          <th scope="col">Score</th>
+          <th scope="col">Distance</th>
+          <th scope="col">Name</th>
+          <th scope="col">Completed Locations</th>
+          <th scope="col">Last interaction</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let score of challengeOverview?.scores">
+            <td>{{score.score}}</td>
+            <td>{{score.distance}}</td>
+            <td>{{score.name}}</td>
+            <td>{{score.completed_locations}}</td>
+            <td [appDateElement]="score.last_interaction"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row" *ngFor="let cl of challengeOverview?.challenge_locations">
+    <div class="col-8">
+
+      <div class="card border-dark" id="round-card">
+        <div class="card-body">
+          <h5 class="card-title">{{ cl.location.Name }}</h5>
+          <table class="table table-striped" id="round-board">
+            <thead>
+            <tr>
+              <th scope="col">Score</th>
+              <th scope="col">Distance</th>
+              <th scope="col">Name</th>
+              <th scope="col">Time</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let guess of cl.guesses">
+              <td>{{ guess.Score }}</td>
+              <td>{{ guess.Distance }}</td>
+              <td>{{ guess.Username }}</td>
+              <td [appDateElement]="guess.Pub_Date"></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <round-map class="col-4" [guesses]="cl.guesses" [location]="cl.location"></round-map>
+  </div>
+</div>

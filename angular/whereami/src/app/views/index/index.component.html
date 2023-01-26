@@ -1,0 +1,70 @@
+<h3>Welcome to WhereAmI.</h3>
+<div class="card border-dark">
+  <div class="card-body">
+    <h5 class="card-title">Challenges.</h5>
+    <h6 class="card-subtitle text-muted">Please click on the challenge you would like to start.</h6>
+    <table class="table table-striped table-bordered" id="challenges" datatable
+           [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+      <thead>
+      <tr>
+        <th scope="col">Created on</th>
+        <th scope="col">Game name</th>
+        <th scope="col"># of Locations</th>
+        <th scope="col">Time</th>
+        <th scope="col">#</th>
+        <th scope="col">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let challenge of challenges">
+        <td [appDateElement]="challenge.pub_date"></td>
+        <td>{{ challenge.game.name }}</td>
+        <td>{{ challenge.location_count }}</td>
+        <td>{{ challenge.time }}</td>
+        <td>{{ challenge.id }}</td>
+        <td>
+          <div class="btn-group w-50">
+            <a *ngIf="!started(challenge)" routerLink="/startChallenge"  [queryParams]="{id: challenge.id}" routerLinkActive="active" class="btn btn-primary">Start</a>
+            <div ngbDropdown *ngIf="started(challenge) && !finished(challenge)" display="static" class="btn-group">
+              <a routerLink="/startChallenge" [queryParams]="{id: challenge.id}" routerLinkActive="active" class="btn btn-primary">Continue</a>
+              <button ngbDropdownToggle class="btn btn-primary dropdown-toggle-split">
+                <span></span>
+              </button>
+              <div ngbDropdownMenu>
+                <a ngbDropdownItem routerLink="/startChallenge"  [queryParams]="{id: challenge.id, ignorePreviousGuesses: true}" routerLinkActive="active" class="btn btn-danger">Start from Beginning</a>
+              </div>
+            </div>
+            <a *ngIf="finished(challenge)" routerLink="/startChallenge"  [queryParams]="{id: challenge.id, ignorePreviousGuesses: true}" routerLinkActive="active" class="btn btn-danger">Replay</a>
+            <button class="btn btn-secondary" (click)="challengeScores.showStats(challenge.id)">Stats</button>
+            <a routerLink="/challengeOverview"  [queryParams]="{id: challenge.id}" routerLinkActive="active"
+               class="btn btn-success">Overview</a>
+            <button class="btn btn-warning"  (click)="invite(challenge.id)">
+              Invite link
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="row">
+  <div class="col-4">
+    <div class="card border-primary">
+      <div class="card-body">
+          <h5 class="card-title">Create a new challenge: </h5>
+          <challenge-form (challengeCreated)="updateChallenges()"></challenge-form>
+      </div>
+    </div>
+  </div>
+  <div class="col-8">
+    <div class="card border-dark">
+      <div class="card-body">
+          <h5 class="card-title" id="score-board-title">Challenge scores</h5>
+          <h6 class="card-subtitle text-muted">Click on the stats button next to a challange to show it's stats
+              here.</h6>
+        <challenge-scores #challengeScores></challenge-scores>
+      </div>
+    </div>
+  </div>
+</div>

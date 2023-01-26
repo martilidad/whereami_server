@@ -5,35 +5,63 @@ import random
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction, IntegrityError
-from django.db.models import Count, Sum, Q, Max, Prefetch, Min
+from django.db.models import Count, Sum, Q, Max, Prefetch, Min, Exists, OuterRef
 from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.safestring import mark_safe
+from rest_framework import viewsets, permissions
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from psycopg2.errors import UniqueViolation
 
 from whereami.models import ChallengeLocation, Guess, Challenge, Game, Location
+from whereami.serializers import ChallengeSerializer, GameSerializer
 
 
-# Create your views here.
+class ChallengeViewSet(viewsets.ModelViewSet):
+    queryset = Challenge.objects.all()
+    serializer_class = ChallengeSerializer
+
+    # def retrieve(self, request, pk=None):
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance)
+    #     return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [permissions.IsAuthenticated()]
+        return [permissions.IsAdminUser()]
+
+    def get_queryset(self):
+        return Challenge.objects \
+            .order_by('-id') \
+            .annotate(location_count=Count('challengelocation')) \
+            .prefetch_related(Prefetch('game', Game.objects.annotate(location_count=Count('locations'))
+                .prefetch_related(Prefetch('locations', Location.objects.all())))) \
+            .prefetch_related(Prefetch('challengelocation_set', 
+                queryset=ChallengeLocation.objects.annotate(
+                    guessed=Exists(Guess.objects.filter(user=self.request.user, challenge_location=OuterRef('pk'))))))
 
 
-@login_required
-def index(request):
-    challenges = Challenge.objects.annotate(Count('challengelocation'))
-    games = Game.objects.annotate(Count('locations'))
-    context = {'challenges': challenges, 'games': games}
-    return render(request, "index.html", context)
+class GameViewSet(viewsets.ModelViewSet):
+    queryset = Game.objects.all()
+    serializer_class = GameSerializer
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [permissions.IsAuthenticated()]
+        return [permissions.IsAdminUser()]
+
+    def get_queryset(self):
+        return Game.objects.annotate(location_count=Count('locations'))
 
 
-@login_required
-def start_challenge(request):
-    context = {'google_api_key': settings.GOOGLE_API_KEY}
-    return render(request, "startChallenge.html", context)
-
-
-@login_required
+# TODO remove the if else, use annotation on base methods
+@api_view(['GET', 'POST'])
+@permission_classes((IsAuthenticated,))
 def guess(request):
     if request.method == 'POST':
         return post_guess(request)
@@ -67,14 +95,15 @@ def get_guesses(request):
         challenge_location_id = request.GET['Challenge_Location_ID']
         challenge_location = ChallengeLocation.objects.get(id=challenge_location_id)
         guesses = challenge_location.guess_set.all()
-        response_dict = [{'Name': guess.user.username, 'Lat': guess.lat, 'Long': guess.long, 'Score': guess.score,
-                          'Distance': guess.distance, 'Own': guess.user == request.user} for guess in guesses]
+        response_dict = [{'Username': guess.user.username, 'Lat': guess.lat, 'Long': guess.long, 'Score': guess.score,
+                          'Distance': guess.distance, 'Pub_Date': guess.pub_date, 'Challenge_Location_ID': challenge_location_id} for guess in guesses]
         return JsonResponse(response_dict, safe=False)
     except (KeyError, ChallengeLocation.DoesNotExist):
         return HttpResponseBadRequest()
 
 
-@login_required
+@api_view(['GET', 'POST'])
+@permission_classes((IsAuthenticated,))
 def challenge(request):
     if request.method == 'GET':
         return get_challenge(request)
@@ -99,11 +128,12 @@ def get_challenge(request):
             filtered_ids = [guess.challenge_location.id for guess in guess_set]
             challenge_locations = challenge_locations.exclude(pk__in=filtered_ids)
         list = [{'Challenge_Location_ID': challenge_location.id,
-                 'Lat': challenge_location.location.lat, 'Long': challenge_location.location.long}
+                 'Lat': challenge_location.location.lat, 'Long': challenge_location.location.long,
+                 'Name': challenge_location.location.name}
                 for challenge_location in challenge_locations]
-        boundary_array = game_boundary(obj.game)
-        response_dict = {'Challenge_ID': id, 'Time': obj.time, 'Challenge_Locations': list,
-                         'Ignored_Count': len(filtered_ids), 'boundary_array': boundary_array}
+        all_locations_array = all_locations(obj.game)
+        response_dict = {'Challenge_ID': id, 'Time': obj.time, 'challengelocation_set': list,
+                         'Ignored_Count': len(filtered_ids), 'all_locations': all_locations_array, 'Name': obj.game.name}
         return JsonResponse(response_dict, safe=False)
     except (KeyError, Challenge.DoesNotExist):
         return HttpResponseBadRequest()
@@ -111,11 +141,12 @@ def get_challenge(request):
 
 def post_challenge(request):
     try:
-        game_id = request.POST['game']
+        data = json.loads(request.body)
+        game_id = data['game']
         game = Game.objects.get(id=game_id)
-        quantity = int(request.POST['quantity'])
-        prevent_reuse = request.POST.get('preventReuse', default=False)
-        time = request.POST['time']
+        quantity = int(data['quantity'])
+        prevent_reuse = data.get('preventReuse') or False
+        time = data['time']
         if prevent_reuse:
             # exclude locations where ChallengeLocations exist already
             used_location_ids = ChallengeLocation.objects.values_list('location_id', flat=True)
@@ -131,7 +162,8 @@ def post_challenge(request):
             challenge.save()
             ChallengeLocation.objects.bulk_create(
                 [ChallengeLocation(challenge=challenge, location=location) for location in sampled_locations])
-        return HttpResponseRedirect('/')
+        id = challenge.pk
+        return JsonResponse({'id': id}, safe=False)
     except (KeyError, Game.DoesNotExist) as ke:
         return HttpResponseBadRequest()
 
@@ -143,7 +175,13 @@ def post_game(request):
         locations = data['Locations']
         with transaction.atomic():
             game = Game(name=name[:32])
-            game.save()
+            try:
+                game.save()
+            except IntegrityError as e:
+                if isinstance(e.__cause__, UniqueViolation) and e.__cause__.diag.constraint_name == 'whereami_game_name_key':
+                    return HttpResponseBadRequest("Duplicate Game Name")
+                else:
+                    return HttpResponseBadRequest()
             db_locations = Location.objects.bulk_create(
                 [Location(name=location['Name'][:32], lat=location['Lat'], long=location['Long'], game=game)
                  for location in locations])
@@ -155,20 +193,18 @@ def post_game(request):
         return HttpResponseBadRequest()
 
 
-@login_required
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
 def game(request):
-    if request.method == 'GET':
-        return render(request, "creategame.html", context={'google_api_key': settings.GOOGLE_API_KEY})
     if request.method == 'POST':
         return post_game(request)
     else:
         return Http404()
 
 
-@login_required
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
 def scores(request):
-    if request.method != 'GET':
-        return Http404()
     challenge_id = request.GET['Challenge_ID']
     users = user_challenge_scores(challenge_id)
     return JsonResponse([{'name': user.username, 'score': user.score, 'distance': user.distance,
@@ -191,11 +227,10 @@ def user_challenge_scores(challenge_id):
     return users
 
 
-@login_required
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
 def challenge_overview(request):
-    if request.method != 'GET':
-        return Http404()
-    challenge_id = request.GET['Challenge_ID']
+    challenge_id = request.GET['id']
     challenge = Challenge.objects.get(id=challenge_id)
     challenge_locations = challenge.challengelocation_set.all().prefetch_related(
         Prefetch('guess_set', queryset=Guess.objects.order_by('-score')),
@@ -204,40 +239,38 @@ def challenge_overview(request):
     winner = users.first()
     winner_name = winner.username if winner else None
     # TODO fix script injection possibility (username), currently admin register only though
-    context = {'scores': json.dumps([{'name': user.username, 'score': user.score, 'distance': user.distance,
-                                      'completed_locations': user.completed_locations,
-                                      'last_interaction': user.last_interaction}
-                                     for user in users], cls=DjangoJSONEncoder),
-               'winner': winner_name,
-               'challenge_id': challenge_id,
-               'challenge_locations': challenge_locations,
-               'google_api_key': settings.GOOGLE_API_KEY
-               }
-    return render(request, 'challengeOverview.html', context)
+    return JsonResponse({'scores': [{'name': user.username, 'score': user.score, 'distance': user.distance,
+                                     'completed_locations': user.completed_locations,
+                                     'last_interaction': user.last_interaction}
+                                    for user in users],
+                         'winner': winner_name,
+                         'id': challenge_id,
+                         'challenge_locations': [{'location': {'Challenge_Location_ID': cl.id,
+                                                               'Lat': cl.location.lat, 'Long': cl.location.long,
+                                                               'Name': cl.location.name},
+                                                  'guesses': [{'Username': g.user.username,
+                                                               'Challenge_Location_ID': cl.id,
+                                                               'Lat': g.lat,
+                                                               'Long': g.long,
+                                                               'Score': g.score,
+                                                               'Distance': g.distance,
+                                                               'Pub_Date': g.pub_date} for g in cl.guess_set.all()]}
+                                                 for cl in challenge_locations]
+                         }, safe=False)
 
 
+# not authenticated! only for open graph response
 def invite(request):
-    is_authenticated = request.user.is_authenticated
-    boundary_array = []
-    api_key = None
     challenge_id = request.GET['Challenge_ID']
     challenge = get_object_or_404(Challenge, id=challenge_id)
-    if is_authenticated:
-        game = challenge.game
-        boundary_array = game_boundary(game)
-        api_key = settings.GOOGLE_API_KEY
-    return render(request, 'invite.html', {'is_authenticated': is_authenticated, 'full_path': request.get_full_path(),
-                                           'boundary_array': mark_safe(json.dumps(boundary_array)),
-                                           'google_api_key': api_key, 'challenge': challenge})
+    return render(request, 'invite.html', {'full_path': request.get_full_path()[len("/redirect"):],
+                                           'challenge': challenge})
 
 
-def game_boundary(game):
-    boundary_array = []
-    aggregates = game.locations.aggregate(Min('lat'), Max('lat'), Min('long'), Max('long'))
-    # create one coord for each lat/long combination
-    for coord in list(itertools.product([aggregates['lat__min'], aggregates['lat__max']],
-                                        [aggregates['long__min'], aggregates['long__max']])):
-        boundary_array.append({'Lat': coord[0], 'Long': coord[1]})
-    any_location = game.locations.first()
-    boundary_array.append({'Lat': any_location.lat, 'Long': any_location.long})
-    return boundary_array
+def all_locations(game):
+    return [{'Lat': location.lat, 'Long': location.long} for location in game.locations.all()]
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def google_api_key(request):
+    return JsonResponse({'google_api_key': settings.GOOGLE_API_KEY})

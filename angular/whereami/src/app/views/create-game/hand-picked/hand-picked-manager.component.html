@@ -1,0 +1,7 @@
+<div id="createGamePano" [attr.hidden]="hidden ? '' : null" >
+  <div id="pano" #panoDiv></div>
+  <div class="row" id="buttonContainer">
+    <button type="button" (click)="focusMarker()" class="btn btn-warning col-6">Focus</button>
+    <button type="button" (click)="deleteMarker()" class="btn btn-danger col-6">Delete</button>
+  </div>
+</div>

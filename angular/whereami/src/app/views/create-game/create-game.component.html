@@ -1,0 +1,42 @@
+<div class="container-fluid">
+  <div class="row" style="height: 850px">
+    <div class="col-3">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-body">Create a new game: </h4>
+          <div class="form-group">
+            <span>Creation-Mode</span>
+            <button id="areaButton" type="button" (click)="handPicked = false" class="btn btn-primary">Area</button>
+            <button id="handPickedButton" type="button" (click)="handPicked = true" class="btn btn-secondary">Handpicked</button>
+          </div>
+          <handpicked-game-form (cancelled)="openModal()" [handPickedManager]="handPickedManager" [hidden]="!handPicked"></handpicked-game-form>
+          <drawn-game-form (cancelled)="openModal()" [drawingManager]="drawingManager" [hidden]="handPicked"></drawn-game-form>
+          
+        </div>
+      </div>
+    </div>
+    <div class="col-9">
+      <google-map [options]="mapOptions" #map id="createGameMap" width="99%" height="90%">
+        <hand-picked-manager #handPickedManager [hidden]="!handPicked"></hand-picked-manager>
+        <drawing-manager #drawingManager [hidden]="handPicked"></drawing-manager>
+        <coverage-toggle></coverage-toggle>
+      </google-map>
+    </div>
+  </div>
+</div>
+<!-- Cancel-Confirmation-Modal -->
+<ng-template let-modal #cancelModal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="modalLabel">Return to Main Menu</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    There are unsaved changes. Are you sure you want to return to the main menu?
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close('Clicked Button')">No, stay at create-page.</button>
+    <a href="/" class="btn btn-danger">Yes, I am sure.</a>
+  </div>
+</ng-template>

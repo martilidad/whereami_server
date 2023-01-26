@@ -1,0 +1,10 @@
+{
+  "karmaTestExplorer.projectWorkspaces": [
+    {
+      "rootPath": "angular/whereami"
+    }
+  ],
+  "coverage-gutters.coverageBaseDir": "angular/whereami/**",
+  "karmaTestExplorer.browser": "ChromeNoAudioInteract",
+  "karmaTestExplorer.allowGlobalPackageFallback": false
+}

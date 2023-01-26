@@ -134,3 +134,13 @@ dmypy.json
 local/
 
 static-out/
+
+## angular output file in django app
+whereami/static/ng/
+
+.dev/.env
+
+## pip install cache
+pip-cache
+
+/.dev/.env
