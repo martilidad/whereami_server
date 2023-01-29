@@ -1,4 +1,4 @@
-name: Run Angular Tests on PR
+name: Run Tests on PR
 
 on:
   pull_request:
@@ -6,13 +6,13 @@ on:
       - master
 
 jobs:
-  build-and-push-image:
+  test-angular:
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: setup Node
         uses: actions/setup-node@v3
@@ -26,3 +26,17 @@ jobs:
       - name: Test Angular
         run: npm run test:ci
         working-directory: ./angular/whereami
+  
+  test-django:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install -r requirements.txt
+      - name: Test Django
+        run: python ./manage.py test */tests
