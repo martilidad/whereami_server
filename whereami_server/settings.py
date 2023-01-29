@@ -14,6 +14,7 @@ import imp
 import os
 import mimetypes
 import datetime
+import sys
 
 from django.core.management import utils
 from environs import Env
@@ -148,6 +149,9 @@ DATABASES = {
         'PORT': DB_PORT
     }
 }
+if 'test' in sys.argv:
+    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
+
 
 
 # Password validation
