@@ -17,9 +17,15 @@ updates:
     # Check for updates once a week
     schedule:
       interval: "weekly"
+    allow:
+    - dependency-name: "@angular*"
+      dependency-type: "direct"
   - package-ecosystem: "pip"
     # Look for a `Dockerfile` in the `root` directory
     directory: "/"
     # Check for updates once a week
     schedule:
       interval: "weekly"
+    allow:
+    - dependency-name: "django*"
+      dependency-type: "direct"
