@@ -1,4 +1,4 @@
-name: Run Angular Tests on PR
+name: Run Tests on PR
 
 on:
   pull_request:
