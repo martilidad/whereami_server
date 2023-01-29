@@ -1,6 +1,6 @@
 # pigar doesn't work :/
 django == 3.2.16
-datetime == 4.3
+datetime == 5.0
 pyyaml == 5.4.1
 psycopg2 == 2.9.3
 channels == 3.0.5
