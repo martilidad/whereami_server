@@ -1,19 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChallengeOverviewComponent } from './challenge-overview.component';
-import {ChallengeOverviewService} from "../../service/challenge-overview/challenge-overview.service";
-import {UserService} from "../../service/user/user.service";
+import {ChallengesService} from "../../service/challenge/challenges.service";
 import {Observable, of} from "rxjs";
-import {ChallengeOverview} from "../../model/game-model/challenge-overview";
+import {Challenge, ChallengeLocation, ChallengeScore, Location} from "@client/models";
 import {ActivatedRoute, Params} from "@angular/router";
 
 describe('ChallengeOverviewComponent', () => {
   let id = 0;
   let component: ChallengeOverviewComponent;
   let fixture: ComponentFixture<ChallengeOverviewComponent>;
-  let challengeOverviewStub: Partial<ChallengeOverviewService> = {
-    getOverview(id: number): Observable<ChallengeOverview | undefined> {
-      return of<ChallengeOverview>({challenge_locations: [], id: id, scores: [], winner: 'aname'})
+  let challengeOverviewStub: Partial<ChallengesService> = {
+    getChallenge(id: number): Observable<Challenge> {
+      return of<Challenge>({id: 3, game: {id: 1, locations: [] as Location[], name: 'test'}, pub_date: '2022-11-20T12:42Z', locations: [] as ChallengeLocation[], scores: [] as ChallengeScore[], time: 19})
     }
   }
   let activatedRouteStub: Partial<ActivatedRoute> = {
@@ -23,7 +22,7 @@ describe('ChallengeOverviewComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ ChallengeOverviewComponent ],
-      providers: [{provide: ChallengeOverviewService, useValue: challengeOverviewStub},
+      providers: [{provide: ChallengesService, useValue: challengeOverviewStub},
         {provide: ActivatedRoute, useValue: activatedRouteStub}]
     })
     .compileComponents();

@@ -1,9 +1,9 @@
 import { Component, Inject, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { GoogleMap } from '@angular/google-maps';
 import { Router, UrlTree } from '@angular/router';
+import { Challenge } from '@client/models';
 import { range } from 'rxjs';
 import { GOOGLE } from 'src/app/app.module';
-import { RuntimeChallenge } from 'src/app/model/game-model/runtime-challenge';
 import { ChallengesService } from 'src/app/service/challenge/challenges.service';
 
 @Component({
@@ -19,7 +19,7 @@ export class HomeComponent implements OnInit {
   @ViewChildren('playMap') 
   playMaps: QueryList<GoogleMap> | undefined;
   
-  challenges: RuntimeChallenge[] = [];
+  challenges: Challenge[] = [];
 
   constructor(@Inject(GOOGLE) private google_ns: typeof google,
   private challengesService: ChallengesService,
@@ -46,16 +46,16 @@ export class HomeComponent implements OnInit {
     this.router.navigateByUrl(urlTree);
   }
 
-  started(challenge: RuntimeChallenge): boolean {
-    return challenge.challengelocation_set.some(cl => cl.guessed);
+  started(challenge: Challenge): boolean {
+    return challenge.locations.some(cl => cl.guessed);
   }
 
-  finished(challenge: RuntimeChallenge): boolean {
-    return challenge.challengelocation_set.every(cl => cl.guessed);
+  finished(challenge: Challenge): boolean {
+    return challenge.locations.every(cl => cl.guessed);
   }
 
   updateChallenges() {
-    this.challengesService.getRuntimeChallenges(5).subscribe(values => this.challenges = values);
+    this.challengesService.getChallenges(5).subscribe(values => this.challenges = values);
   }
 
 }

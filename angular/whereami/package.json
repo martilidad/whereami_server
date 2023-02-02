@@ -30,9 +30,12 @@
     "datatables.net-dt": "^1.12.1",
     "jquery": "^3.6.1",
     "moment": "^2.29.4",
+    "ng-openapi-gen": "^0.24.1",
+    "openapi-zod-client": "^1.5.8",
     "rxjs": "~7.5.7",
     "tslib": "^2.4.0",
     "typescript-optional": "^3.0.0-alpha.3",
+    "zod": "^3.20.2",
     "zone.js": "~0.11.8"
   },
   "devDependencies": {

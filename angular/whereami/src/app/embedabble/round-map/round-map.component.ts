@@ -1,7 +1,6 @@
 import {Component, Inject, InjectionToken, Input, ViewChild} from '@angular/core';
 import { GOOGLE } from 'src/app/app.module';
-import { ChallengeLocation, ChallengeLocationImpl } from 'src/app/model/game-model/challenge-location';
-import { Guess } from 'src/app/model/game-model/guess';
+import { ChallengeLocation, Location, Guess } from '@client/models';
 import { UserService } from 'src/app/service/user/user.service';
 // Only import for type hints; the runtime dependency is injected!!!
 import type {GoogleMap} from "@angular/google-maps";
@@ -75,8 +74,8 @@ export class RoundMapComponent {
     this._map.fitBounds(this.roundBounds)
   }
 
-  private drawChallengeLocation(location: ChallengeLocation) {
-    var latLng = new ChallengeLocationImpl(location).toLatLng(this.google_ns);
+  private drawChallengeLocation(location: ChallengeLocation | Location) {
+    var latLng = new this.google_ns.maps.LatLng(location.lat, location.long);
     this.drawMarker(new this.google_ns.maps.Marker({
       position: latLng,
       label: "Target",
@@ -85,7 +84,7 @@ export class RoundMapComponent {
   }
 
   private drawGuess(guess: Guess) {
-    var marker = guess.Username == this.userService.username ? this.playerMarker(guess, guess.Pub_Date != null) : this.enemyMarker(guess);
+    var marker = guess.username == this.userService.username ? this.playerMarker(guess, guess.pub_date != null) : this.enemyMarker(guess);
     this.drawMarker(marker);
   }
 
@@ -102,19 +101,19 @@ export class RoundMapComponent {
 
   private enemyMarker(guess: Guess): google.maps.Marker {
     return new this.google_ns.maps.Marker({
-      position: new this.google_ns.maps.LatLng(guess.Lat, guess.Long),
-      label: guess.Username,
+      position: new this.google_ns.maps.LatLng(guess.lat, guess.long),
+      label: guess.username,
       icon: ENEMY_MARKER_URL,
-      title: 'Distance: ' + guess.Distance + ' Score: ' + guess.Score
+      title: 'Distance: ' + guess.distance + ' Score: ' + guess.score
     });
   }
 
   private playerMarker(guess: Guess, synched=true): google.maps.Marker {
     return new this.google_ns.maps.Marker({
-      position: new this.google_ns.maps.LatLng(guess.Lat, guess.Long),
+      position: new this.google_ns.maps.LatLng(guess.lat, guess.long),
       label: synched ? "You" : "You (not on Server)",
       icon: PLAYER_MARKER_URL,
-      title: 'Distance: ' + guess.Distance + ' Score: ' + guess.Score
+      title: 'Distance: ' + guess.distance + ' Score: ' + guess.score
     });
   }
 

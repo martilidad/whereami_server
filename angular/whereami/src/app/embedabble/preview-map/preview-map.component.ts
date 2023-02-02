@@ -1,8 +1,7 @@
 import { Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { GoogleMap } from '@angular/google-maps';
+import { Game } from 'src/app/api/generated/client/models';
 import { GOOGLE } from 'src/app/app.module';
-import { Game } from 'src/app/model/game-model/game';
-import { boundsFromChallenge, RuntimeChallenge } from 'src/app/model/game-model/runtime-challenge';
 
 @Component({
   selector: 'app-preview-map',
@@ -45,7 +44,7 @@ export class PreviewMapComponent implements OnInit {
   onInputChanged() {
     if (this._map && this._game) {
       let bounds = new this.google_ns.maps.LatLngBounds();
-      this._game.locations.forEach((latLng) => bounds.extend({ lat: latLng.Lat, lng: latLng.Long }));
+      this._game.locations.forEach((location) => bounds.extend({ lat: location.lat, lng: location.long }));
       this._map.fitBounds(bounds);
       let map = this._map.googleMap!;
       this.outline?.setMap(null);
@@ -74,8 +73,8 @@ export class PreviewMapComponent implements OnInit {
         let circles = this._game.locations.map((location) => {
           let circle = this.drawCircle(
             {
-              lat: location.Lat + this.randomOffset(maxLat),
-              lng: location.Long + this.randomOffset(maxLng),
+              lat: location.lat + this.randomOffset(maxLat),
+              lng: location.long + this.randomOffset(maxLng),
             },
             diagonal / 6000
           ); // + this.randomOffset(maxLng)

@@ -52,8 +52,13 @@ export class HandpickedGameFormComponent implements OnInit {
 
 
   submit() {
-    let streetViewPlaces = this.handPickedManager!.markers.map(marker => new StreetViewPlace(marker.getPosition()!.lat(), marker.getPosition()!.lng(), marker.getTitle()!));
-    this.gamesService.createGame({Name: this.model.name, Locations: streetViewPlaces})
+    let streetViewPlaces = this.handPickedManager!.markers.map(marker => 
+      ({id: null, 
+        pub_date: null, 
+        lat: marker.getPosition()!.lat(), 
+        long: marker.getPosition()!.lng(), 
+        name: marker.getTitle()!}));
+    this.gamesService.createGame({id: null, name: this.model.name, locations: streetViewPlaces})
       .subscribe({
         next: value => this.statusText = "Success",
         error: value => this.statusText = value.error

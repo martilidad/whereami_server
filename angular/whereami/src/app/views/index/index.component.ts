@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ChallengesService} from "../../service/challenge/challenges.service";
-import {Challenge} from "../../model/game-model/challenge";
+import {Challenge} from "@client/models";
 import {Subject} from "rxjs";
 import {DataTableDirective} from "angular-datatables";
 import { Router, UrlTree } from '@angular/router';
@@ -62,11 +62,11 @@ export class IndexComponent implements OnInit, OnDestroy {
   }
 
   started(challenge: Challenge): boolean {
-    return challenge.challengelocation_set.some(cl => cl.guessed);
+    return challenge.locations.some(cl => cl.guessed);
   }
 
   finished(challenge: Challenge): boolean {
-    return challenge.challengelocation_set.every(cl => cl.guessed);
+    return challenge.locations.every(cl => cl.guessed);
   }
 
 }

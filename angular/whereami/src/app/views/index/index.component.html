@@ -17,9 +17,9 @@
       </thead>
       <tbody>
       <tr *ngFor="let challenge of challenges">
-        <td [appDateElement]="challenge.pub_date"></td>
+        <td [appDateElement]="challenge.pub_date!"></td>
         <td>{{ challenge.game.name }}</td>
-        <td>{{ challenge.location_count }}</td>
+        <td>{{ challenge.locations.length }}</td>
         <td>{{ challenge.time }}</td>
         <td>{{ challenge.id }}</td>
         <td>
@@ -35,10 +35,10 @@
               </div>
             </div>
             <a *ngIf="finished(challenge)" routerLink="/startChallenge"  [queryParams]="{id: challenge.id, ignorePreviousGuesses: true}" routerLinkActive="active" class="btn btn-danger">Replay</a>
-            <button class="btn btn-secondary" (click)="challengeScores.showStats(challenge.id)">Stats</button>
+            <button class="btn btn-secondary" (click)="challengeScores.showStats(challenge)">Stats</button>
             <a routerLink="/challengeOverview"  [queryParams]="{id: challenge.id}" routerLinkActive="active"
                class="btn btn-success">Overview</a>
-            <button class="btn btn-warning"  (click)="invite(challenge.id)">
+            <button class="btn btn-warning"  (click)="invite(challenge.id!)">
               Invite link
             </button>
           </div>

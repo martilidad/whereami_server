@@ -1,14 +1,10 @@
 import { AfterContentInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import type { GoogleMap } from '@angular/google-maps';
 import { ActivatedRoute, Router, UrlTree } from '@angular/router';
+import { Challenge } from '@client/models';
 import { randomInt } from 'crypto';
 import { distinct, filter, from, map, mergeMap, timer } from 'rxjs';
 import { GOOGLE } from 'src/app/app.module';
-import { PreviewMapComponent } from 'src/app/embedabble/preview-map/preview-map.component';
-import {
-  boundsFromChallenge,
-  RuntimeChallenge,
-} from 'src/app/model/game-model/runtime-challenge';
 import { PlayStatus } from 'src/app/model/status/play-status';
 import { UserChallengeStatus } from 'src/app/model/status/user-challenge-status';
 import {
@@ -29,7 +25,7 @@ import { distinctTimes } from 'src/app/service/utils';
 export class InviteComponent implements AfterContentInit {
   id: number | undefined;
   statusService: BoundChallengeStatusService | undefined;
-  challenge: RuntimeChallenge | undefined;
+  challenge: Challenge | undefined;
   usersHere: string[] = [];
   otherUsers: string[] = [];
 
@@ -83,8 +79,7 @@ export class InviteComponent implements AfterContentInit {
       this.statusService.statusObservable.subscribe((value) =>
         this.filterUsers(value)
       );
-      this.challengesService
-        .getChallengeById(this.id!)
+      this.challengesService.getChallenge(this.id!)
         .subscribe((value) => {
           this.challenge = value;
         });
@@ -131,5 +126,9 @@ export class InviteComponent implements AfterContentInit {
 
   copyInviteLink() {
     navigator.clipboard.writeText(window.location.href);
+  }
+
+  fullyPlayed(): boolean {
+    return this.challenge ? this.challenge.locations.every(location => location.guessed) : false;
   }
 }

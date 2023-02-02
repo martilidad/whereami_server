@@ -9,8 +9,8 @@
           <a class="btn btn-primary" routerLink="/" routerLinkActive="active">Main Menu</a>
         </div>
       </div>
-      <h6 class="card-subtitle text-muted" *ngIf="challengeOverview?.winner">Easiest game of {{ challengeOverview?.winner }}'s life.</h6>
-      <h6 class="card-subtitle text-muted" *ngIf="!challengeOverview?.winner">No one played yet.</h6>
+      <h6 class="card-subtitle text-muted" *ngIf="winner">Easiest game of {{ winner }}'s life.</h6>
+      <h6 class="card-subtitle text-muted" *ngIf="!winner">No one played yet.</h6>
       <a routerLink="/startChallenge"  [queryParams]="{id: challengeOverview?.id}" routerLinkActive="active"  class="btn btn-primary">Start Challenge</a>
       <table class="table table-striped" id="score-board">
         <thead>
@@ -26,7 +26,7 @@
           <tr *ngFor="let score of challengeOverview?.scores">
             <td>{{score.score}}</td>
             <td>{{score.distance}}</td>
-            <td>{{score.name}}</td>
+            <td>{{score.username}}</td>
             <td>{{score.completed_locations}}</td>
             <td [appDateElement]="score.last_interaction"></td>
           </tr>
@@ -34,12 +34,12 @@
       </table>
     </div>
   </div>
-  <div class="row" *ngFor="let cl of challengeOverview?.challenge_locations">
+  <div class="row" *ngFor="let cl of challengeOverview?.locations">
     <div class="col-8">
 
       <div class="card border-dark" id="round-card">
         <div class="card-body">
-          <h5 class="card-title">{{ cl.location.Name }}</h5>
+          <h5 class="card-title">{{ cl.name }}</h5>
           <table class="table table-striped" id="round-board">
             <thead>
             <tr>
@@ -51,16 +51,16 @@
             </thead>
             <tbody>
             <tr *ngFor="let guess of cl.guesses">
-              <td>{{ guess.Score }}</td>
-              <td>{{ guess.Distance }}</td>
-              <td>{{ guess.Username }}</td>
-              <td [appDateElement]="guess.Pub_Date"></td>
+              <td>{{ guess.score }}</td>
+              <td>{{ guess.distance }}</td>
+              <td>{{ guess.username }}</td>
+              <td [appDateElement]="guess.pub_date!"></td>
             </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
-    <round-map class="col-4" [guesses]="cl.guesses" [location]="cl.location"></round-map>
+    <round-map class="col-4" [guesses]="cl.guesses" [location]="cl"></round-map>
   </div>
 </div>

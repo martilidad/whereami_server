@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Game} from "../../../model/game-model/game";
 import {GamesService} from "../../../service/game/games.service";
 import {ChallengesService} from "../../../service/challenge/challenges.service";
+import { Game } from '@client/models/game';
 
 @Component({
   selector: 'challenge-form',
@@ -41,15 +41,15 @@ export class ChallengeFormComponent implements OnInit {
   }
 
   submit() {
-    this.challengesService.createChallenge({
-      preventReuse: this.preventReuse,
+    this.challengesService.generateChallengeFromGame(this._game!.id!,
+      {
+      prevent_reuse: this.preventReuse,
       time: this.time,
-      game: this._game!.id,
       quantity: this.locationCount
     }).subscribe(value => this.challengeCreated.emit())
   }
 
   private calcMaxLocations(): string {
-    return this._game?.location_count ? this._game.location_count.toString() : '?'
+    return this._game ? this._game.locations.length.toString() : '?'
   }
 }

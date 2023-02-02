@@ -6,5 +6,16 @@
   ],
   "coverage-gutters.coverageBaseDir": "angular/whereami/**",
   "karmaTestExplorer.browser": "ChromeNoAudioInteract",
-  "karmaTestExplorer.allowGlobalPackageFallback": false
+  "karmaTestExplorer.allowGlobalPackageFallback": false,
+  "python.formatting.provider": "yapf",
+  "python.testing.unittestArgs": [
+    "-v",
+    "-s",
+    "./whereami/tests",
+    "-p",
+    "test*.py"
+  ],
+  // "python.testing.cwd": "./whereami/tests",
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": true
 }

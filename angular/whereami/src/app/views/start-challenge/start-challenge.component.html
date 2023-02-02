@@ -10,7 +10,7 @@
       <h1 [textContent]="gameState.round.score"></h1> points this round!<br/><br/>
       <button class="btn btn-primary" type="button" *ngIf="!gameState.finished" (click)="nextRound()">Continue</button>
       <a class="btn btn-success" *ngIf="gameState.finished"
-         routerLink="/challengeOverview"  [queryParams]="{id: challenge!.Challenge_ID}" routerLinkActive="active" >Overview</a>
+         routerLink="/challengeOverview"  [queryParams]="{id: challenge!.id}" routerLinkActive="active" >Overview</a>
       <div class="form-check">
         <input type="checkbox" id="autoStart" class="form-check-input" [checked]="this.autoStart" (change)="autoStartCheckEvent($event)">
         <label for="autostart" class="form-check-label">autostart</label>
@@ -19,7 +19,7 @@
     </div>
     <div id='scoreBoard'>
       <span class='round' *ngIf="challenge">Current Round: <b>{{this.humanReadableRound()}}
-        /{{challenge!.challengelocation_set.length + challenge!.Ignored_Count}}</b></span><br/>
+        /{{challenge!.locations.length}}</b></span><br/>
       <span class='roundScore'>Last Round Score: <b [innerText]="gameState.round.score"></b></span><br/>
       <span class='totalScore'>Total Score: <b [innerText]="gameState.score"></b></span>
     </div>

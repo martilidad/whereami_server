@@ -41,9 +41,9 @@ export class DrawnGameFormComponent implements OnInit {
       )
       .then((places) =>
         this.gamesService
-          .createGame({ Name: this.model.name, Locations: places })
+          .createGame({id: null, name: this.model.name, locations: places})
           .subscribe({
-            next: (value) => {
+            next: () => {
               this.drawingManager?.clear();
               this.drawingStatusText = 'Success';
             },

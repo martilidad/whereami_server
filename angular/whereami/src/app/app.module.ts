@@ -38,6 +38,7 @@ import { HomeComponent } from './views/home/home.component';
 import { PreviewMapComponent } from './embedabble/preview-map/preview-map.component';
 import { HomeChallengeFormComponent } from './views/home/home-challenge-form/home-challenge-form.component';
 import { GameCardComponent } from './views/home/game-card/game-card.component';
+import { AuthorizationInterceptor } from './service/authorization.interceptor';
 export const GOOGLE = new InjectionToken('google');
 
 @NgModule({
@@ -84,9 +85,15 @@ export const GOOGLE = new InjectionToken('google');
     HttpErrorHandler,
     MessageService,
     {provide: GOOGLE, useFactory: () => google},
+    //TODO these handle the same concern and should be combined
     {
       provide: HTTP_INTERCEPTORS,
       useClass: UnauthorizedInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthorizationInterceptor,
       multi: true
     },
     ADDITIONAL_PROVIDERS

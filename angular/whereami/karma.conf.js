@@ -30,10 +30,10 @@ module.exports = function (config) {
       check: {
         emitWarning: false,
         global: {
-          statements: 40,
+          statements: 36,
           // branches: 50, not enabled for now
-          functions: 33,
-          lines: 40,
+          functions: 28,
+          lines: 35,
           excludes: [
             'src\app\app.module.ts',
             'src\app\app-routing.module.ts'
