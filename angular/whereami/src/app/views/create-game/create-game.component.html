@@ -6,8 +6,8 @@
           <h4 class="card-body">Create a new game: </h4>
           <div class="form-group">
             <span>Creation-Mode</span>
-            <button id="areaButton" type="button" (click)="handPicked = false" class="btn btn-primary">Area</button>
-            <button id="handPickedButton" type="button" (click)="handPicked = true" class="btn btn-secondary">Handpicked</button>
+            <button id="areaButton" type="button" (click)="handPicked = false" [className]="handPicked ? 'btn btn-secondary' : 'btn btn-primary'">Area</button>
+            <button id="handPickedButton" type="button" (click)="handPicked = true" [className]="handPicked ? 'btn btn-primary' : 'btn btn-secondary'">Handpicked</button>
           </div>
           <handpicked-game-form (cancelled)="openModal()" [handPickedManager]="handPickedManager" [hidden]="!handPicked"></handpicked-game-form>
           <drawn-game-form (cancelled)="openModal()" [drawingManager]="drawingManager" [hidden]="handPicked"></drawn-game-form>
@@ -28,7 +28,7 @@
 <ng-template let-modal #cancelModal>
   <div class="modal-header">
     <h5 class="modal-title" id="modalLabel">Return to Main Menu</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <button type="button" class="close" aria-label="Close" (click)="modal.close('Clicked Button')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>

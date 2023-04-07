@@ -4,9 +4,32 @@
     <input class="form-control" type="text" id="name" name="name" required [(ngModel)]="model.name">
   </div>
   <div class="form-group">
+    <label for="importFileInput">Import Locations</label>
+    <button type="button" (click)="openModal()" class="btn btn-secondary btn-sm btn-circle"><b>?</b></button>
+    <input type="file" id="importFileInput" accept=".json" class="form-control-file file-input" (change)="handleImportFile($event)" #fileUpload>
+    <div class="file-upload">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="fileUpload.click()">Select File
+      </button>
+      <samp>{{ selectedFile || "no file selected"}}</samp>
+    </div>
+  </div>
+  <div class="form-group">
     <span>Number of Locations: </span><span>{{ handPickedManager?.markers?.length }}</span>
   </div>
   <div [innerText]="statusText"></div>
   <button type="submit" class="btn btn-primary">Create</button>
   <button type="button" (click)="cancel()" class="btn btn-danger">Cancel</button>
 </form>
+
+<!-- import file tooltip -->
+<ng-template let-modal #importFileTooltip>
+  <div class="modal-header">
+    <h5 class="modal-title" id="importFileTooltipLabel">Import Locations: File Format</h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.close('Clicked Button')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <code><pre>{{fileFormat}}</pre></code>
+  </div>
+</ng-template>

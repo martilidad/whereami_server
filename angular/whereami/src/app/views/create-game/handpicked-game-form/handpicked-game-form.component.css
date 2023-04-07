@@ -2,3 +2,18 @@
 .is-hidden {
   display: none !important;
 }
+
+.btn-circle {
+  width: 15px;
+  height: 15px;
+  padding: 0px 0px;
+  margin: 2px;
+  border-radius: 15px;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.file-input {
+  display: none;
+}

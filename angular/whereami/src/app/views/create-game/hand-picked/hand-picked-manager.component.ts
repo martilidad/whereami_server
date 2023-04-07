@@ -42,7 +42,8 @@ export class HandPickedManagerComponent {
       url: INACTIVE_MARKER_URL,
       scaledSize: new this.google_ns.maps.Size(27, 43)
     };
-    this.activeMarkerIcon = {
+    this.activeMarkerIcon = null;
+    /*{
       path: "M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
       fillColor: "blue",
       fillOpacity: 0.6,
@@ -50,7 +51,7 @@ export class HandPickedManagerComponent {
       rotation: 0,
       scale: 2,
       anchor: new this.google_ns.maps.Point(15, 30),
-    };
+    };*/
   }
 
   @ViewChild("panoDiv", {static: true})
@@ -69,9 +70,48 @@ export class HandPickedManagerComponent {
         this.parent.googleMap.addListener("click", (event: google.maps.MapMouseEvent | google.maps.IconMouseEvent) => {
           this.changed = true;
           const radius = 50000 / Math.pow(1.6, <number>this.parent.getZoom());
-          this.streetViewService.getPanorama({location: event.latLng, radius: radius}, this.processPano);
+          this.addMarkerFromPanorama(event.latLng!, radius);
         });
       }
+    }
+  }
+
+  public addMarker(loc: google.maps.LatLng, name: string) {
+    if (!this.locationExists(loc)) {
+      const marker = new this.google_ns.maps.Marker({
+        position: loc,
+        map: this.parent.googleMap,
+        title: name,
+        draggable: true,
+      });
+      this._markers.push(marker);
+      this.activateMarker(marker);
+      marker.addListener("click", () => this.activateMarker(marker));
+      marker.addListener("dragstart", () => this.onDragStart(marker))
+      marker.addListener("dragend", () => this.onDragEnd(marker));
+    }
+  }
+
+  private locationExists(latLng: google.maps.LatLng) {
+    for (let markerId in this._markers) {
+        var presentMarker = this._markers[markerId];
+        if (this.activeMarker === presentMarker) {
+            continue;
+        }
+        var distance = google.maps.geometry.spherical.computeDistanceBetween(presentMarker.getPosition()!, latLng);
+        if (distance < 1) { // two points should not be closer than 1 meter
+            var message = "location already exists!";
+            console.log(message);
+            this.statusText = message;
+            return true;
+        }
+    }
+    return false;
+}
+
+  public addMarkerFromPanorama(loc: google.maps.LatLng, radius: number) {
+    if (!this.locationExists(loc)) {
+      this.streetViewService.getPanorama({ location: loc, radius: radius }, this.processPano);
     }
   }
 
@@ -89,26 +129,20 @@ export class HandPickedManagerComponent {
     this.statusText = "";
     if (status === "OK") {
       const location = data.location;
-      const marker = new this.google_ns.maps.Marker({
-        position: location.latLng,
-        map: this.parent.googleMap,
-        title: location.description,
-        draggable: true,
-      });
-      this._markers.push(marker);
-      this.activateMarker(marker);
-      marker.addListener("click", () => this.activateMarker(marker));
-      marker.addListener("dragstart", () => this.onDragStart(marker))
-      marker.addListener("dragend", () => this.onDragEnd(marker));
+      if (!this.locationExists(location.latLng)) {
+        this.addMarker(location.latLng, location.description);
+      }
     } else {
-      this.statusText = "no Street view for this area";
+      var message = "no Street view for this area";
+      console.log(message);
+      this.statusText = message;
     }
   }
 
   //not static because it needs Maps api import!
   private readonly inactiveMarkerIcon;
 
-  private readonly activeMarkerIcon;
+  private readonly activeMarkerIcon: string|google.maps.Icon|null|google.maps.Symbol|undefined;
 
 
   activateMarker(marker: google.maps.Marker) {
@@ -128,7 +162,11 @@ export class HandPickedManagerComponent {
       }
       this.pano.addListener("position_changed", () => {
         if (this.pano) {
-          marker.setPosition(this.pano.getPosition());
+          this.statusText = "";
+          if (!this.locationExists(this.pano.getPosition()!)) {
+              marker.setPosition(this.pano.getPosition());
+              marker.setTitle(this.pano.getLocation()!.description);
+          }
         }
       });
     }
@@ -150,9 +188,14 @@ export class HandPickedManagerComponent {
   private onPanoRetrieved = (data: any, status: any) => {
     this.statusText = "";
     if (status === "OK") {
-      const pos = data.location.latLng;
-      this.activeMarker!.setPosition(pos);
-      this.updatePano(pos);
+      const location = data.location;
+      if (!this.locationExists(location.latLng)) {
+        this.activeMarker!.setPosition(location.latLng);
+        this.activeMarker!.setTitle(location.description)
+        this.updatePano(location.latLng)
+      } else {
+        this.activeMarker!.setPosition(this.dragStartPos);
+      }
     } else {
       this.activeMarker!.setPosition(this.dragStartPos);
       this.statusText = "no street view found for dragged area";
