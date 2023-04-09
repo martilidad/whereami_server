@@ -16,3 +16,4 @@ pytest-django
 drf_spectacular
 pytest-asyncio
 drf-nested-routers
+daphne
