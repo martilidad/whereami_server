@@ -1,10 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild} from '@angular/core';
 import {HandPickedManagerComponent} from "../hand-picked/hand-picked-manager.component";
-import {DrawingManagerComponent} from "../drawing-manager/drawing-manager.component";
 import {CreateHandpickedGame} from "./create-handpicked-game";
 import {GamesService} from "../../../service/game/games.service";
+import {FileService} from "../../../service/file/file.service";
 import {StreetViewPlace} from "../../../service/street-view-place/streetViewPlace";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ImportLocations } from 'src/app/model/import-locations';
 
 @Component({
   selector: 'handpicked-game-form',
@@ -44,7 +45,7 @@ export class HandpickedGameFormComponent implements OnInit {
   selectedFile = '';
 
 
-  constructor(public modalService: NgbModal, private gamesService: GamesService) { }
+  constructor(public modalService: NgbModal, private gamesService: GamesService, private fileService: FileService) { }
 
   ngOnInit(): void {
   }
@@ -67,21 +68,18 @@ export class HandpickedGameFormComponent implements OnInit {
     this.modalService.open(this.importFileTooltip);
   }
 
-  handleImportFile(e: any) {
+  handleImportFile(e: Event) {
     this.statusText = "";
-    const file: File = e.target.files[0];
+    const file: File = (e.target as HTMLInputElement).files![0];
     if (file) {
       this.selectedFile = file.name;
-      const reader = new FileReader();
-      reader.readAsText(file, "UTF-8");
-      reader.onload = (evt: ProgressEvent<FileReader>) => {
-        try {
-          var fileContent = evt.target!.result;
-          var obj = JSON.parse(fileContent!.toString());
+
+      this.fileService.parse<ImportLocations>(file).subscribe({
+        next: (fileContent: ImportLocations) => {
           if (this.model.name.trim() == "") {
-            this.model.name = obj.map_name;
+            this.model.name = fileContent.map_name;
           }
-          var locations = obj.locations;
+          var locations = fileContent.locations;
           for (var locId in locations) {
             var location = locations[locId];
             if (location.hasOwnProperty('name') && location.name.trim() != "") {
@@ -91,13 +89,14 @@ export class HandpickedGameFormComponent implements OnInit {
               this.handPickedManager!.addMarkerFromPanorama(location.latLng, importRadius); // retrieve a panorama for the location to get a name
             }
           }
-        } catch (e) {
-          this.statusText = "Error reading file: json syntax invalid";
-          console.log(e);
+        },
+        error: (error: any) => {
+          this.statusText = "Error reading file!";
+          console.log(error);
         }
-      };
+      });
     } else {
-      this.statusText = "no file selected"
+      this.selectedFile = "no file selected"
     }
   }
 }

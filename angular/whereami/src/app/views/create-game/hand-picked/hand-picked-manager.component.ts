@@ -98,7 +98,7 @@ export class HandPickedManagerComponent {
         if (this.activeMarker === presentMarker) {
             continue;
         }
-        var distance = google.maps.geometry.spherical.computeDistanceBetween(presentMarker.getPosition()!, latLng);
+        var distance = this.google_ns.maps.geometry.spherical.computeDistanceBetween(presentMarker.getPosition()!, latLng);
         if (distance < 1) { // two points should not be closer than 1 meter
             var message = "location already exists!";
             console.log(message);
