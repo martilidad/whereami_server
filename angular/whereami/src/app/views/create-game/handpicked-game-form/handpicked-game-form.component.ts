@@ -1,9 +1,11 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild} from '@angular/core';
 import {HandPickedManagerComponent} from "../hand-picked/hand-picked-manager.component";
-import {DrawingManagerComponent} from "../drawing-manager/drawing-manager.component";
 import {CreateHandpickedGame} from "./create-handpicked-game";
 import {GamesService} from "../../../service/game/games.service";
+import {FileService} from "../../../service/file/file.service";
 import {StreetViewPlace} from "../../../service/street-view-place/streetViewPlace";
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ImportLocations } from 'src/app/model/import-locations';
 
 @Component({
   selector: 'handpicked-game-form',
@@ -18,12 +20,32 @@ export class HandpickedGameFormComponent implements OnInit {
   @Input()
   public handPickedManager: HandPickedManagerComponent | undefined
 
+  @ViewChild('importFileTooltip')
+  public importFileTooltip: TemplateRef<any> | undefined;
+  
   public statusText: string = ""
 
   public model = new CreateHandpickedGame("")
 
+  public fileFormat = `{
+    "map_name": "some-map",
+    "locations": [
+      {
+        "latLng": {"lat": 38.888222, "lng": -77.03719699999999},
+        "name": "some location"
+      },
+      {
+        "latLng": {"lat": 40.947916, "lng": -4.11834599999997},
+        "name": "some other location"
+      },
+      ...
+    ]
+  }`;
 
-  constructor(private gamesService: GamesService) { }
+  selectedFile = '';
+
+
+  constructor(public modalService: NgbModal, private gamesService: GamesService, private fileService: FileService) { }
 
   ngOnInit(): void {
   }
@@ -40,5 +62,41 @@ export class HandpickedGameFormComponent implements OnInit {
 
   public cancel() {
     this.cancelled.emit();
+  }
+
+  openModal() {
+    this.modalService.open(this.importFileTooltip);
+  }
+
+  handleImportFile(e: Event) {
+    this.statusText = "";
+    const file: File = (e.target as HTMLInputElement).files![0];
+    if (file) {
+      this.selectedFile = file.name;
+
+      this.fileService.parse<ImportLocations>(file).subscribe({
+        next: (fileContent: ImportLocations) => {
+          if (this.model.name.trim() == "") {
+            this.model.name = fileContent.map_name;
+          }
+          var locations = fileContent.locations;
+          for (var locId in locations) {
+            var location = locations[locId];
+            if (location.hasOwnProperty('name') && location.name.trim() != "") {
+              this.handPickedManager!.addMarker(location.latLng, location.name);
+            } else {
+              const importRadius = 50; // for imports there should be a street view panorama in close distance
+              this.handPickedManager!.addMarkerFromPanorama(location.latLng, importRadius); // retrieve a panorama for the location to get a name
+            }
+          }
+        },
+        error: (error: any) => {
+          this.statusText = "Error reading file!";
+          console.log(error);
+        }
+      });
+    } else {
+      this.selectedFile = "no file selected"
+    }
   }
 }
