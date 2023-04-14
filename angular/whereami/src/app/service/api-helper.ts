@@ -6,7 +6,8 @@ import { SafeParseReturnType, z } from "zod";
 
 export const ErrorSchema = z.object({
   code: z.nativeEnum(CodeEnum),
-  message: z.string()
+  message: z.string(),
+  validation_errors: z.optional(z.record(z.string(), z.any()))
 })
 
 /**

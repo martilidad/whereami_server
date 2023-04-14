@@ -7,7 +7,7 @@ def validation_handler(exc, context):
     response = exception_handler(exc, context)
 
     if isinstance(exc, serializers.ValidationError):
-        serializer = ErrorSerializer(data={'code': ErrorCodes.VALIDATION_ERROR, 'message': next(iter(exc.detail)),
+        serializer = ErrorSerializer(data={'code': ErrorCodes.VALIDATION_ERROR.value, 'message': str(exc.detail[next(iter(exc.detail))][0]),
                                            'validation_errors': response.data})
         if serializer.is_valid():
           response.data = serializer.data
