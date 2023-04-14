@@ -4,7 +4,11 @@ import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core
 import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
-import { ApiService } from './services/api.service';
+import { ChallengelocationsService } from './services/challengelocations.service';
+import { ChallengesService } from './services/challenges.service';
+import { GamesService } from './services/games.service';
+import { TokenAuthService } from './services/token-auth.service';
+import { TokenRefreshService } from './services/token-refresh.service';
 
 /**
  * Module that provides all services and configuration.
@@ -14,7 +18,11 @@ import { ApiService } from './services/api.service';
   exports: [],
   declarations: [],
   providers: [
-    ApiService,
+    ChallengelocationsService,
+    ChallengesService,
+    GamesService,
+    TokenAuthService,
+    TokenRefreshService,
     ApiConfiguration
   ],
 })

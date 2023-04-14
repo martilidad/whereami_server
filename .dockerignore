@@ -11,3 +11,5 @@ __pycache__
 pip-cache
 *.sqlite3
 coverage
+.dev
+**/node_modules

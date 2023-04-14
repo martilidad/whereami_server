@@ -6,7 +6,7 @@ info:
 paths:
   /api/challengelocations/:
     get:
-      operationId: api_challengelocations_list
+      operationId: challengelocations_list
       parameters:
       - name: limit
         required: false
@@ -21,7 +21,7 @@ paths:
         schema:
           type: integer
       tags:
-      - api
+      - challengelocations
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -35,7 +35,7 @@ paths:
           description: ''
   /api/challengelocations/{challengelocation_pk}/guesses/:
     get:
-      operationId: api_challengelocations_guesses_list
+      operationId: challengelocations_guesses_list
       parameters:
       - in: path
         name: challengelocation_pk
@@ -56,7 +56,7 @@ paths:
         schema:
           type: integer
       tags:
-      - api
+      - challengelocations
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -69,7 +69,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedGuessList'
           description: ''
     post:
-      operationId: api_challengelocations_guesses_create
+      operationId: challengelocations_guesses_create
       parameters:
       - in: path
         name: challengelocation_pk
@@ -78,7 +78,7 @@ paths:
         description: ID of the Challenge Location resource
         required: true
       tags:
-      - api
+      - challengelocations
       requestBody:
         content:
           application/json:
@@ -96,15 +96,21 @@ paths:
       - cookieAuth: []
       - basicAuth: []
       responses:
-        '201':
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Guess'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/challengelocations/{challengelocation_pk}/guesses/{id}/:
     get:
-      operationId: api_challengelocations_guesses_retrieve
+      operationId: challengelocations_guesses_retrieve
       parameters:
       - in: path
         name: challengelocation_pk
@@ -119,7 +125,7 @@ paths:
         description: A unique integer value identifying this guess.
         required: true
       tags:
-      - api
+      - challengelocations
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -133,7 +139,7 @@ paths:
           description: ''
   /api/challengelocations/{id}/:
     get:
-      operationId: api_challengelocations_retrieve
+      operationId: challengelocations_retrieve
       parameters:
       - in: path
         name: id
@@ -142,7 +148,7 @@ paths:
         description: A unique integer value identifying this challenge location.
         required: true
       tags:
-      - api
+      - challengelocations
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -156,7 +162,7 @@ paths:
           description: ''
   /api/challenges/:
     get:
-      operationId: api_challenges_list
+      operationId: challenges_list
       parameters:
       - name: limit
         required: false
@@ -171,7 +177,7 @@ paths:
         schema:
           type: integer
       tags:
-      - api
+      - challenges
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -185,7 +191,7 @@ paths:
           description: ''
   /api/challenges/{id}/:
     get:
-      operationId: api_challenges_retrieve
+      operationId: challenges_retrieve
       parameters:
       - in: path
         name: id
@@ -194,7 +200,7 @@ paths:
         description: A unique integer value identifying this challenge.
         required: true
       tags:
-      - api
+      - challenges
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -208,7 +214,7 @@ paths:
           description: ''
   /api/games/:
     get:
-      operationId: api_games_list
+      operationId: games_list
       parameters:
       - name: limit
         required: false
@@ -223,7 +229,7 @@ paths:
         schema:
           type: integer
       tags:
-      - api
+      - games
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -236,9 +242,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedGameList'
           description: ''
     post:
-      operationId: api_games_create
+      operationId: games_create
       tags:
-      - api
+      - games
       requestBody:
         content:
           application/json:
@@ -264,7 +270,7 @@ paths:
           description: ''
   /api/games/{id}/:
     get:
-      operationId: api_games_retrieve
+      operationId: games_retrieve
       parameters:
       - in: path
         name: id
@@ -273,7 +279,7 @@ paths:
         description: A unique integer value identifying this game.
         required: true
       tags:
-      - api
+      - games
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -287,7 +293,7 @@ paths:
           description: ''
   /api/games/{id}/generate_challenge/:
     post:
-      operationId: api_games_generate_challenge_create
+      operationId: games_generate_challenge_create
       parameters:
       - in: path
         name: id
@@ -296,7 +302,7 @@ paths:
         description: A unique integer value identifying this game.
         required: true
       tags:
-      - api
+      - games
       requestBody:
         content:
           application/json:
@@ -322,13 +328,13 @@ paths:
           description: ''
   /api/token-auth/:
     post:
-      operationId: api_token_auth_create
+      operationId: token_auth_create
       description: |-
         API View that receives a POST with a user's username and password.
 
         Returns a JSON Web Token that can be used for authenticated requests.
       tags:
-      - api
+      - token-auth
       requestBody:
         content:
           application/json:
@@ -350,7 +356,7 @@ paths:
           description: ''
   /api/token-refresh/:
     post:
-      operationId: api_token_refresh_create
+      operationId: token_refresh_create
       description: |-
         API View that returns a refreshed token (with new expiration) based on
         existing token
@@ -358,7 +364,7 @@ paths:
         If 'orig_iat' field (original issued-at-time) is found, will first check
         if it's within expiration window, then copy it to the new token
       tags:
-      - api
+      - token-refresh
       requestBody:
         content:
           application/json:
@@ -477,6 +483,21 @@ components:
       - last_interaction
       - score
       - username
+    CodeEnum:
+      enum:
+      - exists
+      type: string
+      description: '* `exists` - exists'
+    Error:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/CodeEnum'
+        message:
+          type: string
+      required:
+      - code
+      - message
     Game:
       type: object
       properties:
@@ -506,6 +527,7 @@ components:
           type: string
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
+          readOnly: true
         lat:
           type: number
           format: double
@@ -563,7 +585,6 @@ components:
           nullable: true
         name:
           type: string
-          maxLength: 32
         lat:
           type: number
           format: double

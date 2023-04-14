@@ -12,17 +12,20 @@ from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
                          HttpResponseRedirect, JsonResponse)
 from django.shortcuts import get_object_or_404, render
 from django.utils.safestring import mark_safe
-from drf_spectacular.utils import extend_schema, extend_schema_view
 from drf_spectacular.openapi import OpenApiParameter, OpenApiTypes
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from psycopg2.errors import UniqueViolation
-from rest_framework import mixins, permissions, viewsets, status
-from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework import mixins, permissions, status, viewsets
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from whereami.models import Challenge, ChallengeLocation, Game, Guess, Location
-from whereami.serializers import (ChallengeLocationSerializer, ChallengeSerializer, GameSerializer,
-                                  GuessSerializer, ChallengeGenerationSerializer)
+from whereami.serializers import (ChallengeGenerationSerializer,
+                                  ChallengeLocationSerializer,
+                                  ChallengeSerializer, ErrorCodes,
+                                  ErrorSerializer, GameSerializer,
+                                  GuessSerializer)
 
 
 class CreateOrRetrieveViewSet(mixins.CreateModelMixin,
@@ -77,8 +80,13 @@ class GuessViewSet(CreateOrRetrieveViewSet):
     def get_queryset(self):
         return Guess.objects.filter(challenge_location_id=self.kwargs['challengelocation_pk'])
     
+    @extend_schema(
+        responses={200: GuessSerializer, 400:ErrorSerializer}
+    )
     def create(self, request, *args, **kwargs):
         challenge_location_id = self.kwargs['challengelocation_pk']
+        if Guess.objects.filter(challenge_location_id=challenge_location_id, user=self.request.user).exists():
+            return Response(ErrorCodes.EXISTS.create("Location already guessed."), status=status.HTTP_400_BAD_REQUEST)
         serializer = GuessSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(challenge_location_id=challenge_location_id, user=self.request.user)

@@ -1,13 +1,15 @@
 #python file for all DTOs
-from rest_framework import serializers
-
-from whereami.models import Challenge, Game, ChallengeLocation, Guess, Location
-from django.db.models import (Count, Exists, Max, Min, OuterRef, Prefetch, Q,
-                              Sum)
-from django.db import transaction
+from enum import Enum
 
 from django.contrib.auth.models import User
+from django.db import transaction
+from django.db.models import (Count, Exists, Max, Min, OuterRef, Prefetch, Q,
+                              Sum)
 from drf_spectacular.utils import extend_schema_field
+from rest_framework import serializers
+
+from whereami.models import Challenge, ChallengeLocation, Game, Guess, Location
+
 
 class SpectacularModelSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.IntegerField(read_only=True, allow_null=True)
@@ -27,6 +29,18 @@ class LocationSerializer(SpectacularModelSerializer):
             'lat',
             'long'
         ]
+
+class ErrorCodes(Enum):
+    EXISTS = 'exists'
+    def create(self, message: str):
+        serializer = ErrorSerializer(data={'code': self.value, 'message': message})
+        serializer.is_valid()
+        return serializer.data
+
+
+class ErrorSerializer(serializers.Serializer):
+    code = serializers.ChoiceField(choices=[c.value for c in ErrorCodes])
+    message = serializers.CharField()
 
 
 class GuessSerializer(SpectacularModelSerializer):

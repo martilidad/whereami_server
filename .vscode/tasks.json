@@ -117,7 +117,7 @@
     {
       "label": "generate spectacular openapi spec.yaml",
       "type": "shell",
-      "command": "./venv/Scripts/python.exe ./manage.py spectacular --color --file ./angular/whereami/src/app/api/generated/spec.yaml --validate",
+      "command": "docker build -f specgen.Dockerfile -t whereami_specgen . && docker run -v \"$(pwd -W):/code\" whereami_specgen | tail -n +2 > ./angular/whereami/src/app/api/generated/spec.yaml",
       "problemMatcher": []
     },
     {

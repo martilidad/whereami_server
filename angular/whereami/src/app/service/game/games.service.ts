@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, map } from "rxjs";
 import { Game } from 'src/app/api/generated/client/models';
-import { ApiService } from 'src/app/api/generated/client/services';
+import { GamesService as ApiService } from '@client/services';
 
 
 @Injectable({
@@ -13,7 +13,7 @@ export class GamesService {
   }
 
   getGames(): Observable<Game[]> {
-    return this.apiService.apiGamesList().pipe(
+    return this.apiService.gamesList().pipe(
       map(games => {
         return games.results!
       })
@@ -21,7 +21,7 @@ export class GamesService {
   }
 
   createGame(game: Game): Observable<Game> {
-    return this.apiService.apiGamesCreate$Json({body: game});
+    return this.apiService.gamesCreate$Json({body: game});
   }
 
 }

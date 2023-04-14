@@ -2,6 +2,8 @@ export { Challenge } from './models/challenge';
 export { ChallengeGeneration } from './models/challenge-generation';
 export { ChallengeLocation } from './models/challenge-location';
 export { ChallengeScore } from './models/challenge-score';
+export { CodeEnum } from './models/code-enum';
+export { Error } from './models/error';
 export { Game } from './models/game';
 export { Guess } from './models/guess';
 export { JsonWebToken } from './models/json-web-token';

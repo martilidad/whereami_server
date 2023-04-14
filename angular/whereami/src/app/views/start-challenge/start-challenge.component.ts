@@ -1,7 +1,7 @@
 import { AfterContentInit, Component, HostListener, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
-import { Challenge } from '@client/models';
-import { Subject, Subscription, distinct, filter, from, mergeMap } from "rxjs";
+import { Challenge, CodeEnum, Guess } from '@client/models';
+import { Subject, Subscription, catchError, distinct, filter, from, mergeMap } from "rxjs";
 import { GOOGLE } from 'src/app/app.module';
 import { UserChallengeStatus } from 'src/app/model/status/user-challenge-status';
 import { AUTOSTART, SettingsService } from 'src/app/service/settings/settings.service';
@@ -19,6 +19,8 @@ import {
 import { ChallengesService } from "../../service/challenge/challenges.service";
 import { GuessService } from "../../service/guess/guess.service";
 import { MiniMapComponent } from "./mini-map/mini-map.component";
+import { HttpErrorResponse } from '@angular/common/http';
+import { catchApiError, catchApiErrorCode } from 'src/app/service/api-helper';
 
 
 @Component({
@@ -40,6 +42,10 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
   private readonly LAST_POINT_DISTANCE = 14000;
 
   private counter: NodeJS.Timer | undefined
+  /**
+   * Current guess if the round was guessed before. 
+   */
+  private doubleguess: Guess | null = null;
 
   @HostListener('window:beforeunload')
   confirmLeave(event: BeforeUnloadEvent) {
@@ -125,7 +131,11 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
       score: round.score,
       username: "You(Not on Server)"
     };
-    this.guessService.submitGuess(challengeLocation.id!, guess).subscribe(() => this.refreshMap());
+    this.guessService.submitGuess(challengeLocation.id!, guess)
+    .pipe(catchApiErrorCode(CodeEnum.Exists, () => {
+      this.doubleguess = guess;
+    }))
+    .subscribe(() => this.refreshMap());
     this.statusService!.postStatus({status: PlayStatus.ROUND_END, round: this.gameState.round.index})
     this.statusService?.statusObservable.subscribe(value => this.autoStartIfApplicable(value))
     this.roundMap!.guesses = [guess];
@@ -135,7 +145,12 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
 
   refreshMap() {
     this.guessService.getGuesses(this.challenge!.locations[this.gameState.round.index].id!)
-      .subscribe(result => this.roundMap!.guesses = result)
+      .subscribe(result => {
+        if(this.doubleguess) {
+          result.push(this.doubleguess);
+        }
+        this.roundMap!.guesses = result;
+      })
   }
 
   private autoStartIfApplicable(statuses: Map<string, UserChallengeStatus>) {
@@ -156,7 +171,7 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
       return;
     }
     this.soundService.start();
-    this.gameState = new GameState(new RoundState(0, challenge.time))
+    this.gameState = new GameState(new RoundState(firstUnplayed, challenge.time))
 
     this.statusService!.postStatus({status: PlayStatus.PLAYING, round: this.gameState.round.index})
     let challengeLocation = challenge.locations[firstUnplayed];
@@ -176,12 +191,13 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
     this.soundService.start();
     this.statusSubscription?.unsubscribe();
     let round = this.gameState.round.index + 1;
-    this.gameState.round = new RoundState(round, this.challenge!.time)
-    this.statusService!.postStatus({status: PlayStatus.PLAYING, round: round})
-    this.resetTimer()
+    this.gameState.round = new RoundState(round, this.challenge!.time);
+    this.statusService!.postStatus({status: PlayStatus.PLAYING, round: round});
+    this.resetTimer();
     this.challenge ? this.miniMap?.reset(this.challenge) : {};
-    let challengeLocation = this.challenge!.locations[round]
-    this._gamePano!.setLocation(new this.google_ns.maps.LatLng(challengeLocation.lat, challengeLocation.long))
+    let challengeLocation = this.challenge!.locations[round];
+    this._gamePano!.setLocation(new this.google_ns.maps.LatLng(challengeLocation.lat, challengeLocation.long));
+    this.doubleguess = null;
   }
 
   resetTimer() {
