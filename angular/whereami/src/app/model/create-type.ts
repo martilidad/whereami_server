@@ -1,1 +1,0 @@
-export type CreateType<T> = Omit<T, 'id'>;
