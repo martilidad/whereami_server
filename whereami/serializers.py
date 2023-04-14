@@ -32,6 +32,7 @@ class LocationSerializer(SpectacularModelSerializer):
 
 class ErrorCodes(Enum):
     EXISTS = 'exists'
+    VALIDATION_ERROR = 'validation_error'
     def create(self, message: str):
         serializer = ErrorSerializer(data={'code': self.value, 'message': message})
         serializer.is_valid()
@@ -41,6 +42,7 @@ class ErrorCodes(Enum):
 class ErrorSerializer(serializers.Serializer):
     code = serializers.ChoiceField(choices=[c.value for c in ErrorCodes])
     message = serializers.CharField()
+    validation_errors = serializers.DictField(required=False)
 
 
 class GuessSerializer(SpectacularModelSerializer):

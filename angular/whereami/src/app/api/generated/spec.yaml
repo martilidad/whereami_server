@@ -486,8 +486,11 @@ components:
     CodeEnum:
       enum:
       - exists
+      - validation_error
       type: string
-      description: '* `exists` - exists'
+      description: |-
+        * `exists` - exists
+        * `validation_error` - validation_error
     Error:
       type: object
       properties:
@@ -495,6 +498,9 @@ components:
           $ref: '#/components/schemas/CodeEnum'
         message:
           type: string
+        validation_errors:
+          type: object
+          additionalProperties: {}
       required:
       - code
       - message

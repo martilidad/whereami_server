@@ -4,7 +4,6 @@ import { catchError } from "rxjs";
 import { SafeParseReturnType, z } from "zod";
 
 
-
 export const ErrorSchema = z.object({
   code: z.nativeEnum(CodeEnum),
   message: z.string()

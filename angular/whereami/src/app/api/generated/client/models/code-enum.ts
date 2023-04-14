@@ -3,8 +3,9 @@
 
 /**
  * * `exists` - exists
+ * * `validation_error` - validation_error
  */
 export enum CodeEnum {
   Exists = 'exists',
-  Other = 'other'
+  ValidationError = 'validation_error'
 }
