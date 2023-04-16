@@ -1,5 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {UserChallengeStatus} from "../../../model/status/user-challenge-status";
+import { Component, Input, OnInit } from '@angular/core';
+import { UserChallengeStatus } from "../../../model/status/user-challenge-status";
 import {
   BoundChallengeStatusService,
   ChallengeStatusService

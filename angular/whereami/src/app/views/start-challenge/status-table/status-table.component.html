@@ -1,10 +1,17 @@
-
-<table id="statusTable">
-  <tr><th>Name</th><th>Status</th><th>Round</th></tr>
-  <tr *ngFor="let statusEntry of boundStatusService?.statuses | keyvalue">
-    <td [innerText]="statusEntry.value.username"></td>
-    <td [innerText]="statusEntry.value.status"></td>
-    {{ '' // users like their numbers to start with 1 (nullable e.g. invite screen) }}
-    <td [innerText]="statusEntry.value.round != null ? statusEntry.value.round + 1 : ''"></td>
-  </tr>
-</table>
+<div id="container">
+  <table class="table table-dark">
+    <tbody>
+      <tr>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Round</th>
+      </tr>
+      <tr *ngFor="let statusEntry of boundStatusService?.statuses | keyvalue">
+        <td [innerText]="statusEntry.value.username"></td>
+        <td [innerText]="statusEntry.value.status"></td>
+        {{ '' // users like their numbers to start with 1 (nullable e.g. invite screen) }}
+        <td [innerText]="statusEntry.value.round != null ? statusEntry.value.round + 1 : ''"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

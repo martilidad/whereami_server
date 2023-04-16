@@ -4,7 +4,8 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@client/*": ["src/app/api/generated/client/*"]
+      "@client/*": ["src/app/api/generated/client/*"],
+      "@service/*": ["src/app/service/*"]
     },
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
