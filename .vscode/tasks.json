@@ -113,6 +113,21 @@
         "compose .dev env",
         "python: install requirements"
       ]
+    },
+    {
+      "label": "generate spectacular openapi spec.yaml",
+      "type": "shell",
+      "command": "docker build -f specgen.Dockerfile -t whereami_specgen . && docker run -v \"$(pwd -W):/code\" whereami_specgen | tail -n +2 > ./angular/whereami/src/app/api/generated/spec.yaml",
+      "problemMatcher": []
+    },
+    {
+      "label": "generate openapi client",
+      "type": "shell",
+      "command": "npx ng-openapi-gen --input ./spec.yaml --output ./client/",
+      "options": {
+        "cwd": "${workspaceFolder}/angular/whereami/src/app/api/generated"
+      },
+      "problemMatcher": []
     }
   ]
 }

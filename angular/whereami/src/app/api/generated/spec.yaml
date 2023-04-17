@@ -1,0 +1,706 @@
+openapi: 3.0.3
+info:
+  title: Whereami Backend API
+  version: 1.0.0
+  description: All REST based APIs.
+paths:
+  /api/challengelocations/:
+    get:
+      operationId: challengelocations_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - challengelocations
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedChallengeLocationList'
+          description: ''
+  /api/challengelocations/{challengelocation_pk}/guesses/:
+    get:
+      operationId: challengelocations_guesses_list
+      parameters:
+      - in: path
+        name: challengelocation_pk
+        schema:
+          type: integer
+        description: ID of the Challenge Location resource
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - challengelocations
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGuessList'
+          description: ''
+    post:
+      operationId: challengelocations_guesses_create
+      parameters:
+      - in: path
+        name: challengelocation_pk
+        schema:
+          type: integer
+        description: ID of the Challenge Location resource
+        required: true
+      tags:
+      - challengelocations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Guess'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Guess'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Guess'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guess'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/challengelocations/{challengelocation_pk}/guesses/{id}/:
+    get:
+      operationId: challengelocations_guesses_retrieve
+      parameters:
+      - in: path
+        name: challengelocation_pk
+        schema:
+          type: integer
+        description: ID of the Challenge Location resource
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this guess.
+        required: true
+      tags:
+      - challengelocations
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guess'
+          description: ''
+  /api/challengelocations/{id}/:
+    get:
+      operationId: challengelocations_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this challenge location.
+        required: true
+      tags:
+      - challengelocations
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeLocation'
+          description: ''
+  /api/challenges/:
+    get:
+      operationId: challenges_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - challenges
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedChallengeList'
+          description: ''
+  /api/challenges/{id}/:
+    get:
+      operationId: challenges_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this challenge.
+        required: true
+      tags:
+      - challenges
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Challenge'
+          description: ''
+  /api/games/:
+    get:
+      operationId: games_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - games
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGameList'
+          description: ''
+    post:
+      operationId: games_create
+      tags:
+      - games
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Game'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Game'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Game'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+          description: ''
+  /api/games/{id}/:
+    get:
+      operationId: games_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this game.
+        required: true
+      tags:
+      - games
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+          description: ''
+  /api/games/{id}/generate_challenge/:
+    post:
+      operationId: games_generate_challenge_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this game.
+        required: true
+      tags:
+      - games
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChallengeGeneration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChallengeGeneration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChallengeGeneration'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Challenge'
+          description: ''
+  /api/token-auth/:
+    post:
+      operationId: token_auth_create
+      description: |-
+        API View that receives a POST with a user's username and password.
+
+        Returns a JSON Web Token that can be used for authenticated requests.
+      tags:
+      - token-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JSONWebToken'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JSONWebToken'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JSONWebToken'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONWebToken'
+          description: ''
+  /api/token-refresh/:
+    post:
+      operationId: token_refresh_create
+      description: |-
+        API View that returns a refreshed token (with new expiration) based on
+        existing token
+
+        If 'orig_iat' field (original issued-at-time) is found, will first check
+        if it's within expiration window, then copy it to the new token
+      tags:
+      - token-refresh
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshJSONWebToken'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RefreshJSONWebToken'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RefreshJSONWebToken'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshJSONWebToken'
+          description: ''
+components:
+  schemas:
+    Challenge:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          nullable: true
+        pub_date:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        game:
+          $ref: '#/components/schemas/Game'
+        time:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChallengeLocation'
+        scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChallengeScore'
+          readOnly: true
+      required:
+      - game
+      - id
+      - locations
+      - pub_date
+      - scores
+      - time
+    ChallengeGeneration:
+      type: object
+      properties:
+        quantity:
+          type: integer
+        prevent_reuse:
+          type: boolean
+          default: false
+        time:
+          type: integer
+      required:
+      - quantity
+      - time
+    ChallengeLocation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          nullable: true
+        guesses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Guess'
+          readOnly: true
+        guessed:
+          type: boolean
+          readOnly: true
+        lat:
+          type: number
+          format: double
+        long:
+          type: number
+          format: double
+        name:
+          type: string
+      required:
+      - guessed
+      - guesses
+      - id
+      - lat
+      - long
+      - name
+    ChallengeScore:
+      type: object
+      properties:
+        username:
+          type: string
+        score:
+          type: integer
+        distance:
+          type: integer
+        completed_locations:
+          type: integer
+        last_interaction:
+          type: string
+          format: date-time
+      required:
+      - completed_locations
+      - distance
+      - last_interaction
+      - score
+      - username
+    CodeEnum:
+      enum:
+      - exists
+      - validation_error
+      type: string
+      description: |-
+        * `exists` - exists
+        * `validation_error` - validation_error
+    Error:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/CodeEnum'
+        message:
+          type: string
+        validation_errors:
+          type: object
+          additionalProperties: {}
+      required:
+      - code
+      - message
+    Game:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          nullable: true
+        name:
+          type: string
+          maxLength: 32
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+      required:
+      - id
+      - locations
+      - name
+    Guess:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          nullable: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          readOnly: true
+        lat:
+          type: number
+          format: double
+        long:
+          type: number
+          format: double
+        score:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        distance:
+          type: number
+          format: double
+        pub_date:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - distance
+      - id
+      - lat
+      - long
+      - pub_date
+      - score
+      - username
+    JSONWebToken:
+      type: object
+      description: |-
+        Serializer class used to validate a username and password.
+
+        'username' is identified by the custom UserModel.USERNAME_FIELD.
+
+        Returns a JSON Web Token that can be used to authenticate later calls.
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - password
+      - username
+    Location:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          nullable: true
+        pub_date:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        name:
+          type: string
+        lat:
+          type: number
+          format: double
+        long:
+          type: number
+          format: double
+      required:
+      - id
+      - lat
+      - long
+      - name
+      - pub_date
+    PaginatedChallengeList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Challenge'
+    PaginatedChallengeLocationList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChallengeLocation'
+    PaginatedGameList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Game'
+    PaginatedGuessList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Guess'
+    RefreshJSONWebToken:
+      type: object
+      description: Refresh an access token.
+      properties:
+        token:
+          type: string
+      required:
+      - token
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "JWT"

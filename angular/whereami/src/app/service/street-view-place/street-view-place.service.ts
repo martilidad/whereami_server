@@ -1,7 +1,8 @@
-import {Inject, Injectable} from '@angular/core';
-import {StreetViewPlace} from "./streetViewPlace";
-import {DrawingManagerComponent} from "../../views/create-game/drawing-manager/drawing-manager.component";
+import { Inject, Injectable } from '@angular/core';
+import { Location } from '@client/models';
 import { GOOGLE } from 'src/app/app.module';
+import { DrawingManagerComponent } from "../../views/create-game/drawing-manager/drawing-manager.component";
+import { StreetViewPlaceImpl } from "./streetViewPlace";
 
 const SEARCH_RADIUS = 10000;
 
@@ -20,9 +21,9 @@ export class StreetViewPlaceService {
 
 
   public async getPlaces(pointGenerator: () => google.maps.LatLng, messageConsumer: (message: string) => {},
-                         quantity: number, minDist: number, allowPhotoSpheres: boolean): Promise<StreetViewPlace[]> {
+                         quantity: number, minDist: number, allowPhotoSpheres: boolean): Promise<Location[]> {
     let ignores = 0;
-    let places: StreetViewPlace[] = [];
+    let places: StreetViewPlaceImpl[] = [];
     while (places.length < quantity && ignores <= MAX_IGNORES) {
       let point = pointGenerator();
       //synchronous request, wait for api return
@@ -47,13 +48,13 @@ export class StreetViewPlaceService {
           }
         }
         if (newLocation) {
-          places.push(new StreetViewPlace(latLng.lat(), latLng.lng(), typeof panoData.location.shortDescription === "string" ? panoData.location.shortDescription : "Description Missing"));
+          places.push(new StreetViewPlaceImpl(latLng.lat(), latLng.lng(), typeof panoData.location.shortDescription === "string" ? panoData.location.shortDescription : "Description Missing"));
         }
       } else {
         ignores++;
       }
       messageConsumer(`Loading Locations ${places.length}/${quantity} Ignored: ${ignores}/${MAX_IGNORES}`);
     }
-    return places;
+    return places.map(latlng => ({"id": null, "pub_date": null, "lat": latlng.Lat, "long": latlng.Long, "name": latlng.Name}));
   }
 }

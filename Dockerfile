@@ -9,8 +9,6 @@ LABEL org.opencontainers.image.description="An open source multiplayer location 
 LABEL org.opencontainers.image.url="https://github.com/martilidad/whereami_server"
 LABEL org.opencontainers.image.title="whereami_server"
 LABEL org.opencontainers.image.licenses="MIT"
-RUN apt-get update
-RUN apt-get install netcat --force-yes -y
 CMD python manage.py migrate && \
     python manage.py collectstatic --noinput && \
     gunicorn --bind 0.0.0.0:8000 whereami_server.asgi:application \

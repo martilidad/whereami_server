@@ -3,6 +3,7 @@ import { CreateDrawnGame } from './create-drawn-game';
 import { DrawingManagerComponent } from '../drawing-manager/drawing-manager.component';
 import { StreetViewPlaceService } from '../../../service/street-view-place/street-view-place.service';
 import { GamesService } from '../../../service/game/games.service';
+import { catchApiError } from 'src/app/service/api-helper';
 
 @Component({
   selector: 'drawn-game-form',
@@ -41,13 +42,11 @@ export class DrawnGameFormComponent implements OnInit {
       )
       .then((places) =>
         this.gamesService
-          .createGame({ Name: this.model.name, Locations: places })
-          .subscribe({
-            next: (value) => {
-              this.drawingManager?.clear();
-              this.drawingStatusText = 'Success';
-            },
-            error: (value) => (this.drawingStatusText = value.error),
+          .createGame({id: null, name: this.model.name, locations: places})
+          .pipe(catchApiError(err => this.drawingStatusText = err.message))
+          .subscribe(() => {
+            this.drawingManager?.clear();
+            this.drawingStatusText = 'Success';
           })
       )
       .catch(reason => this.drawingStatusText = reason)

@@ -33,10 +33,21 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v3
+      - name: setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
           cache: 'pip' # caching pip dependencies
       - run: pip install -r requirements.txt
       - name: Test Django
-        run: python ./manage.py test */tests
+        run: pytest whereami/tests
+      - name: generate spec.yaml
+        run: python ./manage.py spectacular --color --file ./angular/whereami/src/app/api/generated/spec.yaml --validate
+      - name: generate ng openapi client
+        working-directory: ./angular/whereami/src/app/api/generated
+        run: npx ng-openapi-gen --input ./spec.yaml --output ./client/
+      - name: Compare generated code(fail if changes not checked in)
+        run: git diff --exit-code

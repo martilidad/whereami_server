@@ -1,8 +1,12 @@
-export interface LatLng {
-  Lat: number
-  Long: number
-}
+import { z } from "zod";
 
+
+export const LatLngSchema = z.object({
+  Lat: z.number(),
+  Long: z.number()
+})
+
+export type LatLng = z.infer<typeof LatLngSchema>;
 export class LatLngImpl implements LatLng{
   Lat: number;
   Long: number;

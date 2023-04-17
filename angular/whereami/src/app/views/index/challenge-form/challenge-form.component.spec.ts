@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { HttpErrorHandler } from 'src/app/http-error-handler.service';
-import { Game } from 'src/app/model/game-model/game';
+import { Game } from '@client/models/game';
 import { GamesService } from 'src/app/service/game/games.service';
 
 import { ChallengeFormComponent } from './challenge-form.component';

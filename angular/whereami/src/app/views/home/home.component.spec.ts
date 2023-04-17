@@ -1,9 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MockBuilder, MockInstance, MockRender, ngMocks } from 'ng-mocks';
+import { Challenge, ChallengeLocation, Location } from '@client/models';
+import { MockBuilder, MockInstance, MockRender } from 'ng-mocks';
 import { Observable, of } from 'rxjs';
 import { AppModule } from 'src/app/app.module';
-import { RuntimeChallenge } from 'src/app/model/game-model/runtime-challenge';
-import { LatLng } from 'src/app/model/lat-lng';
 import { ChallengesService } from 'src/app/service/challenge/challenges.service';
 import { GOOGLE_TESTING_PROVIDER } from 'src/app/test/testutils.spec';
 
@@ -16,8 +14,8 @@ describe('HomeComponent', () => {
     .provide(GOOGLE_TESTING_PROVIDER);
   });
 
-  beforeEach(()=> MockInstance(ChallengesService, 'getRuntimeChallenges', n => 
-  of([{id: 3, game: {locations: [] as LatLng[]}, pub_date: '2022-11-20T12:42Z'}]) as Observable<RuntimeChallenge[]>))
+  beforeEach(()=> MockInstance(ChallengesService, 'getChallenges', n => 
+  of([{id: 3, game: {id: 1, locations: [] as Location[], name: 'test'}, pub_date: '2022-11-20T12:42Z', locations: [] as ChallengeLocation[]}]) as Observable<Challenge[]>))
 
   it('should create', () => {
     const fixture = MockRender(HomeComponent)

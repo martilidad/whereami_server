@@ -1,7 +1,16 @@
-export class StreetViewPlace {
+import { z } from "zod"
+
+export const StreetViewPlaceSchema = z.object({
+  Lat: z.number(),
+  Long: z.number(),
+  Name: z.string()
+})
+
+export type StreetViewPlace = z.infer<typeof StreetViewPlaceSchema>;
+export class StreetViewPlaceImpl implements StreetViewPlace {
 
 
-  constructor(private Lat: number, private Long: number, private Name: string) {
+  constructor(public Lat: number, public Long: number, public Name: string) {
   }
 
   public toLatLng(google_ns: typeof google): google.maps.LatLng {

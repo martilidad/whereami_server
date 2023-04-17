@@ -1,44 +1,23 @@
 import { Injectable } from '@angular/core';
-import {HandleError, HttpErrorHandler} from "../../http-error-handler.service";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {UserService} from "../user/user.service";
-import {Guess} from "../../model/game-model/guess";
-import {catchError, Observable} from "rxjs";
+import { Guess } from '@client/models';
+import { ChallengelocationsService } from "@client/services";
+import { Observable, map } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class GuessService {
-  private readonly handleError: HandleError;
 
-  private readonly _url = '/api/guess';
-
-  constructor(private http: HttpClient,
-              private userService: UserService,
-              httpErrorHandler: HttpErrorHandler) {
-    this.handleError = httpErrorHandler.createHandleError('GuessService');
+  constructor(private challengelocationsService: ChallengelocationsService ) {
   }
 
-  getHeaders() {
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': 'JWT ' + this.userService.token
-    })
-  }
 
-  submitGuess(guess: Guess) {
-    this.http.post(this._url, guess,{
-      headers: this.getHeaders()})
-      .subscribe(value => console.log(value))
+  submitGuess(challengeLocationId: number, guess: Guess): Observable<Guess> {
+    return this.challengelocationsService.challengelocationsGuessesCreate$Json({challengelocation_pk: challengeLocationId, body: guess});
   }
 
   getGuesses(id: number): Observable<Guess[]> {
-    return this.http.get<Guess[]>(this._url, {
-      params: {Challenge_Location_ID: id},
-      headers: this.getHeaders()
-    })
-    .pipe(
-      catchError(this.handleError('getGuesses', []))
-    );
+    return this.challengelocationsService.challengelocationsGuessesList({challengelocation_pk: id})
+    .pipe(map(paginated => paginated.results!));
   }
 }

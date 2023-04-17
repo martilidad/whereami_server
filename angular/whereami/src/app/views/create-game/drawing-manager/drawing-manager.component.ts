@@ -2,6 +2,7 @@ import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { GoogleMap } from '@angular/google-maps';
 import { NonNullAssert } from '@angular/compiler';
 import { GOOGLE } from 'src/app/app.module';
+import { Location } from '@client/models';
 
 export interface DrawingEvents
   extends google.maps.drawing.OverlayCompleteEvent {
@@ -261,4 +262,26 @@ export class DrawingManagerComponent implements OnInit, OnDestroy {
   private static toRad(Value: number): number {
     return (Value * Math.PI) / 180;
   }
+
+    /**
+   * Get the distance between two points as the Crow flies.
+   * @param p1
+   * @param p2
+   * @private
+   */
+    static calcCrowLocations(p1: Location, p2: Location): number {
+      let R = 6371; // km
+      let dLat = DrawingManagerComponent.toRad(p2.lat - p1.lat);
+      let dLon = DrawingManagerComponent.toRad(p2.long - p1.long);
+      let rad1 = DrawingManagerComponent.toRad(p1.lat);
+      let rad2 = DrawingManagerComponent.toRad(p2.lat);
+  
+      let a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(rad1) * Math.cos(rad2);
+      let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
 }
+
+

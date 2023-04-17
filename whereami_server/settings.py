@@ -81,7 +81,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'whereami.apps.WhereamiConfig',
     'channels',
-    'rest_framework'
+    'rest_framework',
+    'drf_spectacular'
 ]
 if DEBUG:
     INSTALLED_APPS.append('debug_toolbar')
@@ -98,6 +99,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'EXCEPTION_HANDLER': 'whereami.exception_handlers.validation_handler'
 }
 
 MIDDLEWARE = [
@@ -149,9 +153,6 @@ DATABASES = {
         'PORT': DB_PORT
     }
 }
-if 'test' in sys.argv:
-    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
-
 
 
 # Password validation
@@ -204,7 +205,6 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
 
 CSRF_USE_SESSIONS = False
 CSRF_COOKIE_HTTPONLY = False  # this is the default, and should be kept this way
@@ -262,4 +262,12 @@ JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
     'JWT_AUTH_COOKIE': None,
 
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Whereami Backend API',
+    'DESCRIPTION': 'All REST based APIs.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
 }

@@ -1,7 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ChallengesService} from "../../../service/challenge/challenges.service";
-import {ScoreService} from "../../../service/score/score.service";
-import {Score} from "../../../model/game-model/score";
+import {Challenge, ChallengeScore} from '@client/models';
 import {DataTableDirective} from "angular-datatables";
 import {Subject} from "rxjs";
 
@@ -22,20 +20,13 @@ export class ChallengeScoresComponent implements OnInit {
   };
   dtTrigger: Subject<any> = new Subject<any>();
 
-  scores: Score[] = []
-
-  constructor(private scoreService: ScoreService) {
-  }
+  scores: ChallengeScore[] = []
 
   ngOnInit(): void {
   }
 
-  showStats(id: number): void {
-    this.scoreService.getScores(id)
-      .subscribe(value => {
-        this.scores = value;
-        this.rerenderDt()
-      })
+  showStats(challenge: Challenge): void {
+    this.scores = challenge.scores;
   }
 
   rerenderDt(): void {

@@ -1,12 +1,12 @@
-<div class="container" *ngIf="challenge?.challengelocation_set?.length != 0">
+<div class="container" *ngIf="!fullyPlayed()">
   <div class="row justify-content-center">
     <div class="col-6">
       <div class="card border-dark text-center">
         <div class="card-body">
           <h5 class="card-title">Challenge invite</h5>
           <h6 class="card-subtitle text-muted">
-            Find {{ challenge?.challengelocation_set?.length }} locations in
-            {{ challenge?.Name }} within {{ challenge?.Time }} seconds
+            Find {{ challenge?.locations?.length }} locations in
+            {{ challenge?.game?.name }} within {{ challenge?.time }} seconds
             each.
           </h6>
           <p></p>
@@ -50,7 +50,7 @@
     </div>
   </div>
 </div>
-<div *ngIf="challenge?.challengelocation_set?.length == 0" class="container">
+<div *ngIf="fullyPlayed()" class="container">
   <div class="row justify-content-center">
     <h1 class="text-center">You already beat this Map!</h1>
   </div>

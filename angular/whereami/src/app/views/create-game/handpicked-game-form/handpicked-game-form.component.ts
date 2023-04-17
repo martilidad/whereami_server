@@ -6,6 +6,7 @@ import {FileService} from "../../../service/file/file.service";
 import {StreetViewPlace} from "../../../service/street-view-place/streetViewPlace";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ImportLocations } from 'src/app/model/import-locations';
+import { catchApiError } from 'src/app/service/api-helper';
 
 @Component({
   selector: 'handpicked-game-form',
@@ -52,12 +53,15 @@ export class HandpickedGameFormComponent implements OnInit {
 
 
   submit() {
-    let streetViewPlaces = this.handPickedManager!.markers.map(marker => new StreetViewPlace(marker.getPosition()!.lat(), marker.getPosition()!.lng(), marker.getTitle()!));
-    this.gamesService.createGame({Name: this.model.name, Locations: streetViewPlaces})
-      .subscribe({
-        next: value => this.statusText = "Success",
-        error: value => this.statusText = value.error
-      });
+    let streetViewPlaces = this.handPickedManager!.markers.map(marker => 
+      ({id: null, 
+        pub_date: null, 
+        lat: marker.getPosition()!.lat(), 
+        long: marker.getPosition()!.lng(), 
+        name: marker.getTitle()!}));
+    this.gamesService.createGame({id: null, name: this.model.name, locations: streetViewPlaces})
+      .pipe(catchApiError(err => this.statusText = err.message))
+      .subscribe(() => this.statusText = "Success");
   }
 
   public cancel() {

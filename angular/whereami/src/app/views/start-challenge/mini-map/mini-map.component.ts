@@ -4,15 +4,14 @@ import {
   ElementRef,
   Inject,
   Input,
-  OnInit,
   ViewChild,
 } from '@angular/core';
 import { GoogleMap } from '@angular/google-maps';
-import { RuntimeChallenge } from '../../../model/game-model/runtime-challenge';
 import { DOCUMENT } from '@angular/common';
 import { timer } from 'rxjs';
 import { GOOGLE } from 'src/app/app.module';
 import { SoundService } from 'src/app/service/sound/sound.service';
+import { Challenge } from '@client/models';
 
 @Component({
   selector: 'mini-map',
@@ -59,10 +58,10 @@ export class MiniMapComponent implements AfterViewInit {
     };  
   }
 
-  reset(challenge: RuntimeChallenge, initial: boolean = false) {
+  reset(challenge: Challenge, initial: boolean = false) {
     let bounds = new google.maps.LatLngBounds();
-    challenge.all_locations
-      .map((place) => new google.maps.LatLng(place.Lat, place.Long))
+    challenge.game.locations
+      .map((location) => new google.maps.LatLng(location.lat, location.long))
       .forEach((latLong) => bounds.extend(latLong));
     this.map!.fitBounds(bounds);
     this._marker?.setMap(null);

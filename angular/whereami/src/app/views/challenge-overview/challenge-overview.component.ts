@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {ChallengeOverview} from "../../model/game-model/challenge-overview";
-import {ChallengeOverviewService} from "../../service/challenge-overview/challenge-overview.service";
 import {ActivatedRoute} from "@angular/router";
+import { Challenge } from '@client/models';
+import { ChallengesService } from 'src/app/service/challenge/challenges.service';
 
 @Component({
   selector: 'app-challenge-overview',
@@ -10,15 +10,23 @@ import {ActivatedRoute} from "@angular/router";
 })
 export class ChallengeOverviewComponent implements OnInit {
 
-  challengeOverview: ChallengeOverview | undefined
+  private _challengeOverview: Challenge | undefined;
+  public get challengeOverview(): Challenge | undefined {
+    return this._challengeOverview;
+  }
+  public set challengeOverview(value: Challenge | undefined) {
+    this._challengeOverview = value;
+    this.winner = value?.scores && value?.scores.length > 0 ? value?.scores[0]?.username : undefined;
+  }
+  winner: string | undefined
 
-  constructor(private overviewService: ChallengeOverviewService, private route: ActivatedRoute) { }
+  constructor(private challengesService: ChallengesService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(value => {
       let id = value['id']
       if(id) {
-        this.overviewService.getOverview(id).subscribe(
+        this.challengesService.getChallenge(id).subscribe(
           value => this.challengeOverview = value
         )
       }

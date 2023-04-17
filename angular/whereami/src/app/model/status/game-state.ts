@@ -1,4 +1,5 @@
-import {LatLng, LatLngImpl} from "../lat-lng";
+import { ChallengeLocation } from "@client/models";
+import { LatLngImpl } from "../lat-lng";
 
 export class RoundState {
   index: number = 0

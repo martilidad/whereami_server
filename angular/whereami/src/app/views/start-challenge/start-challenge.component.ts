@@ -1,27 +1,26 @@
-import {AfterContentInit, Component, HostListener, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
+import { AfterContentInit, Component, HostListener, Inject, OnDestroy, ViewChild } from '@angular/core';
+import { ActivatedRoute } from "@angular/router";
+import { Challenge, CodeEnum, Guess } from '@client/models';
+import { Subject, Subscription, catchError, distinct, filter, from, mergeMap } from "rxjs";
+import { GOOGLE } from 'src/app/app.module';
+import { UserChallengeStatus } from 'src/app/model/status/user-challenge-status';
+import { AUTOSTART, SettingsService } from 'src/app/service/settings/settings.service';
+import { SoundService } from 'src/app/service/sound/sound.service';
+import { UserService } from 'src/app/service/user/user.service';
+import { GamePanoComponent } from "../../embedabble/game-pano/game-pano.component";
+import { RoundMapComponent } from "../../embedabble/round-map/round-map.component";
+import { LatLngImpl } from "../../model/lat-lng";
+import { GameState, RoundState } from "../../model/status/game-state";
+import { PlayStatus } from "../../model/status/play-status";
 import {
   BoundChallengeStatusService,
   ChallengeStatusService
 } from "../../service/challenge-status/challenge-status.service";
-import {ChallengesService} from "../../service/challenge/challenges.service";
-import {RuntimeChallenge} from "../../model/game-model/runtime-challenge";
-import {MiniMapComponent} from "./mini-map/mini-map.component";
-import {GameState, RoundState} from "../../model/status/game-state";
-import {PlayStatus} from "../../model/status/play-status";
-import {GamePanoComponent} from "../../embedabble/game-pano/game-pano.component";
-import {GuessService} from "../../service/guess/guess.service";
-import {ChallengeLocationImpl} from "../../model/game-model/challenge-location";
-import {LatLngImpl} from "../../model/lat-lng";
-import {RoundMapComponent} from "../../embedabble/round-map/round-map.component";
-import {distinct, exhaustMap, filter, from, mergeMap, Observable, of, Subject, Subscription, timer} from "rxjs";
-import { UserChallengeStatus } from 'src/app/model/status/user-challenge-status';
-import { CheckboxControlValueAccessor } from '@angular/forms';
-import { GOOGLE } from 'src/app/app.module';
-import { SoundService } from 'src/app/service/sound/sound.service';
-import { merge } from 'jquery';
-import { UserService } from 'src/app/service/user/user.service';
-import { AUTOSTART, SettingsService } from 'src/app/service/settings/settings.service';
+import { ChallengesService } from "../../service/challenge/challenges.service";
+import { GuessService } from "../../service/guess/guess.service";
+import { MiniMapComponent } from "./mini-map/mini-map.component";
+import { HttpErrorResponse } from '@angular/common/http';
+import { catchApiError, catchApiErrorCode } from 'src/app/service/api-helper';
 
 
 @Component({
@@ -43,6 +42,10 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
   private readonly LAST_POINT_DISTANCE = 14000;
 
   private counter: NodeJS.Timer | undefined
+  /**
+   * Current guess if the round was guessed before. 
+   */
+  private doubleguess: Guess | null = null;
 
   @HostListener('window:beforeunload')
   confirmLeave(event: BeforeUnloadEvent) {
@@ -71,7 +74,7 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
   time: number = 0;
 
 
-  challenge: RuntimeChallenge | undefined;
+  challenge: Challenge | undefined;
   public gameState: GameState = new GameState(new RoundState(0, this.DEFAULT_TIME))
 
   constructor(private route: ActivatedRoute,
@@ -89,11 +92,11 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
       this.ignorePreviousGuesses = params['ignorePreviousGuesses'] ? params['ignorePreviousGuesses'] : false
       this.statusService = this.challengeStatusService.bind(this.id!);
       this.statusService.statusObservable.pipe(mergeMap(val => from(val.values())))
-      .pipe(filter(val => val.round === this.serverRound() && val.status === PlayStatus.ROUND_END && val.username != this.userService.username))
+      .pipe(filter(val => val.round === this.gameState.round.index && val.status === PlayStatus.ROUND_END && val.username != this.userService.username))
       .pipe(distinct(val => {return {user: val.username, round: val.round}}))
       .subscribe(() => this.soundService.complete());
-      this.subscriptions.push(this.challengesService.getChallenge(this.id!, this.ignorePreviousGuesses!)
-        .subscribe(value => this.start(value)))
+      this.subscriptions.push(this.challengesService.getChallenge(this.id!)
+        .subscribe(value => this.start(value, this.ignorePreviousGuesses!)))
       this.statusService.ghost.subscribe(val => this._gamePano?.drawGhost(val.name, val.location));
     }))
   }
@@ -110,26 +113,30 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
     clearInterval(this.counter);
     this.timerEndObservable.next({});
     this.gameState.round.remainingTime = 0
-    this.gameState.finished = this.gameState.round.index + 1 == this.challenge!.challengelocation_set.length
+    this.gameState.finished = this.gameState.round.index + 1 == this.challenge!.locations.length
     let pos = this.miniMap!.marker?.getPosition()
     //only assign if there is a position
     this.gameState.round.guess = pos ? LatLngImpl.of(pos) : new LatLngImpl(0, 0)
 
     this.calcPoints()
 
-    let challengeLocation = this.challenge!.challengelocation_set[this.gameState.round.index];
+    let challengeLocation = this.challenge!.locations[this.gameState.round.index];
     let round = this.gameState.round;
     let guess = {
-      Lat: this.gameState.round.guess.Lat, 
-      Long: this.gameState.round.guess.Long,
-      Challenge_Location_ID: challengeLocation.Challenge_Location_ID, 
-      Distance: round.distance, 
-      Score: round.score,
-      Username: "You(Not on Server)",
-      Pub_Date: undefined
+      id: null,
+      pub_date: null,
+      lat: this.gameState.round.guess.Lat, 
+      long: this.gameState.round.guess.Long,
+      distance: round.distance, 
+      score: round.score,
+      username: "You(Not on Server)"
     };
-    this.guessService.submitGuess(guess)
-    this.statusService!.postStatus({status: PlayStatus.ROUND_END, round: this.serverRound()})
+    this.guessService.submitGuess(challengeLocation.id!, guess)
+    .pipe(catchApiErrorCode(CodeEnum.Exists, () => {
+      this.doubleguess = guess;
+    }))
+    .subscribe(() => this.refreshMap());
+    this.statusService!.postStatus({status: PlayStatus.ROUND_END, round: this.gameState.round.index})
     this.statusService?.statusObservable.subscribe(value => this.autoStartIfApplicable(value))
     this.roundMap!.guesses = [guess];
     this.roundMap!.location = challengeLocation
@@ -137,34 +144,38 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
   }
 
   refreshMap() {
-    this.guessService.getGuesses(this.challenge!.challengelocation_set[this.gameState.round.index].Challenge_Location_ID)
-      .subscribe(result => this.roundMap!.guesses = result)
+    this.guessService.getGuesses(this.challenge!.locations[this.gameState.round.index].id!)
+      .subscribe(result => {
+        if(this.doubleguess) {
+          result.push(this.doubleguess);
+        }
+        this.roundMap!.guesses = result;
+      })
   }
 
   private autoStartIfApplicable(statuses: Map<string, UserChallengeStatus>) {
     if(this.autoStart) {
       statuses.forEach((value:UserChallengeStatus, key: string) => {
-          if(value.round == this.serverRound() + 1 && value.status == PlayStatus.PLAYING) {
+          if(value.round == this.gameState.round.index + 1 && value.status == PlayStatus.PLAYING) {
             this.nextRound();
           }
       })
     }
   }
 
-  private start(challenge: RuntimeChallenge) {
+  private start(challenge: Challenge, ignorePreviousGuesses: boolean) {
     this.challenge = challenge
-
-    if (this.challenge.challengelocation_set.length === 0) {
+    let firstUnplayed = ignorePreviousGuesses ? 0 : this.challenge.locations.findIndex(location => !location.guessed);
+    if (firstUnplayed === -1) {
       this.gameState.playedBefore = true
       return;
     }
     this.soundService.start();
-    this.gameState = new GameState(new RoundState(0, challenge.Time))
+    this.gameState = new GameState(new RoundState(firstUnplayed, challenge.time))
 
-    //Challenge_Locations only contains the locations *THIS PLAYER* didn't play
-    this.statusService!.postStatus({status: PlayStatus.PLAYING, round: this.serverRound()})
-    let challengeLocation = new ChallengeLocationImpl(challenge.challengelocation_set[0])
-    this._gamePano!.setLocation(challengeLocation.toLatLng(this.google_ns))
+    this.statusService!.postStatus({status: PlayStatus.PLAYING, round: this.gameState.round.index})
+    let challengeLocation = challenge.locations[firstUnplayed];
+    this._gamePano!.setLocation(new this.google_ns.maps.LatLng(challengeLocation.lat, challengeLocation.long));
 
     // Scoreboard & Guess button event
     // Init Timer
@@ -172,28 +183,25 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
     this.miniMap!.reset(challenge, true)
   }
 
-  public humanReadableRound(serverRound: number | null = null) {
-    return (serverRound ? serverRound : this.serverRound()) + 1
-  }
-
-  public serverRound() {
-    return this.gameState.round.index + this.challenge!.Ignored_Count
+  public humanReadableRound() {
+    return this.gameState.round.index + 1;
   }
 
   nextRound() {
     this.soundService.start();
     this.statusSubscription?.unsubscribe();
     let round = this.gameState.round.index + 1;
-    this.gameState.round = new RoundState(round, this.challenge!.Time)
-    this.statusService!.postStatus({status: PlayStatus.PLAYING, round: round})
-    this.resetTimer()
+    this.gameState.round = new RoundState(round, this.challenge!.time);
+    this.statusService!.postStatus({status: PlayStatus.PLAYING, round: round});
+    this.resetTimer();
     this.challenge ? this.miniMap?.reset(this.challenge) : {};
-    let challengeLocation = new ChallengeLocationImpl(this.challenge!.challengelocation_set[round])
-    this._gamePano!.setLocation(challengeLocation.toLatLng(this.google_ns))
+    let challengeLocation = this.challenge!.locations[round];
+    this._gamePano!.setLocation(new this.google_ns.maps.LatLng(challengeLocation.lat, challengeLocation.long));
+    this.doubleguess = null;
   }
 
   resetTimer() {
-    this.gameState.round.remainingTime = this.challenge!.Time
+    this.gameState.round.remainingTime = this.challenge!.time
     this.counter = setInterval(() => this.timer(), 1000)
   }
 
@@ -212,15 +220,15 @@ export class StartChallengeComponent implements AfterContentInit, OnDestroy {
     }
   }
 
-  private static calcDistance(from: google.maps.LatLng, to: google.maps.LatLng): number {
-    return google.maps.geometry.spherical.computeDistanceBetween(from, to);
+  private calcDistance(from: google.maps.LatLng, to: google.maps.LatLng): number {
+    return this.google_ns.maps.geometry.spherical.computeDistanceBetween(from, to);
   }
 
 
   private calcPoints(): void {
     // Calculate distance between points, and convert to kilometers
-    let location = new ChallengeLocationImpl(this.challenge!.challengelocation_set[this.gameState.round.index])
-    let distance = Math.floor(StartChallengeComponent.calcDistance(this.gameState.round.guess!.toLatLng(this.google_ns), location.toLatLng(this.google_ns)!) / 10) / 100;
+    let location = this.challenge!.locations[this.gameState.round.index]
+    let distance = Math.floor(this.calcDistance(this.gameState.round.guess!.toLatLng(this.google_ns), new this.google_ns.maps.LatLng(location.lat, location.long)) / 10) / 100;
 
     // use exponential function for points calculation.
     let score = Math.floor(this.MAX_POINT_DISTANCE ** (1 - distance / this.LAST_POINT_DISTANCE));

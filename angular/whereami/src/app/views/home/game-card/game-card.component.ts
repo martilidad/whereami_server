@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router, UrlTree } from '@angular/router';
-import { RuntimeChallenge } from 'src/app/model/game-model/runtime-challenge';
+import { Challenge } from '@client/models'
 
 @Component({
   selector: 'app-game-card',
@@ -10,7 +10,7 @@ import { RuntimeChallenge } from 'src/app/model/game-model/runtime-challenge';
 export class GameCardComponent implements OnInit {
 
   @Input()
-  challenge: RuntimeChallenge | undefined;
+  challenge: Challenge | undefined;
   statsMode: boolean = false;
 
   constructor(private router: Router) { }
@@ -27,11 +27,11 @@ export class GameCardComponent implements OnInit {
   }
 
   started(): boolean {
-    return this.challenge ? this.challenge.challengelocation_set.some(cl => cl.guessed) : false;
+    return this.challenge ? this.challenge.locations.some(cl => cl.guessed) : false;
   }
 
   finished(): boolean {
-    return this.challenge ? this.challenge.challengelocation_set.every(cl => cl.guessed) : false;
+    return this.challenge ? this.challenge.locations.every(cl => cl.guessed) : false;
   }
 
 }

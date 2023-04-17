@@ -2,8 +2,8 @@
   <app-preview-map [game]="challenge.game" [hidden]="statsMode"></app-preview-map>
   <div class="card-body" [hidden]="statsMode">
     <h5 class="card-title">{{ challenge.game.name }}</h5>
-    <p class="card-text">Find {{ challenge.location_count }} locations in
-      {{ challenge.game.name }} within {{ challenge.Time }} seconds.</p>
+    <p class="card-text">Find {{ challenge.locations.length }} locations in
+      {{ challenge.game.name }} within {{ challenge.time }} seconds.</p>
   </div>
   <challenge-scores #challengeScores [hidden]="!statsMode"></challenge-scores>
   <div class="card-footer">
@@ -25,7 +25,7 @@
             Invite
           </button>
           <div ngbDropdown display="static" class="btn-group">
-            <button class="btn btn-secondary" (click)="challengeScores.showStats(challenge.id); statsMode = !statsMode">Stats</button>
+            <button class="btn btn-secondary" (click)="challengeScores.showStats(challenge); statsMode = !statsMode">Stats</button>
             <button ngbDropdownToggle class="btn btn-secondary dropdown-toggle-split" *ngIf="finished()">
               <span></span>
             </button>
@@ -37,7 +37,7 @@
         </div>
       </div>
       <div class="col">
-        <small class="text-muted">Created {{ challenge.pub_date | formatTime}}</small>
+        <small class="text-muted">Created {{ challenge.pub_date! | formatTime}}</small>
       </div>
     </div>
   </div>
