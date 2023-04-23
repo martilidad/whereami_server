@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AUTOSTART, GHOST, SettingsService, VOLUME } from 'src/app/service/settings/settings.service';
+import { Observable, Subject } from 'rxjs';
+import { AUTOSTART, GHOST, REACTIONS, SettingsService, VOLUME } from 'src/app/service/settings/settings.service';
 import { SoundService } from 'src/app/service/sound/sound.service';
 import { UserService } from 'src/app/service/user/user.service';
 
@@ -11,15 +12,18 @@ import { UserService } from 'src/app/service/user/user.service';
 export class NavbarComponent implements OnInit {
 
   volume:number;
-  autoStart:boolean;
   ghost:boolean;
+  autostart$: Observable<boolean>;
+  reactions$: Observable<boolean>;
+
 
   constructor(private settingsService: SettingsService,
     private soundService: SoundService,
     public userService: UserService) { 
     this.volume = settingsService.load(VOLUME);
-    this.autoStart = settingsService.load(AUTOSTART);
     this.ghost = settingsService.load(GHOST);
+    this.autostart$ = this.settingsService.load$(AUTOSTART);
+    this.reactions$ = this.settingsService.load$(REACTIONS);
   }
 
   ngOnInit(): void {
@@ -30,12 +34,17 @@ export class NavbarComponent implements OnInit {
     this.soundService.complete();
   }
 
-  autoStartHandler() {
-    this.settingsService.save(this.autoStart, AUTOSTART);
+  autoStartCheckEvent(event: Event) {
+    this.settingsService.save((event.target as HTMLInputElement).checked, AUTOSTART);
   }
 
   ghostHandler() {
     this.settingsService.save(this.ghost, GHOST);
+  }
+
+  
+  reactionCheckEvent(event: Event) {
+    this.settingsService.save((event.target as HTMLInputElement).checked, REACTIONS);
   }
 
 }

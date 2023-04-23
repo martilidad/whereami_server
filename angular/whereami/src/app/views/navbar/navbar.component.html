@@ -10,11 +10,15 @@
       </label>
     <label ngbDropdownItem ngbTooltip="Will start the round for you when another player starts the round. (pre-round-screen only)">
       autostart
-      <input type="checkbox" [(ngModel)]="autoStart" (change)="autoStartHandler()">
+      <input type="checkbox" [checked]="('' | settings).autostart" (click)="autoStartCheckEvent($event)">
     </label>
     <label ngbDropdownItem ngbTooltip="Show player positions during the game. If one of two players has this deactivated, neither will see each other.">
       Ghost
       <input type="checkbox" [(ngModel)]="ghost" (change)="ghostHandler()">
+    </label>
+    <label ngbDropdownItem ngbTooltip="Show reaction Videos at the end of a round.">
+      Reactions
+      <input type="checkbox" [checked]="reactions$ | async" (click)="reactionCheckEvent($event)">
     </label>
     <div *ngIf="this.userService.username">
       <div class="dropdown-divider"></div>

@@ -1,12 +1,12 @@
 import { Injectable, Type } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Observable, Subject, startWith } from 'rxjs';
 import { Optional } from 'typescript-optional';
 
-class Property<T> {
+export class Property<T> {
   constructor(public key: string) {}
 }
 
-class DefinedProperty<T> extends Property<T> {
+export class DefinedProperty<T> extends Property<T> {
   constructor(key: string, public initial: T) {
     super(key);
   }
@@ -16,6 +16,7 @@ export const VOLUME = new DefinedProperty<number>('volume', 1);
 export const AUTOSTART = new DefinedProperty<boolean>('autostart', false);
 export const GHOST = new DefinedProperty<boolean>('ghost', true);
 export const TOKEN = new Property<string>('token');
+export const REACTIONS = new DefinedProperty<boolean>('reactions', true);
 
 @Injectable({
   providedIn: 'root'
@@ -36,21 +37,13 @@ export class SettingsService {
     return this.loadOpt<T>(property).orElse(property.initial);
   }
 
-  private _listen<T>(property: DefinedProperty<T>, once: (value: T) => void = ()=>{}, onupdate: (value: T) => void = ()=>{}) {
-    Optional.ofNullable(this.subjects.get(property))
-    .ifPresentOrElse(val => val.subscribe(onupdate), () => {
-      let subject = new Subject<T>();
-      this.subjects.set(property, subject);
-      subject.subscribe(onupdate);
-    });
-    once(this.load(property));
-  }
-
-  listen<T>(property: DefinedProperty<T>, always: (value: T) => void): void;
-  listen<T>(property: DefinedProperty<T>, once: (value: T) => void, onupdate: (value: T) => void): void;
-  listen<T>(property: DefinedProperty<T>, once?: (value: T) => void, onupdate?: (value: T) => void, always?: (value: T) => void) {
-    always ? this._listen(property, always, always) : {};
-    once || onupdate ? this._listen(property, once, onupdate) : {};
+  load$<T>(property: DefinedProperty<T>): Observable<T> {
+     const subject: Subject<T> = Optional.ofNullable(this.subjects.get(property))
+    .orElseGet(() => new Subject<T>());
+    this.subjects.set(property, subject);
+    //every new subscriber should have the chance to consume a value
+    //could also work with behavioursubject instead
+    return subject.pipe(startWith(this.load(property)));
   }
 
   saveOpt<T>(value: Optional<T>, property: Property<T>) {

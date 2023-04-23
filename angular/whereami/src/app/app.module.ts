@@ -39,6 +39,7 @@ import { ChallengeScoresComponent } from './views/index/challenge-scores/challen
 import { InviteComponent } from './views/invite/invite.component';
 import { NavbarComponent } from './views/navbar/navbar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SettingsPipe } from './service/settings/settings-pipe.pipe';
 export const GOOGLE = new InjectionToken('google');
 
 @NgModule({
@@ -63,7 +64,8 @@ export const GOOGLE = new InjectionToken('google');
     PreviewMapComponent,
     HomeChallengeFormComponent,
     GameCardComponent,
-    OverviewMapComponent
+    OverviewMapComponent,
+    SettingsPipe
   ],
   imports: [
     AppRoutingModule,

@@ -10,7 +10,7 @@ import { LatLngImpl } from 'src/app/model/lat-lng';
 import { ChallengeLocation } from '@client/models';
 
 
-const MAX_POINT_DISTANCE = 10000;
+export const MAX_POINT_DISTANCE = 10000;
 /**
  * Min distance for at least one point.
  */

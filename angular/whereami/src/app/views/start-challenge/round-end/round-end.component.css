@@ -1,8 +1,9 @@
 #container {
   position: absolute;
+  top: 10%;
   left: 50%;
-  width: 40vw;
-  margin: 4vh 0 0 -16vw;
+  /* This is here for documentation; it is set by the animation */
+  transform: translate(-50%, 0%);
   padding: 2vh;
   background: grey;
   text-align: center;
