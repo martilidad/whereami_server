@@ -1,23 +1,21 @@
-//TODO implement autostart as side effect
 
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { ChallengeStatusService } from '@service/challenge-status/challenge-status.service';
+import { AUTOSTART, SettingsService } from '@service/settings/settings.service';
 import { filter, map, switchMap, tap, withLatestFrom } from 'rxjs';
 import { GameState } from 'src/app/model/status/game-state';
 import { PlayStatus } from 'src/app/model/status/play-status';
+import { UserChallengeStatus } from 'src/app/model/status/user-challenge-status';
 import { ActionTypes, BindStatusWorker, NextRound } from './challenge.actions';
 import {
   selectChallengeId,
   selectChallengeStatusWorker,
   selectFinished,
   selectRound,
-  selectRoundEnded,
-  selectTotalRounds,
+  selectRoundEnded
 } from './challenge.selectors';
-import { UserChallengeStatus } from 'src/app/model/status/user-challenge-status';
-import { AUTOSTART, SettingsService } from '@service/settings/settings.service';
 
 @Injectable()
 export class StatusEffects {

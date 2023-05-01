@@ -1,4 +1,4 @@
-import { InjectionToken, NgModule } from '@angular/core';
+import { InjectionToken, NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -79,8 +79,7 @@ export const GOOGLE = new InjectionToken('google');
     HttpClientJsonpModule,
     StoreModule.forRoot({}),
     EffectsModule.forRoot(),
-    //TODO logonly in prod
-    StoreDevtoolsModule.instrument({ maxAge: 25, trace: true}),
+    StoreDevtoolsModule.instrument({ maxAge: 25, trace: true, logOnly: !isDevMode(), autoPause: true}),
   ],
   providers: [
     HttpErrorHandler,
