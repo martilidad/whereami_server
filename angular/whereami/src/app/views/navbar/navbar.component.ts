@@ -12,18 +12,11 @@ import { UserService } from 'src/app/service/user/user.service';
 export class NavbarComponent implements OnInit {
 
   volume:number;
-  ghost:boolean;
-  autostart$: Observable<boolean>;
-  reactions$: Observable<boolean>;
-
 
   constructor(private settingsService: SettingsService,
     private soundService: SoundService,
     public userService: UserService) { 
     this.volume = settingsService.load(VOLUME);
-    this.ghost = settingsService.load(GHOST);
-    this.autostart$ = this.settingsService.load$(AUTOSTART);
-    this.reactions$ = this.settingsService.load$(REACTIONS);
   }
 
   ngOnInit(): void {
@@ -32,19 +25,6 @@ export class NavbarComponent implements OnInit {
   volumeHandler() {
     this.settingsService.save(this.volume, VOLUME);
     this.soundService.complete();
-  }
-
-  autoStartCheckEvent(event: Event) {
-    this.settingsService.save((event.target as HTMLInputElement).checked, AUTOSTART);
-  }
-
-  ghostHandler() {
-    this.settingsService.save(this.ghost, GHOST);
-  }
-
-  
-  reactionCheckEvent(event: Event) {
-    this.settingsService.save((event.target as HTMLInputElement).checked, REACTIONS);
   }
 
 }

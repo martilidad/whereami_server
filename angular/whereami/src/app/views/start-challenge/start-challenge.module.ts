@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { SharedModule } from 'src/app/shared/shared.module';
 import { challengeReducer } from './challenge-store/challenge.reducer';
 import { GuessEffects } from './challenge-store/guess.effects';
 import { RouteEffects } from './challenge-store/route.effects';
@@ -30,14 +31,17 @@ import { StatusTableComponent } from './status-table/status-table.component';
     StatusTableComponent,
     PlayedBeforeComponent,
     ScoreBoardComponent,
-    RoundEndComponent,
+    RoundEndComponent
   ],
   imports: [
     GoogleMapsModule,
     CommonModule,
     StartChallengeRoutingModule,
     StoreModule.forFeature('challenge', challengeReducer),
-    EffectsModule.forFeature([RouteEffects, GuessEffects, ScoreCalculationEffects, SoundEffects, TimerEffects])
-  ]
+    EffectsModule.forFeature([RouteEffects, GuessEffects, ScoreCalculationEffects, SoundEffects, TimerEffects]),
+    SharedModule,
+  ],
+  //No exports!!!!
+  exports: []
 })
 export class StartChallengeModule { }

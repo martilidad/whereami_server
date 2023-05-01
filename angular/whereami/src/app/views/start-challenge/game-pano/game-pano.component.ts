@@ -1,6 +1,7 @@
 import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { ChallengeLocation } from '@client/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import {
   Observable,
@@ -17,11 +18,11 @@ import {
   SettingsService,
 } from 'src/app/service/settings/settings.service';
 import { Optional } from 'typescript-optional';
+import { ActionTypes } from '../challenge-store/challenge.actions';
 import {
   selectChallengeStatusWorker,
   selectLocation,
 } from '../challenge-store/challenge.selectors';
-import { boolean } from 'zod';
 
 @UntilDestroy()
 @Component({
@@ -37,7 +38,8 @@ export class GamePanoComponent {
   constructor(
     @Inject(GOOGLE) private google_ns: typeof google,
     private settingsService: SettingsService,
-    private store: Store<{ challenge: GameState }>
+    private store: Store<{ challenge: GameState }>,
+    private actions$: Actions
   ) {
     this.startLocation$ = store.select(selectLocation);
     this.startLocation$
@@ -89,6 +91,8 @@ export class GamePanoComponent {
     this.settingsService
       .load$(GHOST)
       .subscribe((enabled) => this.markGhostsEnabled(enabled));
+    this.actions$.pipe(ofType(ActionTypes.ToStart),untilDestroyed(this))
+    .subscribe(() => this.reset());
   }
 
   @ViewChild('panoDiv')

@@ -1,14 +1,14 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AUTOSTART, REACTIONS, SettingsService } from '@service/settings/settings.service';
-import { BehaviorSubject, Observable, Subject, filter, map, of, startWith, switchMap, takeUntil } from 'rxjs';
-import { GameState } from 'src/app/model/status/game-state';
-import { selectChallengeId, selectDistance, selectFinished, selectScore } from '../challenge-store/challenge.selectors';
-import { NextRound, RefreshMap } from '../challenge-store/challenge.actions';
-import { animate, state, style, transition, trigger } from '@angular/animations';
-import { GfycatService } from '@service/gfycat/gfycat.service';
-import { MAX_POINT_DISTANCE } from '../challenge-store/score-calculation.effects';
 import { TaggedVideo } from '@service/gfycat/gfycat-response';
+import { GfycatService } from '@service/gfycat/gfycat.service';
+import { AUTOSTART, REACTIONS, SettingsService } from '@service/settings/settings.service';
+import { Observable, Subject, of, startWith, switchMap } from 'rxjs';
+import { GameState } from 'src/app/model/status/game-state';
+import { NextRound, RefreshMap } from '../challenge-store/challenge.actions';
+import { selectChallengeId, selectDistance, selectFinished, selectScore } from '../challenge-store/challenge.selectors';
+import { MAX_POINT_DISTANCE } from '../challenge-store/score-calculation.effects';
 
 @Component({
   selector: 'app-round-end',
@@ -27,7 +27,7 @@ import { TaggedVideo } from '@service/gfycat/gfycat-response';
         'hidden',
         style({
           opacity: 0,
-          transform: 'scale(0.5) translate(20px, 680px)'
+          transform: 'scale(0) translate(+100%, 0)'
         })
       ),
       transition('shown => hidden', animate('300ms ease-out')),
@@ -42,7 +42,6 @@ export class RoundEndComponent {
   finished$: Observable<boolean>;
   show = true
   taggedVideo$: Observable<TaggedVideo|null>
-  autostart$: Observable<boolean>;
   newGif$ = new Subject<void>;
   
   constructor(private store: Store<{ challenge: GameState }>, private settingsService: SettingsService, private gfycatService: GfycatService) {
@@ -63,15 +62,10 @@ export class RoundEndComponent {
         }
       })
     );
-    this.autostart$ = this.settingsService.load$(AUTOSTART);
   }  
   
   refreshMap() {
     this.store.dispatch(new RefreshMap());
-  }
-
-  setAutoStart(autostart: boolean) {
-    this.settingsService.save(autostart, AUTOSTART);
   }
 
   nextRound() {

@@ -18,6 +18,15 @@ export const GHOST = new DefinedProperty<boolean>('ghost', true);
 export const TOKEN = new Property<string>('token');
 export const REACTIONS = new DefinedProperty<boolean>('reactions', true);
 
+export const DEFINED_PROPERTIES = {
+  volume: VOLUME,
+  autostart: AUTOSTART,
+  ghost: GHOST,
+  reactions: REACTIONS
+};
+
+export type DefinedPropertyKey = 'volume' | 'autostart' | 'ghost' | 'reactions';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -28,14 +37,30 @@ export class SettingsService {
 
   constructor() { }
 
+  saveForKey<T>(value: T, key: DefinedPropertyKey) {
+    const property: DefinedProperty<unknown> = DEFINED_PROPERTIES[key];
+    return this.save(value, property);
+  }
+
   save<T>(value: T, property: Property<T>) {
     localStorage.setItem(property.key, JSON.stringify(value));
     Optional.ofNullable(this.subjects.get(property)).ifPresent(sub => sub.next(value));
   }
 
+
+  loadFromKey(key: DefinedPropertyKey): unknown {
+      const property: DefinedProperty<unknown> = DEFINED_PROPERTIES[key];
+      return this.load(property);
+  }
+
   load<T>(property: DefinedProperty<T>): T {
     return this.loadOpt<T>(property).orElse(property.initial);
   }
+
+  loadFromKey$(key: DefinedPropertyKey): Observable<unknown> {
+    const property: DefinedProperty<unknown> = DEFINED_PROPERTIES[key];
+    return this.load$(property);
+}
 
   load$<T>(property: DefinedProperty<T>): Observable<T> {
      const subject: Subject<T> = Optional.ofNullable(this.subjects.get(property))

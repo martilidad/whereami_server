@@ -3,9 +3,10 @@
   <p>
     Your guess was <strong>{{distance$ | async}}km</strong> away from the actual location.
   </p>
-  <div style="display: flex;" (click)="newGif$.next()">
+  <div style="display: flex;">
     <round-map classAppend="height: 50vh !important; width: 40vw !important;"></round-map>
-    <div style="display: flex; flex-direction: column; align-items: center;height: 50vh; width: 40vw;" *ngIf="(taggedVideo$ | async) as taggedVideo">
+    <div style="display: flex; flex-direction: column; align-items: center;height: 50vh; width: 40vw;" 
+    *ngIf="(taggedVideo$ | async) as taggedVideo" (click)="newGif$.next()">
       <h2 style="text-align: center;">{{taggedVideo.tag}}</h2>
       <div style="flex-grow: 1;">
         <video style="width: 100%; height: 100%; object-fit: contain;"  loop autoplay playsinline muted [src]="taggedVideo.src">
@@ -20,8 +21,7 @@
     <button class="btn btn-primary" *ngIf="!(finished$ | async)" (click)="nextRound()">Continue</button>
     <a class="btn btn-success" *ngIf="finished$ | async" routerLink="/challengeOverview"
       [queryParams]="{id: id$ | async }" routerLinkActive="active">Overview</a>
-    <input #checkbox type="checkbox" class="btn-check" id="autostart" autocomplete="off" [checked]="autostart$ | async"
-    (click)="setAutoStart(checkbox.checked)">
+    <input type="checkbox" class="btn-check" autocomplete="off" appCheckBoxSetting [configKey]="'autostart'">
     <label class="btn btn-outline-primary" for="autostart">Autostart</label>
     <button class="btn btn-secondary" (click)="refreshMap()">Refresh Map</button>
   </div>
