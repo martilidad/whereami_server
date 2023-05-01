@@ -1,0 +1,10 @@
+#container {
+  position: absolute;
+  bottom: 0px;
+  z-index: 2000;
+  opacity: 0.7;
+  
+  /* background: white;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.9); */
+}
+

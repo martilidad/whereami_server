@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { CodeEnum, Error } from "@client/models";
-import { catchError } from "rxjs";
+import { ObservableInput, ObservedValueOf, OperatorFunction, catchError } from "rxjs";
 import { SafeParseReturnType, z } from "zod";
 
 
@@ -32,12 +32,11 @@ export function catchApiError(action: (err: Error) => void) {
  * @param actionForThisError the action to execute
  * @returns rxjs OperatorFunction (e.g. for usage in Observable.map())
  */
-export function catchApiErrorCode(code: CodeEnum, actionForThisError: (err: Error) => void) {
+export function catchApiErrorCode<T, O extends ObservableInput<any>>(code: CodeEnum, actionForThisError: (err: Error) => O): OperatorFunction<T, T | ObservedValueOf<O>> {
   return catchError((error: HttpErrorResponse) => {
     let validated: SafeParseReturnType<any, Error> = ErrorSchema.safeParse(error.error);
     if(validated.success && validated.data.code === code) {
-      actionForThisError(validated.data);
-      return [];
+      return actionForThisError(validated.data);
     }
     throw error;
   });

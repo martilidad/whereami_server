@@ -1,3 +1,13 @@
+#container {
+  height: 50vh;
+  width: 50vh;
+  position: absolute;
+  bottom: 43vh;
+  right: 1vw;
+  z-index: 1000;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+}
+
 #timerControl {
   background-color: #fff;
   border: 2px solid #fff;
@@ -15,4 +25,13 @@
   line-height: 38px;
   padding-left: 5px;
   padding-right: 5px;
+}
+
+.opaque {
+  opacity: 1;
+  transition: opacity 0s;
+}
+.transparent {
+  opacity: 0.3;
+  transition: opacity 10s;
 }

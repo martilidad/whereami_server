@@ -1,18 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GOOGLE_TESTING_PROVIDER } from 'src/app/test/testutils.spec';
+import { GOOGLE_TESTING_PROVIDER } from '../../../test/testutils.spec';
 
-import { RoundMapComponent } from './round-map.component';
+import { OverviewMapComponent } from './overview-map.component';
 
-describe('RoundMapComponent', () => {
-  let component: RoundMapComponent;
-  let fixture: ComponentFixture<RoundMapComponent>;
+describe('OverviewMapComponent', () => {
+  let component: OverviewMapComponent;
+  let fixture: ComponentFixture<OverviewMapComponent>;
   let httpClientSpy: jasmine.SpyObj<HttpClient>;
 
   beforeEach(async () => {
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
     await TestBed.configureTestingModule({
-      declarations: [ RoundMapComponent ],
+      declarations: [ OverviewMapComponent ],
       providers: [
         {provide: HttpClient, useValue: httpClientSpy},
         GOOGLE_TESTING_PROVIDER]
@@ -21,7 +21,7 @@ describe('RoundMapComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RoundMapComponent);
+    fixture = TestBed.createComponent(OverviewMapComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

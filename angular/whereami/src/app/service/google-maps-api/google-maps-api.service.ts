@@ -65,7 +65,7 @@ export class GoogleMapsApiService {
       });
   }
 
-  get apiLoaded(): Subscribable<boolean> {
+  get apiLoaded(): Observable<boolean> {
     return this._apiLoaded;
   }
 }

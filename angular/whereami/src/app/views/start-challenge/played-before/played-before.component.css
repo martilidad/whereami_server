@@ -1,0 +1,11 @@
+#container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  margin: -190px 0 0 -240px;
+  padding: 20px;
+  background: grey;
+  text-align: center;
+  z-index: 1000;
+}

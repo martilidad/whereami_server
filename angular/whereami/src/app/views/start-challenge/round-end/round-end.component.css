@@ -1,0 +1,24 @@
+#container {
+  position: absolute;
+  left: 50%;
+  width: 40vw;
+  margin: 4vh 0 0 -16vw;
+  padding: 2vh;
+  background: grey;
+  text-align: center;
+  z-index: 1005;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+}
+
+#resultsButton {
+  font-size: 2.5vh;
+  font-weight: bold;
+  color: white;
+  width: 13vh;
+  cursor: pointer;
+  text-align: center;
+  position: absolute;
+  top: 70vh;
+  right: 1vw;
+  z-index: 1000;
+}

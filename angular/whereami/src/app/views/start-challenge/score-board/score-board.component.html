@@ -1,0 +1,18 @@
+<div id="container">
+  <table class="table table-dark">
+    <tbody>
+      <tr>
+        <th scope="row">Current Round</th>
+        <td>{{ humanReadableRound$ | async }}/{{ totalRounds$ | async}}</td>
+      </tr>
+      <tr>
+        <th scope="row">Last Round Score</th>
+        <td>{{score$ | async}}</td>
+      </tr>
+      <tr>
+        <th scope="row">Total Score</th>
+        <td>{{totalScore$ | async}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

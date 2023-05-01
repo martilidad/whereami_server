@@ -9,6 +9,7 @@ import {StartChallengeComponent} from "./views/start-challenge/start-challenge.c
 import {ChallengeOverviewComponent} from "./views/challenge-overview/challenge-overview.component";
 import { InviteComponent } from './views/invite/invite.component';
 import { HomeComponent } from './views/home/home.component';
+import { GoogleMapsGuard } from '@service/google-maps-api/google-maps.guard';
 
 const routes: Routes = [
   {
@@ -29,7 +30,9 @@ const routes: Routes = [
   },
   {
     path:"startChallenge",
-    component: StartChallengeComponent,
+    loadChildren: () => import('./views/start-challenge/start-challenge.module').then(m => m.StartChallengeModule),
+    //module absolutely needs maps to be loaded, because it has effects that use the maps api
+    canMatch: [GoogleMapsGuard]
   },
   {
     path:"challengeOverview",

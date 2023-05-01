@@ -1,34 +1,37 @@
-import { ChallengeLocation } from "@client/models";
-import { LatLngImpl } from "../lat-lng";
+import { Challenge, ChallengeLocation, Guess } from '@client/models';
+import { LatLng } from '../lat-lng';
+import { BoundChallengeStatusService } from '@service/challenge-status/challenge-status.service';
 
 export class RoundState {
-  index: number = 0
-  score: number = 0
-  distance: number = 0
-  remainingTime: number
-  guess: LatLngImpl | undefined
+  index: number|null;
+  score: number = 0;
+  scoreHidden: number = 0;
+  distance: number = 0;
+  distanceHidden: number = 0;
+  remainingTime: number;
+  //TODO merge these two; just create the guess object prematurely
+  guess: google.maps.LatLng | undefined;
+  duplicateGuessMarker: Guess | undefined
+  ended: boolean = false;
 
-  constructor(index: number, time: number) {
-    this.index = index
-    this.remainingTime = time
+  constructor(index: number|null, time: number) {
+    this.index = index;
+    this.remainingTime = time;
   }
 }
 
 export class GameState {
-  finished: boolean = false
-  playedBefore: boolean = false
-  round: RoundState
-  score: number = 0
-  distance: number = 0
+  finished: boolean = false;
+  playedBefore: boolean = false;
+  round: RoundState;
+  score: number = 0;
+  distance: number = 0;
+  challenge: Challenge| null
+  statusWorker: BoundChallengeStatusService | undefined
 
-  constructor(round: RoundState) {
-    this.round = round
-  }
-
-  updateScore(distance: number, score: number) {
-    this.score += score
-    this.distance += distance
-    this.round.score = score
-    this.round.distance = distance
+  //TODO this is only null so it can easily be constructed for initial state :/
+  constructor(round: RoundState, challenge: Challenge| null) {
+    this.challenge = challenge
+    this.round = round;
   }
 }

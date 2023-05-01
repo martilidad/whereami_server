@@ -1,43 +1,40 @@
+import { DOCUMENT } from '@angular/common';
 import {
   AfterViewInit,
   Component,
   ElementRef,
   Inject,
-  Input,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
 import { GoogleMap } from '@angular/google-maps';
-import { DOCUMENT } from '@angular/common';
-import { timer } from 'rxjs';
-import { GOOGLE } from 'src/app/app.module';
-import { SoundService } from 'src/app/service/sound/sound.service';
 import { Challenge } from '@client/models';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Actions, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { filter, switchMap, timer } from 'rxjs';
+import { GOOGLE } from 'src/app/app.module';
+import { GameState } from 'src/app/model/status/game-state';
+import { ActionTypes, GuessChanged } from '../challenge-store/challenge.actions';
+import { selectRemainingTime } from '../challenge-store/challenge.selectors';
 
+@UntilDestroy()
 @Component({
   selector: 'mini-map',
   templateUrl: './mini-map.component.html',
   styleUrls: ['./mini-map.component.css'],
 })
 export class MiniMapComponent implements AfterViewInit {
-  private _marker: google.maps.Marker | undefined;
+  readonly DEFAULT_OPTIONS: google.maps.MapOptions;
+  private readonly position;
+  interacting = false
+  private marker: google.maps.Marker | undefined;
   @ViewChild('map')
   map: GoogleMap | undefined;
 
-  _time: number = 0;
+  time$
 
   @ViewChild('timer')
   timer: ElementRef | undefined;
-  @Input()
-  private position;
-
-  @Input()
-  public set time(value: number) {
-    this._time = value;
-  }
-
-  get marker(): google.maps.Marker | undefined {
-    return this._marker;
-  }
 
   ngAfterViewInit(): void {
     this.map!.controls[this.position].push(this.timer!.nativeElement);
@@ -46,7 +43,8 @@ export class MiniMapComponent implements AfterViewInit {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(GOOGLE) private google_ns: typeof google,
-    private soundService: SoundService
+    private store: Store<{ challenge: GameState }>,
+    actions$: Actions
   ) {
     this.position = google_ns.maps.ControlPosition.TOP_CENTER;
     this.DEFAULT_OPTIONS = {
@@ -55,7 +53,16 @@ export class MiniMapComponent implements AfterViewInit {
       mapTypeControl: false,
       streetViewControl: false,
       mapTypeId: google_ns.maps.MapTypeId.ROADMAP,
-    };  
+    };
+    this.time$ = this.store.select(selectRemainingTime).pipe(filter(Boolean));
+    actions$.pipe(ofType(ActionTypes.NextRound, ActionTypes.Start), 
+    untilDestroyed(this),
+    switchMap(()=>this.store.select(state => state.challenge.challenge)),
+    filter(Boolean))
+    .subscribe(challenge => this.reset(challenge));
+
+    actions$.pipe(ofType(ActionTypes.EndedRound))
+    .subscribe(() => this.exitFullScreen());
   }
 
   reset(challenge: Challenge, initial: boolean = false) {
@@ -64,8 +71,8 @@ export class MiniMapComponent implements AfterViewInit {
       .map((location) => new google.maps.LatLng(location.lat, location.long))
       .forEach((latLong) => bounds.extend(latLong));
     this.map!.fitBounds(bounds);
-    this._marker?.setMap(null);
-    this._marker = undefined;
+    this.marker?.setMap(null);
+    this.marker = undefined;
     if (initial) {
       // this doesn't work; how to wait for map init?
       // this.map!.mapInitialized.asObservable().subscribe(() => this.map!.fitBounds(bounds));
@@ -74,15 +81,16 @@ export class MiniMapComponent implements AfterViewInit {
     }
   }
 
-  readonly DEFAULT_OPTIONS: google.maps.MapOptions;
   mapClick(event: google.maps.MapMouseEvent) {
     this.guessMarker().setPosition(event.latLng);
-    this.soundService.pin();
+    if(event.latLng) {
+      this.store.dispatch(new GuessChanged(event.latLng))
+    }
   }
 
   private guessMarker(): google.maps.Marker {
-    return (this._marker = this._marker
-      ? this._marker
+    return (this.marker = this.marker
+      ? this.marker
       : new google.maps.Marker({
           map: this.map!.googleMap,
           visible: true,

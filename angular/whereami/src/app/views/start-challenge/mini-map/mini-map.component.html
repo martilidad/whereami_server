@@ -1,5 +1,8 @@
-<google-map #map (mapClick)="mapClick($event)" height="100%" width="100%" [options]="DEFAULT_OPTIONS">
-</google-map>
-<div #timer id="timerControl">
-  <div [innerText]="_time" id="timer"></div>
+<div id="container" [ngClass]="{'opaque': interacting, 'transparent': !interacting}" (mouseenter)="interacting = true"
+  (mouseleave)="interacting = false">
+  <google-map #map (mapClick)="mapClick($event)" height="100%" width="100%" [options]="DEFAULT_OPTIONS">
+  </google-map>
+  <div #timer id="timerControl">
+    <div [innerText]="time$ | async" id="timer"></div>
+  </div>
 </div>

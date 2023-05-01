@@ -1,0 +1,12 @@
+<div id="container">
+  <h1>You already beat this Map!</h1>
+  <a class="btn btn-large btn-primary" routerLink="/" routerLinkActive="active">Main Menu</a>
+  <p>
+    <a class="btn btn-large btn-secondary mx-2" routerLink="/startChallenge"
+      [queryParams]="{ id: id$ | async, ignorePreviousGuesses: true }" routerLinkActive="active">
+      Replay(unranked)
+    </a>
+    <a class="btn btn-large btn-success mx-2" routerLink="/challengeOverview" [queryParams]="{ id: id$ | async }"
+      routerLinkActive="active">Overview</a>
+  </p>
+</div>

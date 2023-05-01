@@ -1,7 +1,7 @@
 import {Component, Inject, InjectionToken, Input, ViewChild} from '@angular/core';
-import { GOOGLE } from 'src/app/app.module';
+import { GOOGLE } from '../../../app.module';
 import { ChallengeLocation, Location, Guess } from '@client/models';
-import { UserService } from 'src/app/service/user/user.service';
+import { UserService } from '../../../service/user/user.service';
 // Only import for type hints; the runtime dependency is injected!!!
 import type {GoogleMap} from "@angular/google-maps";
 
@@ -9,12 +9,13 @@ const ACTUAL_MARKER_URL = "/assets/red_marker.png";
 const PLAYER_MARKER_URL = "/assets/green_marker.png";
 const ENEMY_MARKER_URL = "/assets/orange_marker.png";
 
+//TODO simplify after splitting the shared roundmap
 @Component({
-  selector: 'round-map',
-  templateUrl: './round-map.component.html',
-  styleUrls: ['./round-map.component.css']
+  selector: 'overview-map',
+  templateUrl: './overview-map.component.html',
+  styleUrls: ['./overview-map.component.css']
 })
-export class RoundMapComponent {
+export class OverviewMapComponent {
 
 
   @Input()
