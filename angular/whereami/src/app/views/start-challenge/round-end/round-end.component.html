@@ -21,7 +21,7 @@
     <button class="btn btn-primary" *ngIf="!(finished$ | async)" (click)="nextRound()">Continue</button>
     <a class="btn btn-success" *ngIf="finished$ | async" routerLink="/challengeOverview"
       [queryParams]="{id: id$ | async }" routerLinkActive="active">Overview</a>
-    <input type="checkbox" class="btn-check" autocomplete="off" appCheckBoxSetting [configKey]="'autostart'">
+    <input id="autostart" type="checkbox" class="btn-check" autocomplete="off" appCheckBoxSetting [configKey]="'autostart'">
     <label class="btn btn-outline-primary" for="autostart">Autostart</label>
     <button class="btn btn-secondary" (click)="refreshMap()">Refresh Map</button>
   </div>
