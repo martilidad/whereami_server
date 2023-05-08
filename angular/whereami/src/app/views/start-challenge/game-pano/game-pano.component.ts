@@ -1,11 +1,7 @@
-import {
-  Component,
-  ElementRef,
-  Inject,
-  ViewChild
-} from '@angular/core';
+import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { ChallengeLocation } from '@client/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import {
   Observable,
@@ -13,7 +9,7 @@ import {
   filter,
   first,
   switchMap,
-  withLatestFrom
+  withLatestFrom,
 } from 'rxjs';
 import { GOOGLE } from 'src/app/app.module';
 import { GameState } from 'src/app/model/status/game-state';
@@ -22,6 +18,7 @@ import {
   SettingsService,
 } from 'src/app/service/settings/settings.service';
 import { Optional } from 'typescript-optional';
+import { ActionTypes } from '../challenge-store/challenge.actions';
 import {
   selectChallengeStatusWorker,
   selectLocation,
@@ -41,7 +38,8 @@ export class GamePanoComponent {
   constructor(
     @Inject(GOOGLE) private google_ns: typeof google,
     private settingsService: SettingsService,
-    private store: Store<{ challenge: GameState }>
+    private store: Store<{ challenge: GameState }>,
+    private actions$: Actions
   ) {
     this.startLocation$ = store.select(selectLocation);
     this.startLocation$
@@ -71,14 +69,30 @@ export class GamePanoComponent {
       .pipe(
         filter(Boolean),
         untilDestroyed(this),
-        switchMap((worker) => worker.ghost)
+        switchMap((worker) => worker.ghost),
+        withLatestFrom(this.settingsService.load$(GHOST))
       )
-      .subscribe((ghost) => this.drawGhost(ghost.name, ghost.location));
-
+      .subscribe(([ghost, enabled]) =>
+        this.drawGhost(ghost.name, ghost.location, enabled)
+      );
     this.store
       .select(selectChallengeStatusWorker)
-      .pipe(filter(Boolean), untilDestroyed(this), withLatestFrom(this.ghost()))
-      .subscribe(([worker, ghost]) => worker.postGhost(ghost));
+      .pipe(
+        filter(Boolean),
+        untilDestroyed(this),
+        withLatestFrom(this.ghost()),
+        withLatestFrom(this.settingsService.load$(GHOST))
+      )
+      .subscribe(([[worker, ghost], enabled]) => {
+        if (enabled) {
+          worker.postGhost(ghost);
+        }
+      });
+    this.settingsService
+      .load$(GHOST)
+      .subscribe((enabled) => this.markGhostsEnabled(enabled));
+    this.actions$.pipe(ofType(ActionTypes.ToStart),untilDestroyed(this))
+    .subscribe(() => this.reset());
   }
 
   @ViewChild('panoDiv')
@@ -114,11 +128,7 @@ export class GamePanoComponent {
   ghost(): Observable<google.maps.LatLng> {
     let subject = new Subject<google.maps.LatLng | null | undefined>();
     this.pano?.addListener('pano_changed', () => {
-      this.settingsService.listen(GHOST, (enabled: boolean) => {
-        if (enabled) {
-          subject.next(this.pano?.getLocation()?.latLng);
-        }
-      });
+      subject.next(this.pano?.getLocation()?.latLng);
     });
     return subject.pipe(
       filter((val) => val != undefined && val != null)
@@ -127,37 +137,31 @@ export class GamePanoComponent {
 
   private ghostMap: Map<string, google.maps.Marker> = new Map();
 
-
-  //TODO do it the rxjs way
-  drawGhost(name: string, location: google.maps.LatLng) {
-    this.settingsService.listen(
-      GHOST,
-      (enabled) => {
-        Optional.ofNullable(this.ghostMap.get(name)).ifPresentOrElse(
-          (marker) => {
-            marker.setPosition(location);
-            marker.setAnimation(this.google_ns.maps.Animation.BOUNCE);
-          },
-          () =>
-            this.ghostMap.set(
-              name,
-              new this.google_ns.maps.Marker({
-                clickable: false,
-                position: location,
-                map: enabled ? this.pano : null,
-                title: name,
-                label: name,
-                icon: '/assets/orange_marker.png',
-                animation: this.google_ns.maps.Animation.BOUNCE,
-              })
-            )
-        );
+  drawGhost(name: string, location: google.maps.LatLng, enabled: boolean) {
+    Optional.ofNullable(this.ghostMap.get(name)).ifPresentOrElse(
+      (marker) => {
+        marker.setPosition(location);
+        marker.setAnimation(this.google_ns.maps.Animation.BOUNCE);
       },
-      (enabled) => {
-        this.ghostMap.forEach((marker) =>
-          marker.setMap(enabled ? this.pano! : null)
-        );
-      }
+      () =>
+        this.ghostMap.set(
+          name,
+          new this.google_ns.maps.Marker({
+            clickable: false,
+            position: location,
+            map: enabled ? this.pano : null,
+            title: name,
+            label: name,
+            icon: '/assets/orange_marker.png',
+            animation: this.google_ns.maps.Animation.BOUNCE,
+          })
+        )
+    );
+  }
+
+  markGhostsEnabled(enabled: boolean) {
+    this.ghostMap.forEach((marker) =>
+      marker.setMap(enabled ? this.pano! : null)
     );
   }
 }

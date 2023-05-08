@@ -1,9 +1,9 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ChallengesService} from "../../service/challenge/challenges.service";
-import {Challenge} from "@client/models";
-import {Subject} from "rxjs";
-import {DataTableDirective} from "angular-datatables";
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, UrlTree } from '@angular/router';
+import { Challenge } from "@client/models";
+import { DataTableDirective } from "angular-datatables";
+import { Subject } from "rxjs";
+import { ChallengesService } from "../../service/challenge/challenges.service";
 
 @Component({
   selector: 'app-index',

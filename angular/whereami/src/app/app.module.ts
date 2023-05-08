@@ -9,6 +9,7 @@ import { NotFoundComponent } from './views/not-found/not-found.component';
 import { HTTP_INTERCEPTORS, HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
 import { GoogleMapsModule } from "@angular/google-maps";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from "@angular/router";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { EffectsModule } from '@ngrx/effects';
@@ -16,14 +17,11 @@ import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { DataTablesModule } from 'angular-datatables';
 import { ADDITIONAL_PROVIDERS } from 'src/environments/environment';
-import { CoverageToggleComponent } from './embedabble/coverage-toggle/coverage-toggle.component';
-import { DateElementDirective } from './embedabble/date-element.directive';
-import { FormatTimePipe } from './embedabble/format-time.pipe';
-import { PreviewMapComponent } from './embedabble/preview-map/preview-map.component';
 import { HttpErrorHandler } from "./http-error-handler.service";
 import { AuthorizationInterceptor } from './service/authorization.interceptor';
 import { MessageService } from "./service/message.service";
 import { UnauthorizedInterceptor } from "./service/unauthorized-interceptor";
+import { SharedModule } from './shared/shared.module';
 import { ChallengeOverviewComponent } from './views/challenge-overview/challenge-overview.component';
 import { OverviewMapComponent } from './views/challenge-overview/overview-map/overview-map.component';
 import { CreateGameComponent } from './views/create-game/create-game.component';
@@ -38,7 +36,6 @@ import { ChallengeFormComponent } from './views/index/challenge-form/challenge-f
 import { ChallengeScoresComponent } from './views/index/challenge-scores/challenge-scores.component';
 import { InviteComponent } from './views/invite/invite.component';
 import { NavbarComponent } from './views/navbar/navbar.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 export const GOOGLE = new InjectionToken('google');
 
 @NgModule({
@@ -47,7 +44,6 @@ export const GOOGLE = new InjectionToken('google');
     NotFoundComponent,
     IndexComponent,
     CreateGameComponent,
-    CoverageToggleComponent,
     DrawingManagerComponent,
     HandPickedManagerComponent,
     DrawnGameFormComponent,
@@ -56,11 +52,8 @@ export const GOOGLE = new InjectionToken('google');
     ChallengeScoresComponent,
     ChallengeOverviewComponent,
     InviteComponent,
-    FormatTimePipe,
-    DateElementDirective,
     NavbarComponent,
     HomeComponent,
-    PreviewMapComponent,
     HomeChallengeFormComponent,
     GameCardComponent,
     OverviewMapComponent
@@ -80,6 +73,7 @@ export const GOOGLE = new InjectionToken('google');
     StoreModule.forRoot({}),
     EffectsModule.forRoot(),
     StoreDevtoolsModule.instrument({ maxAge: 25, trace: true, logOnly: !isDevMode(), autoPause: true}),
+    SharedModule,
   ],
   providers: [
     HttpErrorHandler,
@@ -98,6 +92,8 @@ export const GOOGLE = new InjectionToken('google');
     },
     ADDITIONAL_PROVIDERS
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  //No exports!!!!
+  exports: []
 })
 export class AppModule { }

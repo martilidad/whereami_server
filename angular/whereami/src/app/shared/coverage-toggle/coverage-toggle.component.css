@@ -1,0 +1,10 @@
+#centerToggle {
+  color: black;
+  background-color: white;
+  font-family: Roboto,Arial,sans-serif;
+  font-size: 16px;
+  line-height: 38px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 5px;
+}
